@@ -22,6 +22,7 @@ import random
 import pygame
 
 from .. import settings as S
+from . import procgen
 from ..core.pathfinding import astar, compress_path
 
 SOLID_TILES = {S.T_BLOCK, S.T_CORE, S.T_WALL}
@@ -39,6 +40,21 @@ THEMES = {
     "hive":   dict(ground=(74, 58, 72), dark=(60, 46, 60), light=(96, 120, 70),
                    grid=(62, 48, 62), path=(120, 70, 96), path_dark=(92, 50, 74),
                    rock=(104, 84, 98), rock_dark=(66, 52, 64)),
+    "magma":  dict(ground=(58, 44, 44), dark=(44, 32, 32), light=(120, 64, 40),
+                   grid=(72, 54, 52), path=(96, 76, 66), path_dark=(66, 50, 44),
+                   rock=(84, 64, 58), rock_dark=(52, 40, 36), hazard="lava"),
+    "orbital": dict(ground=(70, 78, 96), dark=(58, 64, 80), light=(96, 104, 124),
+                   grid=(84, 92, 112), path=(46, 52, 66), path_dark=(34, 38, 50),
+                   rock=(120, 110, 90), rock_dark=(80, 72, 60), wall_style="door"),
+    "derelict": dict(ground=(48, 52, 60), dark=(38, 40, 48), light=(70, 76, 66),
+                     grid=(58, 62, 72), path=(78, 72, 66), path_dark=(56, 52, 48),
+                     rock=(90, 84, 80), rock_dark=(60, 56, 52)),
+    "twin":   dict(ground=(84, 76, 108), dark=(70, 62, 92), light=(110, 100, 140),
+                   grid=(76, 68, 100), path=(126, 108, 90), path_dark=(98, 84, 70),
+                   rock=(104, 96, 120), rock_dark=(70, 64, 84)),
+    "plains": dict(ground=(98, 142, 74), dark=(82, 122, 62), light=(126, 168, 92),
+                   grid=(88, 130, 68), path=(150, 128, 86), path_dark=(122, 102, 66),
+                   rock=(110, 108, 100), rock_dark=(76, 74, 70)),
 }
 
 
@@ -47,14 +63,21 @@ def level_path(level_id):
 
 
 def level_exists(level_id):
-    return os.path.exists(level_path(level_id))
+    return level_id.startswith("proc_") or os.path.exists(level_path(level_id))
+
+
+def load_level_data(level_id):
+    """A level file, or a procedural sector for ids like "proc_12345"."""
+    if level_id.startswith("proc_"):
+        return procgen.generate(int(level_id[5:]))
+    with open(level_path(level_id), "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 class LevelSystem:
     def __init__(self, events, level_id):
         self.events = events
-        with open(level_path(level_id), "r", encoding="utf-8") as f:
-            self.data = json.load(f)
+        self.data = load_level_data(level_id)
         self.id = level_id
         self.name = self.data.get("name", level_id)
         self.theme = THEMES.get(self.data.get("theme", "desert"), THEMES["desert"])
@@ -67,12 +90,27 @@ class LevelSystem:
         # Enemies may only walk on path tiles unless the level allows
         # free movement across open ground.
         self.free_path = self.data.get("free_path", False)
+        self.weather_ice = False    # Blizzard weather makes every tile slippery
         self.occupied = {}   # (tx, ty) -> Tower
         self.spawn_tiles = sorted(self._find_all(S.T_SPAWN), key=lambda t: (t[1], t[0]))
-        found_core = self._find_all(S.T_CORE)
-        if not self.spawn_tiles or len(found_core) != 1:
-            raise ValueError(f"{level_id}: needs at least one 'S' spawn and exactly one 'C' core")
-        self.core_tile = found_core[0]
+        self.core_tiles = sorted(self._find_all(S.T_CORE), key=lambda t: (t[1], t[0]))
+        if not self.spawn_tiles or not self.core_tiles:
+            raise ValueError(f"{level_id}: needs at least one 'S' spawn and one 'C' core")
+        self.core_tile = self.core_tiles[0]
+        # Which Core each lane heads for (Twin Cores). Default: the nearest one.
+        lane_cores = self.data.get("lane_cores")
+        self.lane_goals = []
+        for i, sp in enumerate(self.spawn_tiles):
+            if lane_cores and i < len(lane_cores):
+                self.lane_goals.append(self.core_tiles[lane_cores[i] % len(self.core_tiles)])
+            else:
+                self.lane_goals.append(min(self.core_tiles,
+                                           key=lambda c: abs(c[0] - sp[0]) + abs(c[1] - sp[1])))
+        self.dark = self.data.get("dark", False)          # Derelict Ship: only lit areas are visible
+        self.conveyors = {}                               # (tx, ty) -> (dx, dy)
+        for belt in self.data.get("conveyors", []):
+            for t in belt["tiles"]:
+                self.conveyors[tuple(t)] = tuple(belt["dir"])
         self.wall_events = [dict(e, done=False) for e in self.data.get("wall_events", [])]
         self.routes = []          # one waypoint list per lane
         self.route_tiles = []     # one tile list per lane (for debug drawing)
@@ -120,6 +158,17 @@ class LevelSystem:
     def core_pos(self):
         return self.tile_center(*self.core_tile)
 
+    @property
+    def core_positions(self):
+        return [self.tile_center(*t) for t in self.core_tiles]
+
+    def nearest_core_pos(self, x, y):
+        return min(self.core_positions, key=lambda p: (p[0] - x) ** 2 + (p[1] - y) ** 2)
+
+    def conveyor_at(self, x, y):
+        """Belt direction under a world position, or None."""
+        return self.conveyors.get(self.world_to_tile(x, y)) if self.conveyors else None
+
     def is_buildable(self, tx, ty):
         return self.tile_at(tx, ty) in BUILDABLE_TILES and (tx, ty) not in self.occupied
 
@@ -128,7 +177,7 @@ class LevelSystem:
         return self.tile_at(tx, ty) in SOLID_TILES or (tx, ty) in self.occupied
 
     def is_ice(self, tx, ty):
-        return self.tile_at(tx, ty) == S.T_ICE
+        return self.weather_ice or self.tile_at(tx, ty) == S.T_ICE
 
     def is_hazard(self, tx, ty):
         return self.tile_at(tx, ty) == S.T_HAZARD
@@ -142,8 +191,8 @@ class LevelSystem:
         return ch in PATH_TILES
 
     # ---- pathing ---------------------------------------------------------
-    def find_route(self, start, extra_blocked=None):
-        return astar(start, self.core_tile,
+    def find_route(self, start, extra_blocked=None, goal=None):
+        return astar(start, goal or self.core_tile,
                      lambda x, y: self.enemy_walkable(x, y, extra_blocked),
                      self.width, self.height)
 
@@ -160,8 +209,8 @@ class LevelSystem:
 
     def recompute_path(self, announce=True):
         routes, tiles_per_lane = [], []
-        for spawn in self.spawn_tiles:
-            tiles = self.find_route(spawn)
+        for spawn, goal in zip(self.spawn_tiles, self.lane_goals):
+            tiles = self.find_route(spawn, goal=goal)
             if tiles is None:
                 raise ValueError(f"{self.id}: no route from spawn {spawn} to the core")
             tiles_per_lane.append(tiles)
@@ -174,14 +223,16 @@ class LevelSystem:
     def route_from(self, x, y):
         """Fresh waypoints from a world position to the Core (for rerouting
         an enemy that is already on the path). None if it's cut off."""
-        tiles = self.find_route(self.world_to_tile(x, y))
+        cx, cy = self.nearest_core_pos(x, y)
+        tiles = self.find_route(self.world_to_tile(x, y), goal=self.world_to_tile(cx, cy))
         if tiles is None:
             return None
         pts = self._route_points(tiles, offscreen_start=False)
         return [(x, y)] + pts[1:] if len(pts) > 1 else [(x, y), self.core_pos]
 
     def all_lanes_connected(self, extra_blocked=None):
-        return all(self.find_route(s, extra_blocked) is not None for s in self.spawn_tiles)
+        return all(self.find_route(s, extra_blocked, goal=g) is not None
+                   for s, g in zip(self.spawn_tiles, self.lane_goals))
 
     def placement_blocks_route(self, tx, ty):
         """True if putting something on (tx, ty) would cut enemies off."""
@@ -259,13 +310,27 @@ class LevelSystem:
                 elif ch == S.T_BLOCK:
                     self._draw_rock(surf, rect, rng)
                 elif ch == S.T_HAZARD:
-                    self._draw_acid(surf, rect, rng)
+                    if th.get("hazard") == "lava":
+                        self._draw_lava(surf, rect, rng)
+                    else:
+                        self._draw_acid(surf, rect, rng)
+                elif ch == S.T_WALL and th.get("wall_style") == "door":
+                    self._draw_door(surf, rect)
                 elif ch == S.T_WALL:
                     self._draw_hive_wall(surf, rect, tx, ty, rng)
-        # Core landing pad.
-        cx, cy = self.tile_center(*self.core_tile)
-        pygame.draw.circle(surf, S.STEEL_DARK, (int(cx), int(cy)), 34)
-        pygame.draw.circle(surf, S.STEEL, (int(cx), int(cy)), 34, 2)
+        # Conveyor belts (Orbital Platform): chevrons pointing the way they push.
+        for (tx, ty), (dx, dy) in self.conveyors.items():
+            cx, cy = self.tile_center(tx, ty)
+            for k in (-7, 5):
+                px, py = cx + dx * k, cy + dy * k
+                pts = [(px - dx * 4 - dy * 6, py - dy * 4 - dx * 6), (px + dx * 4, py + dy * 4),
+                       (px - dx * 4 + dy * 6, py - dy * 4 + dx * 6)]
+                pygame.draw.lines(surf, S.ENERGY, False, pts, 2)
+        # Core landing pads.
+        for core in self.core_tiles:
+            cx, cy = self.tile_center(*core)
+            pygame.draw.circle(surf, S.STEEL_DARK, (int(cx), int(cy)), 34)
+            pygame.draw.circle(surf, S.STEEL, (int(cx), int(cy)), 34, 2)
         self.surface = surf
 
     def _draw_path(self, surf, rect, tx, ty, rng):
@@ -302,12 +367,29 @@ class LevelSystem:
             pygame.draw.line(surf, S.WHITE, (x, y), (x + 5, y - 5), 1)
 
     @staticmethod
+    def _draw_lava(surf, rect, rng):
+        pygame.draw.ellipse(surf, (90, 30, 16), rect.inflate(-2, -6))
+        pygame.draw.ellipse(surf, S.ORANGE, rect.inflate(-6, -10))
+        for _ in range(2):
+            pygame.draw.circle(surf, S.ENERGY,
+                               (rect.x + rng.randrange(8, 24), rect.y + rng.randrange(10, 22)), 2)
+
+    @staticmethod
     def _draw_acid(surf, rect, rng):
         pygame.draw.ellipse(surf, (40, 90, 30), rect.inflate(-2, -6))
         pygame.draw.ellipse(surf, S.ACID, rect.inflate(-6, -10))
         for _ in range(2):
             pygame.draw.circle(surf, (200, 255, 150),
                                (rect.x + rng.randrange(8, 24), rect.y + rng.randrange(10, 22)), 2)
+
+    @staticmethod
+    def _draw_door(surf, rect):
+        """A closed airlock (Orbital Platform)."""
+        pygame.draw.rect(surf, (22, 22, 34), rect)
+        pygame.draw.rect(surf, S.STEEL_DARK, rect.inflate(-2, -2))
+        for i in range(0, rect.w, 8):
+            pygame.draw.line(surf, S.ENERGY, (rect.x + i, rect.bottom - 3), (rect.x + i + 6, rect.y + 3), 3)
+        pygame.draw.rect(surf, S.RED, (rect.centerx - 2, rect.y + 2, 4, 4))
 
     @staticmethod
     def _draw_hive_wall(surf, rect, tx, ty, rng):

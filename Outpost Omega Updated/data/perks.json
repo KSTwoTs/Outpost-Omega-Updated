@@ -1,0 +1,11 @@
+{
+  "_comment": "Commander level-up perks. Vance earns XP from every alien killed and picks 1 of 3 perks per level.",
+  "sharpshooter": {"name": "Sharpshooter", "desc": "Blaster damage +30%"},
+  "rapid_fire":   {"name": "Rapid Fire", "desc": "Blaster fires 30% faster"},
+  "long_barrel":  {"name": "Long Barrel", "desc": "Blaster range +25%"},
+  "tough":        {"name": "Tough as Nails", "desc": "+30 max HP, healed now"},
+  "sprinter":     {"name": "Sprinter", "desc": "Move 15% faster"},
+  "field_tech":   {"name": "Field Tech", "desc": "Repairs 50% faster"},
+  "uplink":       {"name": "Priority Uplink", "desc": "Orbital Strike recharges 20% faster"},
+  "salvager":     {"name": "Salvager", "desc": "+2 Energy per kill"}
+}

@@ -1,0 +1,44 @@
+{
+  "_comment": "Endless mode tuning. Each enemy's threat cost and unlock_wave live in enemies.json.",
+  "budget_base": 12,
+  "budget_growth": 1.12,
+  "max_groups": 3,
+  "enemy_weights": {"skitter": 3.0, "glider": 1.5, "brute": 1.5, "brood_sac": 1.2, "saboteur": 0.6,
+                    "mender": 0.8, "juggernaut": 0.8, "cloaker": 1.0, "burrower": 1.0, "spitter": 0.8,
+                    "shield_drone": 0.7, "hunter": 0.8, "mimic": 0.6, "carrier": 0.5},
+  "wave_length": 20.0,
+  "min_interval": 0.25,
+  "max_interval": 1.2,
+  "hp_scale_after_wave": 10,
+  "hp_growth": 0.05,
+
+  "boss_every": 10,
+  "boss": "hive_overseer",
+  "bosses": ["hive_overseer", "siege_titan", "hive_queen", "burrow_wyrm"],
+  "boss_hp_step": 0.5,
+
+  "mutator_every": 5,
+  "mutators": {
+    "swarm":    {"name": "Swarm",        "desc": "Twice as many aliens, 60% HP each", "budget_mult": 2.0, "hp_mult": 0.6},
+    "armored":  {"name": "Armored Tide", "desc": "+3 armor on every alien",           "armor_add": 3},
+    "blitz":    {"name": "Blitz",        "desc": "Aliens move 30% faster",            "speed_mult": 1.3},
+    "air_raid": {"name": "Air Raid",     "desc": "Gliders replace 40% of ground units", "air_share": 0.4},
+    "blackout": {"name": "Blackout",     "desc": "Towers lose 20% range",             "tower_range_mult": 0.8}
+  },
+
+  "elites": {
+    "start_wave": 12,
+    "chance_per_wave": 0.015,
+    "max_chance": 0.35,
+    "hp_mult": 2.0,
+    "reward_mult": 2.0,
+    "affixes": {
+      "hasted":       {"name": "Hasted",       "color": [255, 214, 60],  "speed_mult": 1.4},
+      "armored":      {"name": "Armored",      "color": [140, 152, 168], "armor_add": 4},
+      "regenerating": {"name": "Regenerating", "color": [80, 220, 110],  "regen": 0.03},
+      "shielded":     {"name": "Shielded",     "color": [0, 229, 255],   "shield": 0.3},
+      "volatile":     {"name": "Volatile",     "color": [255, 140, 40],  "blast_radius": 70, "blast_damage": 25},
+      "vampiric":     {"name": "Vampiric",     "color": [235, 60, 60],   "lifesteal": 2.0}
+    }
+  }
+}

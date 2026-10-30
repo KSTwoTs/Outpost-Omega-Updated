@@ -26,6 +26,7 @@ class PlayerSystem:
         self.audio = audio
         self.commander = Commander(self, self.find_spawn())
         self.orbital = Cooldown(S.ORBITAL_COOLDOWN, ready=True)
+        self.orbital_damage = S.ORBITAL_DAMAGE   # Siege Run augments can raise this
         self.aiming_orbital = False
         self.strikes = []   # [x, y, time_left]
 
@@ -67,7 +68,7 @@ class PlayerSystem:
         return True
 
     def _detonate(self, x, y):
-        self.enemies.splash(x, y, S.ORBITAL_RADIUS, S.ORBITAL_DAMAGE, include_air=True, knockback=24)
+        self.enemies.splash(x, y, S.ORBITAL_RADIUS, self.orbital_damage, include_air=True, knockback=24)
         for _ in range(3):
             self.effects.explosion(x, y, S.ORANGE, count=30)
         self.effects.ring(x, y, S.ORBITAL_RADIUS, S.WHITE, 0.5, width=4)

@@ -32,12 +32,28 @@ class Walk(State):
             return "stunned"
         if e.can_attack_commander():
             return "attack"
+        if e.blocking_barricade() is not None:
+            return "chew"
         special = e.special_action(dt)
         if special:
             return special
         e.move(dt)
         if e.at_core():
             e.system.enemy_reached_core(e)
+        return None
+
+
+class Chew(State):
+    """A Barricade blocks the path: stop and gnaw on it until it breaks."""
+
+    def update(self, e, dt):
+        if e.stun_timer > 0:
+            return "stunned"
+        b = e.blocking_barricade()
+        if b is None:
+            return "walk"
+        e.vel.update(0, 0)
+        b.health.damage(max(10.0, e.attack_dps) * dt, ignore_armor=True)
         return None
 
 
@@ -51,6 +67,8 @@ class Attack(State):
             return "walk"
         e.vel.update(0, 0)
         e.system.commander.take_damage(e.attack_dps * dt)
+        if e.lifesteal:   # Vampiric elites heal off the Commander
+            e.health.heal(e.attack_dps * dt * e.lifesteal)
         return None
 
 
@@ -113,11 +131,34 @@ class Enemy(pygame.sprite.Sprite):
         self.reached_core = False
         self.invulnerable = False
         self.wave = 1
+        # Elite affix (endless mode); EnemySystem.make_elite fills these in.
+        self.affix = None
+        self.affix_cfg = {}
+        self.regen = 0.0
+        self.lifesteal = 0.0
+        self.shield = 0.0
+        self.max_shield = 0.0
+        self.aura_shield = 0.0          # >0 while a Shield Drone's bubble covers us
+        self.in_dark = False            # Derelict Ship: outside every light source
         self.fsm = StateMachine(self, self.build_states(), "walk")
 
     def build_states(self):
         """Subclasses extend this dict to add their own states."""
-        return {"walk": Walk(), "attack": Attack(), "stunned": Stunned(), "dying": Dying()}
+        return {"walk": Walk(), "attack": Attack(), "stunned": Stunned(), "dying": Dying(),
+                "chew": Chew()}
+
+    def blocking_barricade(self):
+        """An active Barricade right in front of us on the path, or None."""
+        towers = self.system.towers
+        if self.flying or self.hidden or towers is None or not towers.barricades:
+            return None
+        dx, dy = self.follower.direction
+        reach = self.radius + 18
+        for b in towers.barricades:
+            ox, oy = b.x - self.pos.x, b.y - self.pos.y
+            if ox * ox + oy * oy <= reach * reach and ox * dx + oy * dy > -4:
+                return b
+        return None
 
     def special_action(self, dt):
         """Checked every Walk update; return a state name to switch to it."""
@@ -127,6 +168,11 @@ class Enemy(pygame.sprite.Sprite):
     @property
     def targetable(self):
         return not self.remove and not self.reached_core and self.fsm.name != "dying"
+
+    @property
+    def hidden(self):
+        """Hidden enemies (cloaked, burrowed, in the dark) can't be targeted or hit."""
+        return self.in_dark
 
     @property
     def speed(self):
@@ -194,6 +240,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def update_status(self, dt):
         self.flash_timer = max(0.0, self.flash_timer - dt)
+        self.aura_shield = max(0.0, self.aura_shield - dt)
         self.stun_timer = max(0.0, self.stun_timer - dt)
         if self.slow_timer > 0:
             self.slow_timer -= dt
@@ -202,10 +249,17 @@ class Enemy(pygame.sprite.Sprite):
         if self.burn_timer > 0:
             self.burn_timer -= dt
             self.system.damage(self, self.burn_dps * dt, ignore_armor=True, quiet=True)
+        if self.regen and self.targetable:
+            self.health.heal(self.health.max_hp * self.regen * dt)
 
     # ---- movement ----------------------------------------------------------
     def move(self, dt):
-        self.follower.advance(self.speed * dt)
+        speed = self.speed
+        belt = self.system.level.conveyor_at(self.pos.x, self.pos.y)
+        if belt and not self.flying:   # conveyors speed up or slow down walkers
+            fx, fy = self.follower.direction
+            speed *= 1.0 + 0.6 * (belt[0] * fx + belt[1] * fy)
+        self.follower.advance(max(0.0, speed) * dt)
         new = pygame.math.Vector2(self.follower.pos)
         self.vel = (new - self.pos) / dt if dt else pygame.math.Vector2()
         self.pos = new
@@ -243,6 +297,8 @@ class Enemy(pygame.sprite.Sprite):
         if self.flying:  # shadow so flyers read as "in the air"
             pygame.draw.ellipse(screen, (60, 50, 40), (x - 8, y + 10, 16, 6))
             y -= 4 + math.sin(self.anim_t) * 2
+        if self.affix and self.targetable:
+            self.render_elite(screen, assets, x, y)
         screen.blit(img, img.get_rect(center=(int(x), int(y))))
         if self.health.ratio < 1 and self.targetable:
             w = max(16, self.radius * 2)
@@ -252,6 +308,22 @@ class Enemy(pygame.sprite.Sprite):
                              (bx, by, int(w * self.health.ratio), 4))
         if self.stun_timer > 0:
             pygame.draw.circle(screen, S.ENERGY, (int(x), int(y - self.radius - 4)), 3)
+        if self.shield > 0 and self.targetable:
+            w = max(16, self.radius * 2)
+            bx, by = int(x - w / 2), int(y - self.radius - 13)
+            pygame.draw.rect(screen, S.CYAN, (bx, by, int(w * self.shield / self.max_shield), 3))
+
+    def render_elite(self, screen, assets, x, y):
+        """Colored ring under the sprite plus a small name tag."""
+        color = tuple(self.affix_cfg.get("color", S.ENERGY))
+        r = int(self.radius + 5 + math.sin(self.anim_t * 2) * 1.5)
+        pygame.draw.circle(screen, color, (int(x), int(y)), r, 2)
+        name = self.affix_cfg.get("name", self.affix)
+        center = (int(x), int(y + self.radius + 10))
+        shadow = assets.text(name, 14, S.SPACE, True)
+        screen.blit(shadow, shadow.get_rect(center=(center[0] + 1, center[1] + 1)))
+        tag = assets.text(name, 14, color, True)
+        screen.blit(tag, tag.get_rect(center=center))
 
 
 # ---- subclasses -----------------------------------------------------------
@@ -283,7 +355,7 @@ class Glider(Enemy):
             sy = -20 if sy < 0 else S.MAP_H + 20
             sx = min(S.MAP_W - 40, max(40, sx + random.uniform(-160, 160)))
         self.pos = pygame.math.Vector2(sx, sy)
-        self.target = pygame.math.Vector2(lvl.core_pos)
+        self.target = pygame.math.Vector2(lvl.nearest_core_pos(sx, sy))
         self.start_dist = max(1.0, self.pos.distance_to(self.target))
         self.vel = (self.target - self.pos).normalize() * self.base_speed
 
@@ -516,7 +588,502 @@ class HiveOverseer(Enemy):
             screen.blit(bubble, (x - 55, y - 55))
 
 
+# ---- Phase 3 enemies -------------------------------------------------------------
+class Mender(Enemy):
+    """Heals every alien within heal_range by heal_pct of its max HP each second."""
+    sprite = "mender"
+    frame_count = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.heal_timer = Timer(1.0, repeat=True)
+
+    def update(self, dt):
+        if self.targetable and self.heal_timer.update(dt):
+            r2 = self.stats.get("heal_range", 80) ** 2
+            healed = False
+            for e in self.system.enemies:
+                if e.targetable and e.health.ratio < 1 and self.pos.distance_squared_to(e.pos) <= r2:
+                    e.health.heal(e.health.max_hp * self.stats.get("heal_pct", 0.06))
+                    healed = True
+            if healed:
+                self.system.effects.ring(self.pos.x, self.pos.y, self.stats.get("heal_range", 80),
+                                         S.GREEN, 0.35, width=2)
+        super().update(dt)
+
+
+class Juggernaut(Enemy):
+    """Big armored walker. Immune to slow, stun and knockback."""
+    sprite = "juggernaut"
+    frame_count = 1
+    anim_fps = 3
+
+    def apply_slow(self, amount, duration):
+        pass
+
+    def apply_stun(self, duration):
+        pass
+
+    def knockback(self, amount, direction=None):
+        pass
+
+
+class Cloaker(Enemy):
+    """Invisible to towers unless Vance or a Radar Relay is close (EnemySystem sets revealed)."""
+    sprite = "cloaker"
+    frame_count = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.revealed = False
+
+    @property
+    def hidden(self):
+        return not self.revealed or self.in_dark
+
+    def render(self, screen, assets, offset):
+        if self.revealed:
+            super().render(screen, assets, offset)
+            return
+        img = assets.get(self.frame_name(), flip=self.facing_left).copy()
+        img.set_alpha(60)
+        screen.blit(img, img.get_rect(center=(int(self.pos.x + offset[0]), int(self.pos.y + offset[1]))))
+
+
+class Burrower(Enemy):
+    """Alternates between walking on the surface and tunnelling (hidden, 30% faster)."""
+    sprite = "burrower"
+    frame_count = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.underground = False
+        self.dig_timer = self.stats.get("surface_time", 3.0) * random.uniform(0.5, 1.0)
+        self.revealed = False
+
+    @property
+    def hidden(self):
+        return (self.underground and not self.revealed) or self.in_dark
+
+    @property
+    def speed(self):
+        return super().speed * (1.3 if self.underground else 1.0)
+
+    def can_attack_commander(self):
+        return not self.underground and super().can_attack_commander()
+
+    def update(self, dt):
+        if self.targetable:
+            self.dig_timer -= dt
+            if self.dig_timer <= 0:
+                self.underground = not self.underground
+                key = "under_time" if self.underground else "surface_time"
+                self.dig_timer = self.stats.get(key, 2.5)
+                self.system.effects.burst(self.pos.x, self.pos.y, (150, 110, 70), 12, 90, 0.4, 3)
+        super().update(dt)
+
+    def render(self, screen, assets, offset):
+        if not self.underground or not self.targetable:
+            super().render(screen, assets, offset)
+            return
+        x, y = int(self.pos.x + offset[0]), int(self.pos.y + offset[1])
+        pygame.draw.ellipse(screen, (90, 64, 40), (x - 12, y - 6, 24, 12))
+        pygame.draw.ellipse(screen, (130, 96, 60), (x - 8, y - 4, 16, 8))
+        if self.revealed:
+            pygame.draw.circle(screen, S.GREEN, (x, y), 14, 1)
+
+
+class Spit(State):
+    """Spitter stops and lobs acid at the nearest tower."""
+    DURATION = 1.4
+    FIRE_AT = 0.6
+
+    def enter(self, e):
+        e.vel.update(0, 0)
+        e.spat = False
+
+    def update(self, e, dt):
+        if e.stun_timer > 0:
+            return "stunned"
+        if not e.spat and e.fsm.time_in_state >= self.FIRE_AT:
+            e.spat = True
+            e.spit()
+        if e.fsm.time_in_state >= self.DURATION:
+            return "walk"
+        return None
+
+
+class Spitter(Enemy):
+    sprite = "spitter"
+    frame_count = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.spit_cooldown = 1.0
+        self.spat = False
+
+    def build_states(self):
+        states = super().build_states()
+        states["spit"] = Spit()
+        return states
+
+    def update(self, dt):
+        self.spit_cooldown -= dt
+        super().update(dt)
+
+    def target_tower(self):
+        towers = self.system.towers
+        if towers is None:
+            return None
+        r2 = self.stats.get("spit_range", 130) ** 2
+        near = [t for t in towers.towers if self.pos.distance_squared_to((t.x, t.y)) <= r2
+                and not t.health.is_dead]
+        return min(near, key=lambda t: self.pos.distance_squared_to((t.x, t.y))) if near else None
+
+    def special_action(self, dt):
+        if self.spit_cooldown <= 0 and self.target_tower():
+            return "spit"
+        return None
+
+    def spit(self):
+        self.spit_cooldown = self.stats.get("spit_cooldown", 5.0)
+        t = self.target_tower()
+        if t is None:
+            return
+        t.health.damage(self.stats.get("spit_damage", 18), ignore_armor=True)
+        fx = self.system.effects
+        fx.beam(self.pos.x, self.pos.y, t.x, t.y, S.ACID, 0.2)
+        fx.burst(t.x, t.y, S.ACID, 12, 120, 0.4, 3)
+
+
+class HiveEgg(Enemy):
+    """Laid by the Hive Queen. Sits still and hatches into Skitters unless destroyed."""
+    sprite = "hive_egg"
+    frame_count = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hatch_timer = self.stats.get("hatch_time", 6.0)
+
+    def can_attack_commander(self):
+        return False
+
+    def at_core(self):
+        return False
+
+    def update(self, dt):
+        if self.targetable:
+            self.hatch_timer -= dt
+            if self.hatch_timer <= 0:
+                spec = self.stats.get("hatch", {"enemy": "skitter", "count": 4})
+                for i in range(spec["count"]):
+                    self.system.spawn(spec["enemy"], self.wave, start_distance=max(0.0, self.follower.distance - i * 8),
+                                      route=self.follower.waypoints)
+                self.system.effects.burst(self.pos.x, self.pos.y, S.ALIEN_GREEN, 16, 140, 0.4, 3)
+                self.remove = True
+                return
+        super().update(dt)
+
+    def render(self, screen, assets, offset):
+        super().render(screen, assets, offset)
+        if self.targetable:   # hatch countdown ring
+            x, y = int(self.pos.x + offset[0]), int(self.pos.y + offset[1])
+            frac = max(0.0, self.hatch_timer / self.stats.get("hatch_time", 6.0))
+            pygame.draw.arc(screen, S.MAGENTA, (x - 13, y - 13, 26, 26), 0, frac * math.tau, 2)
+
+
+class _BossBase(Enemy):
+    is_boss = True
+    frame_count = 1
+
+    def apply_stun(self, duration):
+        pass
+
+    def apply_slow(self, amount, duration):
+        super().apply_slow(amount * 0.5, duration)   # bosses shrug off half of any slow
+
+    def knockback(self, amount, direction=None):
+        pass
+
+
+class SiegeTitan(_BossBase):
+    """Boss. Crushes towers right next to it and stomps every few seconds."""
+    sprite = "siege_titan"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stomp_timer = Timer(self.stats.get("stomp_interval", 4.0), repeat=True)
+
+    def update(self, dt):
+        towers = self.system.towers
+        if self.targetable and towers is not None:
+            cr2 = self.stats.get("crush_range", 44) ** 2
+            for t in towers.towers:
+                if self.pos.distance_squared_to((t.x, t.y)) <= cr2:
+                    t.health.damage(self.stats.get("crush_dps", 25) * dt, ignore_armor=True)
+            if self.fsm.name == "walk" and self.stomp_timer.update(dt):
+                r = self.stats.get("stomp_range", 90)
+                for t in towers.towers:
+                    if self.pos.distance_squared_to((t.x, t.y)) <= r * r:
+                        t.health.damage(self.stats.get("stomp_damage", 30), ignore_armor=True)
+                fx = self.system.effects
+                fx.ring(self.pos.x, self.pos.y, r, S.ORANGE, 0.5, width=5)
+                fx.burst(self.pos.x, self.pos.y, (150, 110, 70), 24, 200, 0.5, 4)
+                fx.shake(0.3)
+                self.system.audio.play("explode")
+        super().update(dt)
+
+
+class HiveQueen(_BossBase):
+    """Boss. Lays a Hive Egg behind her every lay_interval seconds."""
+    sprite = "hive_queen"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lay_timer = Timer(self.stats.get("lay_interval", 6.0), repeat=True)
+
+    def update(self, dt):
+        if self.targetable and self.fsm.name == "walk" and self.lay_timer.update(dt):
+            back = max(0.0, self.follower.distance - 34)
+            self.system.spawn(self.stats.get("egg", "hive_egg"), self.wave, start_distance=back,
+                              route=self.follower.waypoints)
+            self.system.effects.burst(self.pos.x, self.pos.y, S.MAGENTA, 14, 120, 0.4, 3)
+        super().update(dt)
+
+
+# ---- Phase 3, second batch --------------------------------------------------------
+class ShieldDrone(Enemy):
+    """Flies along the path. Ground aliens inside its bubble take half damage."""
+    sprite = "shield_drone"
+    frame_count = 1
+
+    def update(self, dt):
+        if self.targetable:
+            r2 = self.stats.get("aura_range", 75) ** 2
+            for e in self.system.enemies:
+                if not e.flying and e.targetable and self.pos.distance_squared_to(e.pos) <= r2:
+                    e.aura_shield = 0.25
+        super().update(dt)
+
+    def render(self, screen, assets, offset):
+        if self.targetable:
+            r = self.stats.get("aura_range", 75)
+            surf = pygame.Surface((r * 2 + 4, r * 2 + 4), pygame.SRCALPHA)
+            pygame.draw.circle(surf, (*S.CYAN, 28), (r + 2, r + 2), r)
+            pygame.draw.circle(surf, (*S.CYAN, 110), (r + 2, r + 2), r, 1)
+            screen.blit(surf, (self.pos.x + offset[0] - r - 2, self.pos.y + offset[1] - r - 2))
+        super().render(screen, assets, offset)
+
+
+class Hunter(Enemy):
+    """Ignores the path and runs straight at Vance (or the Core while she's down)."""
+    sprite = "hunter"
+    frame_count = 1
+
+    def goal(self):
+        cmd = self.system.commander
+        if cmd is not None and cmd.alive:
+            return pygame.math.Vector2(cmd.pos)
+        return pygame.math.Vector2(self.system.level.nearest_core_pos(self.pos.x, self.pos.y))
+
+    @property
+    def progress(self):
+        core = self.system.level.nearest_core_pos(self.pos.x, self.pos.y)
+        return -self.pos.distance_to(core)
+
+    def reroute(self, waypoints):
+        pass
+
+    def blocking_barricade(self):
+        return None   # Hunters leap over barricades; they don't follow the path
+
+    def at_core(self):
+        cmd = self.system.commander
+        if cmd is not None and cmd.alive:
+            return False
+        core = self.system.level.nearest_core_pos(self.pos.x, self.pos.y)
+        return self.pos.distance_squared_to(core) < 20 * 20
+
+    def move(self, dt):
+        to = self.goal() - self.pos
+        if to.length_squared() > 1:
+            to.scale_to_length(self.speed)
+        self.vel = to
+        self.pos += self.vel * dt
+        if abs(self.vel.x) > 1:
+            self.facing_left = self.vel.x < 0
+
+    def future_position(self, t):
+        p = self.pos + self.vel * t
+        return (p.x, p.y)
+
+    def knockback(self, amount, direction=None):
+        if direction is not None:
+            self.pos += pygame.math.Vector2(direction) * amount
+
+
+class Mimic(Enemy):
+    """Hides next to the path looking like an Energy Crystal. Bites Vance if she comes
+    to collect it, then runs for the Core. Wakes up on its own after disguise_time."""
+    sprite = "mimic"
+    frame_count = 1
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.disguised = True
+        self.disguise_timer = self.stats.get("disguise_time", 10.0)
+        f = PathFollower(self.follower.waypoints,
+                         self.follower.total_length * random.uniform(0.25, 0.7))
+        dx, dy = f.direction
+        side = random.choice((-1, 1)) * 40
+        self.pos = pygame.math.Vector2(f.x - dy * side, f.y + dx * side)
+
+    @property
+    def hidden(self):
+        return self.disguised or self.in_dark
+
+    def can_attack_commander(self):
+        return not self.disguised and super().can_attack_commander()
+
+    def at_core(self):
+        return not self.disguised and super().at_core()
+
+    def reveal(self, bite):
+        self.disguised = False
+        route = self.system.level.route_from(self.pos.x, self.pos.y)
+        if route:
+            self.reroute(route)
+        cmd = self.system.commander
+        fx = self.system.effects
+        fx.burst(self.pos.x, self.pos.y, S.ENERGY, 14, 140, 0.4, 3)
+        if bite and cmd is not None:
+            cmd.take_damage(self.stats.get("bite", 25))
+            self.system.events.publish("toast", text="It's a Mimic!", color=S.RED)
+
+    def reroute(self, waypoints):
+        if not self.disguised:
+            super().reroute(waypoints)
+
+    def update(self, dt):
+        if self.disguised and self.targetable:
+            self.disguise_timer -= dt
+            self.anim_t += dt
+            cmd = self.system.commander
+            near = cmd is not None and cmd.alive and self.pos.distance_squared_to(cmd.pos) < 40 * 40
+            if near or self.disguise_timer <= 0:
+                self.reveal(bite=near)
+            return
+        super().update(dt)
+
+    def render(self, screen, assets, offset):
+        if not self.disguised:
+            super().render(screen, assets, offset)
+            return
+        x, y = self.pos.x + offset[0], self.pos.y + offset[1] + math.sin(self.anim_t * 4) * 2
+        glow = pygame.Surface((40, 40), pygame.SRCALPHA)
+        pygame.draw.circle(glow, (*S.ENERGY, 70), (20, 20), int(10 + 3 * math.sin(self.anim_t * 6)))
+        screen.blit(glow, (x - 20, y - 20))
+        assets.blit_centered(screen, "energy_crystal", (x, y))
+
+
+class Carrier(Glider):
+    """Slow, tough flyer that drops Gliders every drop_interval seconds."""
+    sprite = "carrier"
+    frame_count = 1
+    MAX_FORCE = 80.0
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.drop_timer = Timer(self.stats.get("drop_interval", 5.0), repeat=True)
+
+    def update(self, dt):
+        if self.targetable and self.drop_timer.update(dt):
+            spec = self.stats.get("drop", {"enemy": "glider", "count": 2})
+            for i in range(spec["count"]):
+                g = self.system.spawn(spec["enemy"], self.wave)
+                g.pos = pygame.math.Vector2(self.pos.x + (i - 0.5) * 24, self.pos.y)
+                to = g.target - g.pos
+                if to.length_squared() > 0:
+                    g.vel = to.normalize() * g.base_speed
+            self.system.effects.burst(self.pos.x, self.pos.y, S.MAGENTA, 10, 100, 0.3, 3)
+        super().update(dt)
+
+
+class BurrowWyrm(_BossBase):
+    """Boss. Alternates between the surface and tunnelling; it can't be hit underground.
+    When it surfaces it has jumped ahead along the path and damages towers nearby."""
+    sprite = "burrow_wyrm"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.underground = False
+        self.dig_timer = self.stats.get("surface_time", 5.0)
+
+    @property
+    def hidden(self):
+        return self.underground
+
+    def can_attack_commander(self):
+        return not self.underground and super().can_attack_commander()
+
+    def update(self, dt):
+        if self.targetable:
+            self.dig_timer -= dt
+            if self.dig_timer <= 0:
+                if self.underground:
+                    self.emerge()
+                else:
+                    self.underground = True
+                    self.invulnerable = True
+                    self.dig_timer = self.stats.get("under_time", 2.5)
+                    self.system.effects.burst(self.pos.x, self.pos.y, (150, 110, 70), 24, 160, 0.5, 4)
+        super().update(dt)
+
+    def emerge(self):
+        lo, hi = self.stats.get("jump", [120, 220])
+        f = self.follower
+        target = min(f.total_length - 80, f.distance + random.uniform(lo, hi))
+        if target > f.distance:
+            self.follower = PathFollower(f.waypoints, target)
+            self.pos.update(self.follower.pos)
+        self.underground = False
+        self.invulnerable = False
+        self.dig_timer = self.stats.get("surface_time", 5.0)
+        r = self.stats.get("emerge_range", 80)
+        towers = self.system.towers
+        if towers is not None:
+            for t in towers.towers:
+                if self.pos.distance_squared_to((t.x, t.y)) <= r * r:
+                    t.health.damage(self.stats.get("emerge_damage", 40), ignore_armor=True)
+        fx = self.system.effects
+        fx.burst(self.pos.x, self.pos.y, (150, 110, 70), 30, 240, 0.6, 5)
+        fx.ring(self.pos.x, self.pos.y, r, S.ORANGE, 0.5, width=4)
+        fx.shake(0.35)
+        self.system.audio.play("explode")
+
+    def render(self, screen, assets, offset):
+        if not self.underground or not self.targetable:
+            super().render(screen, assets, offset)
+            return
+        x, y = int(self.pos.x + offset[0]), int(self.pos.y + offset[1])
+        pygame.draw.ellipse(screen, (90, 64, 40), (x - 26, y - 10, 52, 20))
+        pygame.draw.ellipse(screen, (130, 96, 60), (x - 18, y - 6, 36, 12))
+
+
 ENEMY_CLASSES = {
+    "shield_drone": ShieldDrone,
+    "hunter": Hunter,
+    "mimic": Mimic,
+    "carrier": Carrier,
+    "burrow_wyrm": BurrowWyrm,
+    "mender": Mender,
+    "juggernaut": Juggernaut,
+    "cloaker": Cloaker,
+    "burrower": Burrower,
+    "spitter": Spitter,
+    "hive_egg": HiveEgg,
+    "siege_titan": SiegeTitan,
+    "hive_queen": HiveQueen,
     "skitter": Skitter,
     "brute": Brute,
     "glider": Glider,

@@ -5,6 +5,9 @@ Waves come from the level JSON:
      "boss": null}
 Every enemy of the wave gets a spawn time; they go into a heap (heapq) ordered
 by that time, and each update pops whatever is due.
+
+Endless mode passes a generator instead of a fixed list: waves are made on
+demand, total_waves is None and the run only ends when the Core falls.
 """
 import heapq
 
@@ -12,9 +15,10 @@ BUILD, WAVE, DONE = "build", "wave", "done"
 
 
 class WaveSystem:
-    def __init__(self, events, waves, build_time):
+    def __init__(self, events, waves, build_time, generator=None):
         self.events = events
         self.waves = waves
+        self.generator = generator     # EndlessWaveGenerator, or None for a campaign level
         self.build_time = build_time
         self.phase = BUILD
         self.countdown = build_time
@@ -25,8 +29,29 @@ class WaveSystem:
         self.total_this_wave = 0
 
     @property
+    def endless(self):
+        return self.generator is not None
+
+    @property
     def total_waves(self):
-        return len(self.waves)
+        return None if self.endless else len(self.waves)
+
+    def wave_data(self, number):
+        """The wave dict for a 1-based wave number, or None past the last wave."""
+        if self.endless:
+            return self.generator.wave(number)
+        if 1 <= number <= len(self.waves):
+            return self.waves[number - 1]
+        return None
+
+    @property
+    def next_wave(self):
+        """What the next wave will send (for the HUD preview)."""
+        return self.wave_data(self.wave_number + 1)
+
+    @property
+    def current_wave(self):
+        return self.wave_data(self.wave_number) if self.wave_number else None
 
     @property
     def remaining_in_queue(self):
@@ -49,15 +74,17 @@ class WaveSystem:
 
     def start_next_wave(self):
         """Space bar or the build countdown reaching 0."""
-        if self.phase != BUILD or self.wave_number >= self.total_waves:
+        if self.phase != BUILD or self.next_wave is None:
             return False
         self.wave_number += 1
-        self.queue = self.build_queue(self.waves[self.wave_number - 1])
+        wave = self.wave_data(self.wave_number)
+        self.queue = self.build_queue(wave)
         self.total_this_wave = len(self.queue)
         self.spawned_this_wave = 0
         self.wave_time = 0.0
         self.phase = WAVE
-        self.events.publish("wave_started", number=self.wave_number, total=self.total_waves)
+        self.events.publish("wave_started", number=self.wave_number, total=self.total_waves,
+                            mods=wave.get("mods"), mutator=wave.get("mutator"))
         return True
 
     def on_update(self, dt, enemies_alive):
@@ -74,7 +101,7 @@ class WaveSystem:
                                     wave=self.wave_number, lane=lane)
             if not self.queue and enemies_alive == 0:
                 self.events.publish("wave_cleared", number=self.wave_number)
-                if self.wave_number >= self.total_waves:
+                if not self.endless and self.wave_number >= self.total_waves:
                     self.phase = DONE
                     self.events.publish("all_waves_cleared")
                 else:

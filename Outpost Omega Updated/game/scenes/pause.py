@@ -12,9 +12,13 @@ class PauseScene(Scene):
     def __init__(self, game, **kwargs):
         super().__init__(game, **kwargs)
         cx = S.SCREEN_W // 2
+        stack = game.scenes.stack
+        in_run = bool(stack) and getattr(stack[-1], "mode", None) == "run"
+        middle = (Button((cx - 140, 366, 280, 52), "ABANDON RUN", "abandon") if in_run
+                  else Button((cx - 140, 366, 280, 52), "RESTART SECTOR", "restart"))
         self.buttons = [
             Button((cx - 140, 300, 280, 52), "RESUME", "resume", hotkey="Esc"),
-            Button((cx - 140, 366, 280, 52), "RESTART SECTOR", "restart"),
+            middle,
             Button((cx - 140, 432, 280, 52), "QUIT TO MENU", "menu"),
         ]
 
@@ -34,7 +38,11 @@ class PauseScene(Scene):
         if command == "resume":
             scenes.pop()
         elif command == "restart" and play is not None:
-            scenes.change("play", level_id=play.level_id, difficulty=play.difficulty)
+            scenes.change("play", **play.launch)
+        elif command == "abandon" and play is not None:
+            s = play.session
+            play.run.fail(kills=s.kills, score=s.score)
+            scenes.change("run_end")
         elif command == "menu":
             self.audio.stop_music()
             scenes.change("menu")

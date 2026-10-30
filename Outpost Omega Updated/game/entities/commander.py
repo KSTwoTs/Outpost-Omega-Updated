@@ -52,7 +52,7 @@ class Repair(State):
                 or c.pos.distance_squared_to((t.x, t.y)) > S.REPAIR_RANGE ** 2):
             c.repair_target = None
             return "idle"
-        t.health.heal(t.health.max_hp / S.REPAIR_TIME * dt)
+        t.health.heal(t.health.max_hp / c.repair_time * dt)
         return None
 
 
@@ -81,6 +81,10 @@ class Commander(pygame.sprite.Sprite):
         self.half = S.CMD_SIZE / 2
         self.health = Health(S.CMD_MAX_HP)
         self.blaster = Cooldown(1.0 / S.BLASTER_RATE)
+        self.blaster_damage = S.BLASTER_DAMAGE   # Siege Run augments can raise this
+        self.max_speed = S.CMD_MAX_SPEED          # Commander class can change these
+        self.repair_time = S.REPAIR_TIME
+        self.blaster_range = S.BLASTER_RANGE
         self.respawn_timer = 0.0
         self.hurt_timer = 0.0
         self.facing_left = False
@@ -125,12 +129,12 @@ class Commander(pygame.sprite.Sprite):
     def try_fire_blaster(self):
         if not self.blaster.ready:
             return False
-        target = self.system.collision.nearest_enemy(self.pos.x, self.pos.y, S.BLASTER_RANGE)
+        target = self.system.collision.nearest_enemy(self.pos.x, self.pos.y, self.blaster_range)
         if target is None:
             return False
         self.blaster.trigger()
         aim = self.system.projectiles.fire_at(
-            self.pos.x, self.pos.y, target, S.BLASTER_SPEED, S.BLASTER_DAMAGE,
+            self.pos.x, self.pos.y, target, S.BLASTER_SPEED, self.blaster_damage,
             color=S.CYAN, hits_air=True, radius=2)
         self.aim_angle = math.atan2(aim[1] - self.pos.y, aim[0] - self.pos.x)
         self.facing_left = math.cos(self.aim_angle) < 0
@@ -146,12 +150,14 @@ class Commander(pygame.sprite.Sprite):
         self.vel += accel * dt
         # Friction: exponential decay, frame-rate independent.
         self.vel *= math.exp(-friction * dt)
-        if self.vel.length_squared() > S.CMD_MAX_SPEED ** 2:
-            self.vel.scale_to_length(S.CMD_MAX_SPEED)
+        if self.vel.length_squared() > self.max_speed ** 2:
+            self.vel.scale_to_length(self.max_speed)
         if self.vel.length_squared() < 4 and not any(move):
             self.vel.update(0, 0)
+        push = level.conveyor_at(self.pos.x, self.pos.y) or (0, 0)   # Orbital Platform belts
         nx, ny, hit_x, hit_y = self.system.collision.move_box(
-            self.pos.x, self.pos.y, self.half, self.vel.x * dt, self.vel.y * dt, level.is_solid)
+            self.pos.x, self.pos.y, self.half, (self.vel.x + push[0] * 110) * dt,
+            (self.vel.y + push[1] * 110) * dt, level.is_solid)
         self.pos.update(nx, ny)
         if hit_x:
             self.vel.x = 0

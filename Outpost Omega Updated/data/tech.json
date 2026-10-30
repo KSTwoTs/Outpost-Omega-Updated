@@ -1,0 +1,19 @@
+{
+  "_comment": "Command Tech tree: permanent upgrades bought with Salvage. Each rank applies the effects once more. Effect types are the same as run.json.",
+  "reinforced_core": {"name": "Reinforced Core", "desc": "Core max HP +15 per rank", "costs": [30, 60, 90],
+                      "effects": [{"type": "core_max", "add": 15}]},
+  "supply_lines":    {"name": "Supply Lines", "desc": "+30 starting Energy per rank", "costs": [25, 50, 75],
+                      "effects": [{"type": "start_energy", "add": 30}]},
+  "field_arsenal":   {"name": "Field Arsenal", "desc": "Start runs with 1 extra random tower", "costs": [80],
+                      "effects": [{"type": "extra_tower_card", "add": 1}]},
+  "scavenger":       {"name": "Scavenger", "desc": "+15% Scrap per rank", "costs": [40, 80],
+                      "effects": [{"type": "scrap", "mult": 1.15}]},
+  "uplink":          {"name": "Satellite Uplink", "desc": "Orbital Strike cooldown -10% per rank", "costs": [40, 80],
+                      "effects": [{"type": "orbital_cooldown", "mult": 0.9}]},
+  "wider_draft":     {"name": "Wider Draft", "desc": "Augment drafts offer 4 choices", "costs": [120],
+                      "effects": [{"type": "draft_choices", "add": 1}]},
+  "veteran":         {"name": "Veteran Commander", "desc": "Blaster damage +25% per rank", "costs": [30, 60],
+                      "effects": [{"type": "blaster_damage", "mult": 1.25}]},
+  "supply_drop":     {"name": "Supply Drop", "desc": "Start runs with 40 Scrap per rank", "costs": [40, 80],
+                      "effects": [{"type": "start_scrap", "add": 40}]}
+}

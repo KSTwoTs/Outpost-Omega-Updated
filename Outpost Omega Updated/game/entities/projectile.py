@@ -23,7 +23,7 @@ class Projectile:
 
     def spawn(self, x, y, dx, dy, speed, damage, color, radius=3, life=1.5,
               hits_air=True, ignore_armor=False, splash=0, homing_target=None,
-              turn_rate=0.0):
+              turn_rate=0.0, source=None):
         length = math.hypot(dx, dy) or 1.0
         self.x, self.y = x, y
         self.vx, self.vy = dx / length * speed, dy / length * speed
@@ -34,6 +34,7 @@ class Projectile:
         self.life = life
         self.hits_air = hits_air
         self.ignore_armor = ignore_armor
+        self.source = source      # tower that fired it (veterancy)
         self.splash = splash
         self.homing_target = homing_target
         self.turn_rate = turn_rate

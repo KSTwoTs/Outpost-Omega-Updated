@@ -9,9 +9,13 @@
     "can_target_air": true,
     "description": "Fast single-target shots. The all-rounder.",
     "tiers": [
-      {"damage": 8,  "range": 140, "fire_rate": 2.5, "projectile_speed": 520, "upgrade_cost": 0},
+      {"damage": 8, "range": 140, "fire_rate": 2.5, "projectile_speed": 520, "upgrade_cost": 0},
       {"damage": 12, "range": 152, "fire_rate": 3.0, "projectile_speed": 560, "upgrade_cost": 60},
       {"damage": 18, "range": 166, "fire_rate": 3.6, "projectile_speed": 600, "upgrade_cost": 100}
+    ],
+    "branches": [
+      {"name": "Minigun", "desc": "Shreds swarms: 8 shots per second", "cost": 220, "stats": {"damage": 14, "range": 160, "fire_rate": 8.0, "projectile_speed": 640}},
+      {"name": "Marksman", "desc": "Huge single shots at long range", "cost": 220, "stats": {"damage": 60, "range": 240, "fire_rate": 1.4, "projectile_speed": 900}}
     ]
   },
   "tesla": {
@@ -27,6 +31,10 @@
       {"damage": 14, "range": 120, "fire_rate": 1.0, "chain": 3, "chain_range": 80, "upgrade_cost": 0},
       {"damage": 20, "range": 130, "fire_rate": 1.2, "chain": 4, "chain_range": 90, "upgrade_cost": 110},
       {"damage": 28, "range": 140, "fire_rate": 1.4, "chain": 5, "chain_range": 100, "upgrade_cost": 160}
+    ],
+    "branches": [
+      {"name": "Storm Spire", "desc": "Chains through up to 14 enemies", "cost": 280, "stats": {"damage": 22, "range": 160, "fire_rate": 1.5, "chain": 14, "chain_range": 140}},
+      {"name": "Arc Battery", "desc": "Slow, massive discharges", "cost": 280, "stats": {"damage": 110, "range": 150, "fire_rate": 0.6, "chain": 8, "chain_range": 110}}
     ]
   },
   "cryo": {
@@ -39,9 +47,13 @@
     "can_target_air": true,
     "description": "Slows enemies in range by 40%.",
     "tiers": [
-      {"slow": 0.40, "range": 100, "dps": 0, "upgrade_cost": 0},
+      {"slow": 0.4, "range": 100, "dps": 0, "upgrade_cost": 0},
       {"slow": 0.45, "range": 115, "dps": 0, "upgrade_cost": 70},
-      {"slow": 0.50, "range": 130, "dps": 4, "upgrade_cost": 110}
+      {"slow": 0.5, "range": 130, "dps": 4, "upgrade_cost": 110}
+    ],
+    "branches": [
+      {"name": "Absolute Zero", "desc": "70% slow and freezing damage", "cost": 200, "stats": {"slow": 0.7, "range": 130, "dps": 10}},
+      {"name": "Frost Nova", "desc": "Much wider slow field", "cost": 200, "stats": {"slow": 0.5, "range": 190, "dps": 6}}
     ]
   },
   "railgun": {
@@ -54,9 +66,13 @@
     "can_target_air": false,
     "description": "Long-range piercing shot through a line. Ignores armor.",
     "tiers": [
-      {"damage": 60,  "range": 300, "fire_rate": 0.4, "upgrade_cost": 0},
-      {"damage": 90,  "range": 330, "fire_rate": 0.45, "upgrade_cost": 150},
+      {"damage": 60, "range": 300, "fire_rate": 0.4, "upgrade_cost": 0},
+      {"damage": 90, "range": 330, "fire_rate": 0.45, "upgrade_cost": 150},
       {"damage": 130, "range": 360, "fire_rate": 0.5, "upgrade_cost": 220}
+    ],
+    "branches": [
+      {"name": "Overpenetrator", "desc": "Longer range, faster, harder hits", "cost": 300, "stats": {"damage": 170, "range": 420, "fire_rate": 0.65}},
+      {"name": "Executioner", "desc": "Instantly kills non-boss aliens below 15% HP", "cost": 300, "stats": {"damage": 140, "range": 360, "fire_rate": 0.5, "execute": 0.15}}
     ]
   },
   "missile": {
@@ -72,6 +88,130 @@
       {"damage": 24, "range": 200, "fire_rate": 0.8, "splash": 56, "projectile_speed": 300, "turn_rate": 4.0, "upgrade_cost": 0},
       {"damage": 34, "range": 215, "fire_rate": 0.9, "splash": 64, "projectile_speed": 320, "turn_rate": 4.5, "upgrade_cost": 130},
       {"damage": 48, "range": 230, "fire_rate": 1.0, "splash": 72, "projectile_speed": 340, "turn_rate": 5.0, "upgrade_cost": 190}
+    ],
+    "branches": [
+      {"name": "Cluster Swarm", "desc": "Giant explosions", "cost": 260, "stats": {"damage": 40, "range": 230, "fire_rate": 1.0, "splash": 120, "projectile_speed": 340, "turn_rate": 5.0}},
+      {"name": "Hunter-Killer", "desc": "Fast, heavy, precise missiles", "cost": 260, "stats": {"damage": 110, "range": 280, "fire_rate": 1.0, "splash": 50, "projectile_speed": 480, "turn_rate": 8.0}}
+    ]
+  },
+  "flamer": {
+    "name": "Flamer",
+    "key": 6,
+    "cost": 80,
+    "enabled": true,
+    "behavior": "cone",
+    "hp": 110,
+    "can_target_air": false,
+    "description": "Short cone of fire. Burns groups; weak to armor.",
+    "tiers": [
+      {"damage": 6, "range": 90, "fire_rate": 6.0, "cone": 0.45, "burn_dps": 6, "burn_time": 2.0, "upgrade_cost": 0},
+      {"damage": 8, "range": 100, "fire_rate": 6.0, "cone": 0.5, "burn_dps": 10, "burn_time": 2.5, "upgrade_cost": 80},
+      {"damage": 11, "range": 110, "fire_rate": 7.0, "cone": 0.55, "burn_dps": 16, "burn_time": 3.0, "upgrade_cost": 130}
+    ]
+  },
+  "mortar": {
+    "name": "Mortar",
+    "key": 7,
+    "cost": 140,
+    "enabled": true,
+    "behavior": "mortar",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Lobbed shells, huge splash. Can't hit close or flying.",
+    "tiers": [
+      {"damage": 45, "range": 260, "min_range": 80, "fire_rate": 0.35, "splash": 70, "flight_time": 1.1, "upgrade_cost": 0},
+      {"damage": 65, "range": 290, "min_range": 80, "fire_rate": 0.4, "splash": 80, "flight_time": 1.0, "upgrade_cost": 130},
+      {"damage": 95, "range": 320, "min_range": 80, "fire_rate": 0.45, "splash": 92, "flight_time": 0.9, "upgrade_cost": 190}
+    ]
+  },
+  "gravity": {
+    "name": "Gravity Well",
+    "key": 8,
+    "cost": 130,
+    "enabled": true,
+    "behavior": "gravity",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Pulls ground aliens back along the path every few seconds.",
+    "tiers": [
+      {"range": 100, "fire_rate": 0.25, "pull": 45, "upgrade_cost": 0},
+      {"range": 115, "fire_rate": 0.3, "pull": 60, "upgrade_cost": 110},
+      {"range": 130, "fire_rate": 0.35, "pull": 80, "upgrade_cost": 160}
+    ]
+  },
+  "harvester": {
+    "name": "Harvester",
+    "key": 9,
+    "cost": 100,
+    "enabled": true,
+    "behavior": "income",
+    "hp": 80,
+    "can_target_air": false,
+    "description": "No attack. Produces Energy after every wave.",
+    "tiers": [
+      {"range": 0, "income": 25, "upgrade_cost": 0},
+      {"range": 0, "income": 45, "upgrade_cost": 100},
+      {"range": 0, "income": 70, "upgrade_cost": 140}
+    ]
+  },
+  "radar": {
+    "name": "Radar Relay",
+    "key": 10,
+    "cost": 110,
+    "enabled": true,
+    "behavior": "support",
+    "hp": 90,
+    "can_target_air": true,
+    "description": "+15% range to nearby towers. Reveals cloaked and burrowed aliens.",
+    "tiers": [
+      {"range": 110, "buff": 0.15, "upgrade_cost": 0},
+      {"range": 130, "buff": 0.2, "upgrade_cost": 90},
+      {"range": 150, "buff": 0.25, "upgrade_cost": 130}
+    ]
+  },
+  "drone": {
+    "name": "Drone Bay",
+    "key": 11,
+    "cost": 150,
+    "enabled": true,
+    "behavior": "drones",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Launches drones that hunt aliens in range, flyers included.",
+    "tiers": [
+      {"range": 170, "drones": 2, "damage": 6, "fire_rate": 2.0, "speed": 240, "upgrade_cost": 0},
+      {"range": 190, "drones": 3, "damage": 8, "fire_rate": 2.2, "speed": 260, "upgrade_cost": 130},
+      {"range": 210, "drones": 4, "damage": 11, "fire_rate": 2.5, "speed": 280, "upgrade_cost": 180}
+    ]
+  },
+  "barricade": {
+    "name": "Barricade",
+    "key": 12,
+    "cost": 60,
+    "enabled": true,
+    "behavior": "barricade",
+    "hp": 300,
+    "can_target_air": false,
+    "description": "Goes ON the path. Aliens stop to chew through it. Repair it with E.",
+    "tiers": [
+      {"range": 0, "max_hp": 300, "upgrade_cost": 0},
+      {"range": 0, "max_hp": 550, "upgrade_cost": 50},
+      {"range": 0, "max_hp": 900, "upgrade_cost": 80}
+    ]
+  },
+  "mines": {
+    "name": "Mine Layer",
+    "key": 13,
+    "cost": 120,
+    "enabled": true,
+    "behavior": "mines",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Scatters proximity mines on the path within range.",
+    "tiers": [
+      {"range": 120, "fire_rate": 0.4, "max_mines": 3, "damage": 40, "splash": 48, "upgrade_cost": 0},
+      {"range": 135, "fire_rate": 0.5, "max_mines": 4, "damage": 60, "splash": 54, "upgrade_cost": 110},
+      {"range": 150, "fire_rate": 0.6, "max_mines": 5, "damage": 85, "splash": 60, "upgrade_cost": 160}
     ]
   }
 }

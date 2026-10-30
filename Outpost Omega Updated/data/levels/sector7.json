@@ -1,0 +1,248 @@
+{
+  "name": "Sector 7 - Derelict Ship",
+  "id": "sector7",
+  "theme": "derelict",
+  "core_hp": 100,
+  "start_energy": 330,
+  "build_time": 16,
+  "enemy_hp_mult": 1.55,
+  "dark": true,
+  "legend": {
+    ".": "buildable",
+    "#": "path",
+    "S": "spawn",
+    "C": "core",
+    "X": "blocked",
+    "~": "hazard",
+    "I": "ice",
+    "W": "wall / airlock"
+  },
+  "tiles": [
+    "........................................",
+    "........................................",
+    "........................................",
+    "S##########.............................",
+    "..........#.......XX....................",
+    "..........#........X....................",
+    "..........#.................XX..........",
+    "..........#.............................",
+    "....XX....#.............................",
+    "..........###############...............",
+    "..............#.........#......XX.......",
+    "..............#.........#...............",
+    "...X..........#.~~......#...........XXXX",
+    "..............#.~.......#...........XXXX",
+    "..............#.........#############CXX",
+    "..............#.....................XXXX",
+    "S##############.....................XXXX",
+    "....................XX........~~........",
+    "........................................",
+    "........................................"
+  ],
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 8,
+          "interval": 0.9,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 8,
+          "interval": 0.9,
+          "delay": 2,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "cloaker",
+          "count": 4,
+          "interval": 2,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 10,
+          "interval": 0.8,
+          "delay": 2,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 3,
+          "interval": 3,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "mimic",
+          "count": 2,
+          "interval": 2,
+          "delay": 2,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "hunter",
+          "count": 3,
+          "interval": 2,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "cloaker",
+          "count": 5,
+          "interval": 1.5,
+          "delay": 2,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brood_sac",
+          "count": 5,
+          "interval": 2,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "burrower",
+          "count": 4,
+          "interval": 1.8,
+          "delay": 3,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "spitter",
+          "count": 4,
+          "interval": 2,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "shield_drone",
+          "count": 2,
+          "interval": 4,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 12,
+          "interval": 0.6,
+          "delay": 3,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "juggernaut",
+          "count": 2,
+          "interval": 6,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "cloaker",
+          "count": 8,
+          "interval": 1,
+          "delay": 2,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "carrier",
+          "count": 1,
+          "interval": 1,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "hunter",
+          "count": 4,
+          "interval": 2,
+          "delay": 2,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 6,
+          "interval": 2,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "mender",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 2,
+          "lane": 1
+        },
+        {
+          "enemy": "burrower",
+          "count": 6,
+          "interval": 1.2,
+          "delay": 4,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "cloaker",
+          "count": 10,
+          "interval": 0.8,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "juggernaut",
+          "count": 2,
+          "interval": 5,
+          "delay": 2,
+          "lane": 0
+        }
+      ],
+      "boss": "hive_queen"
+    }
+  ]
+}

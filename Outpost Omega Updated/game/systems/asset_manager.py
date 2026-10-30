@@ -20,7 +20,83 @@ PALETTE = {
     "g": S.ALIEN_GREEN, "G": S.ALIEN_DARK,
     "m": S.MAGENTA, "M": S.MAGENTA_DARK,
     "r": S.RED, "b": S.CRYO, "e": (12, 12, 12),
+    "n": (150, 104, 64), "N": (96, 64, 40), "a": S.ACID, "W": (255, 255, 255),
 }
+
+# ---- Phase 3 aliens --------------------------------------------------------------
+MENDER = [
+    "....kkkk....", "...kggggk...", "..kgWWWWgk..", ".kggWrrWggk.",
+    ".kgWWrrWWgk.", ".kgWrrrrWgk.", ".kggWrrWggk.", "..kgWWWWgk..",
+    "..kGggggGk..", "..kg.kk.gk..", ".kk......kk.", "............",
+]
+JUGGERNAUT = [
+    "....kkkkkkkk....", "...kddddddddk...", "..kdSSssssSSdk..", ".kdSsmmssmmsSdk.",
+    ".kdssssssssssdk.", "kddSSddddddSSddk", "kdsdSssssssSdsdk", "kdsdssGGGGssdsdk",
+    "kdsdsGggggGsdsdk", "kddsssGGGGsssddk", ".kdddssssssdddk.", ".kdSdddddddddSdk",
+    "..kddk.kk.kddk..", "..kSSk....kSSk..", ".kddddk..kddddk.", ".kkkkkk..kkkkkk.",
+]
+CLOAKER = [
+    "....kkkk....", "...kMMMMk...", "..kMmmmmMk..", "..kMcMMcMk..",
+    ".kkMmmmmMkk.", "k.kMMmmMMk.k", "..kMmmmmMk..", "..kMM..MMk..",
+    ".kMk....kMk.", ".kk......kk.",
+]
+BURROWER = [
+    "....kkkkkk....", "...kNnnnnNk...", "..kNnSSSSnNk..", ".kNnSddddSnNk.",
+    "kNnnSdyydSnnNk", "kNnnnSSSSnnnNk", "kNnmnnnnnnmnNk", ".kNnnnnnnnnNk.",
+    "..kNNk..kNNk..", ".kNk......kNk.",
+]
+SPITTER = [
+    "....kkkk....", "...kggggk...", "..kgmggmgk..", "..kgggggGk..",
+    ".kgkaaaakgk.", ".kgaaaaaagk.", "..kGaaaaGk..", "..kgggggGk..",
+    "..kgk..kgk..", ".kk......kk.",
+]
+HIVE_EGG = [
+    "...kkkk...", "..kmmmmk..", ".kmMmmMmk.", ".kmmggmmk.", "kmmgaagmmk",
+    "kmMgaagMmk", "kmmmggmmmk", ".kmMmmMmk.", "..kmmmmk..", "...kkkk...",
+]
+SIEGE_TITAN = [
+    "......kkkkkkkkkk......", "....kkddddddddddkk....", "...kddSSSSSSSSSSddk...",
+    "..kdSSddmmddmmddSSdk..", ".kdSdddrrdddrrdddSdk..", "kddSddddddddddddSddk..",
+    "kdSSdssssssssssdSSdk..", "kdSdsGGGGGGGGGGsdSdk..", "kdSdsGggggggggGsdSdk..",
+    "kdSdsGGGGGGGGGGsdSdk..", "kddSdssssssssssdSddk..", ".kdSSddddddddddSSdk...",
+    "..kddkkddddddkkddk....", "..kSSk.kSSSSk.kSSk....", ".kddddkkddddkkddddk...",
+    ".kkkkkk.kkkk.kkkkkk...",
+]
+SHIELD_DRONE = [
+    "....kkkk....", "..kkccccKk..".replace("K", "k"), ".kcSSSSSSck.", "kcSdddddSSck",
+    "kcSdccccdSck", "kcSdcwwcdSck", "kcSdccccdSck", "kcSSddddSSck",
+    ".kcSSSSSSck.", "..kkcccckk..", "....kkkk....", "............",
+]
+HUNTER = [
+    "k..........k", ".kk.kkkk.kk.", "..krrrrrrk..", ".krryrryrrk.",
+    "kkrrrrrrrrkk", "..krGrrGrk..", ".krrrrrrrrk.", "kk.krrrrk.kk",
+    "...kr..rk...", "..kk....kk..",
+]
+MIMIC = [
+    "....kkkk....", "...kyyyyk...", "..kyWyyyyk..", ".kyyyyyyyyk.",
+    "kyykwkwkwyyk", "kyrrrrrrrryk", "kyykwkwkwyyk", ".kyyyyyyyyk.",
+    "..kgk..kgk..", ".kk......kk.",
+]
+CARRIER = [
+    "kk..................kk", "mmkk....kkkkkk....kkmm", "mMmmkkkkmmmmmmkkkkmmMm",
+    ".mMMmmmmggggggmmmmMMm.", "..mMMMmgGggggGgmMMMm..", "...mmmmggmmmmggmmmm...",
+    "....kkmggggggggmkk....", "......kmGGGGGGmk......", ".......kkggggkk.......",
+    ".........kkkk.........",
+]
+BURROW_WYRM = [
+    "........kkkkkk........", "......kknnnnnnkk......", ".....knnSSSSSSnnk.....",
+    "....knSSdrrrrdSSnk....", "...knnSdryyyyrdSnnk...", "..knnnSdrrrrrrdSnnnk..",
+    ".knNnnnSSddddSSnnnNnk.", "knNNnnnnnnnnnnnnnnNNnk", "knNnnNnnNnnNnnNnnNnnNk",
+    ".kNnnNnnNnnNnnNnnNnNk.", "..kNNkkNNkkNNkkNNkNk..", "...kk..kk..kk..kk.k...",
+]
+HIVE_QUEEN = [
+    "kk....kkkkkkkkkk....kk", "mmk.kkmmmmmmmmmmkk.kmm", "mMmkmmMMmmmmmmMMmmkmMm",
+    ".mMmmMggggggggggMmmMm.", ".kmMggmmggyyggmmggMmk.", "kmMggmeemggggmeemggMmk",
+    "kmmMgggmmggggmmgggMmmk", "kmMggggggggggggggggMmk", "kmMgggaaggggggaagggMmk",
+    "kmMggggaaaaaaaaggggMmk", ".kmMggggggggggggggMmk.", "..kmmMMMggggggMMMmmk..",
+    "...kmmmmMMMMMMmmmmk...", "..kmMk.kmmk.kmmk.kMmk.", ".kmmk..kmk...kmk..kmmk",
+    ".kkk...kkk...kkk...kkk",
+]
 
 COMMANDER_TOP = [
     "................",
@@ -108,8 +184,12 @@ SPRITE_NAMES = [
     "commander_0", "commander_1", "commander_down",
     "skitter_0", "skitter_1", "brute_0", "brute_1", "glider_0", "glider_1",
     "brood_sac_0", "saboteur_0", "hive_overseer_0",
+    "mender_0", "juggernaut_0", "cloaker_0", "burrower_0", "spitter_0", "hive_egg_0",
+    "siege_titan_0", "hive_queen_0", "shield_drone_0", "hunter_0", "mimic_0", "carrier_0",
+    "burrow_wyrm_0",
     "tower_base", "turret_pulse", "turret_tesla", "turret_cryo",
-    "turret_railgun", "turret_missile", "core",
+    "turret_railgun", "turret_missile", "turret_flamer", "turret_mortar", "turret_gravity",
+    "turret_harvester", "turret_radar", "turret_drone", "turret_barricade", "turret_mines", "core",
     "energy_crystal", "repair_kit", "overcharge", "shield_battery",
 ]
 
@@ -173,6 +253,57 @@ def _turret(kind):
         pygame.draw.rect(s, S.STEEL, (10, 10, 20, 20), border_radius=3)
         for mx, my in ((15, 15), (25, 15), (15, 25), (25, 25)):
             pygame.draw.circle(s, S.RED, (mx, my), 3)
+    elif kind == "flamer":
+        pygame.draw.polygon(s, k, [(18, 14), (38, 11), (38, 29), (18, 26)])
+        pygame.draw.polygon(s, S.STEEL_DARK, [(19, 15), (36, 13), (36, 27), (19, 25)])
+        pygame.draw.rect(s, S.ORANGE, (34, 15, 4, 10))
+        pygame.draw.circle(s, k, c, 10)
+        pygame.draw.circle(s, S.RED, c, 9)
+        pygame.draw.circle(s, S.ENERGY, c, 4)
+    elif kind == "mortar":
+        pygame.draw.circle(s, k, c, 13)
+        pygame.draw.circle(s, S.STEEL_DARK, c, 12)
+        pygame.draw.circle(s, k, (26, 20), 8)
+        pygame.draw.circle(s, S.STEEL, (26, 20), 7)
+        pygame.draw.circle(s, (22, 22, 34), (28, 20), 4)
+    elif kind == "gravity":
+        pygame.draw.circle(s, k, c, 12)
+        pygame.draw.circle(s, S.MAGENTA_DARK, c, 11)
+        pygame.draw.arc(s, S.MAGENTA, (10, 10, 20, 20), 0, 3.6, 3)
+        pygame.draw.arc(s, S.MAGENTA, (14, 14, 12, 12), 3.1, 6.3, 2)
+        pygame.draw.circle(s, S.WHITE, c, 3)
+    elif kind == "harvester":
+        pygame.draw.rect(s, k, (9, 9, 22, 22), border_radius=5)
+        pygame.draw.rect(s, S.STEEL, (10, 10, 20, 20), border_radius=5)
+        pygame.draw.polygon(s, k, [(20, 11), (27, 20), (20, 29), (13, 20)])
+        pygame.draw.polygon(s, S.ENERGY, [(20, 13), (25, 20), (20, 27), (15, 20)])
+        pygame.draw.polygon(s, S.WHITE, [(20, 15), (22, 19), (20, 21), (18, 19)])
+    elif kind == "drone":
+        pygame.draw.rect(s, k, (8, 10, 24, 20), border_radius=4)
+        pygame.draw.rect(s, S.STEEL_DARK, (9, 11, 22, 18), border_radius=4)
+        pygame.draw.rect(s, (22, 22, 34), (12, 15, 16, 10), border_radius=2)
+        for px in (15, 20, 25):
+            pygame.draw.circle(s, S.GREEN, (px, 20), 2)
+    elif kind == "barricade":
+        pygame.draw.rect(s, k, (5, 7, 30, 26), border_radius=3)
+        pygame.draw.rect(s, S.STEEL, (6, 8, 28, 24), border_radius=3)
+        for i in range(4):
+            pygame.draw.polygon(s, S.ENERGY, [(6 + i * 8, 32), (10 + i * 8, 32), (18 + i * 8, 8), (14 + i * 8, 8)])
+        pygame.draw.rect(s, k, (6, 8, 28, 24), 1, border_radius=3)
+    elif kind == "mines":
+        pygame.draw.circle(s, k, c, 12)
+        pygame.draw.circle(s, S.STEEL_DARK, c, 11)
+        pygame.draw.rect(s, k, (18, 11, 18, 8))
+        pygame.draw.rect(s, S.STEEL, (19, 12, 16, 6))
+        pygame.draw.circle(s, S.RED, c, 4)
+        pygame.draw.circle(s, S.ENERGY, c, 2)
+    elif kind == "radar":
+        pygame.draw.circle(s, k, c, 9)
+        pygame.draw.circle(s, S.STEEL, c, 8)
+        pygame.draw.arc(s, k, (8, 4, 24, 24), 3.6, 5.8, 5)
+        pygame.draw.arc(s, S.GREEN, (8, 4, 24, 24), 3.6, 5.8, 3)
+        pygame.draw.line(s, S.GREEN, c, (20, 9), 2)
+        pygame.draw.circle(s, S.GREEN, c, 3)
     return s
 
 
@@ -235,6 +366,14 @@ def build_placeholder(name):
         return from_pixels(SABOTEUR, 2)
     if name.startswith("hive_overseer"):
         return from_pixels(OVERSEER, 3)
+    phase3 = {"mender": (MENDER, 2), "juggernaut": (JUGGERNAUT, 3), "cloaker": (CLOAKER, 2),
+              "burrower": (BURROWER, 2), "spitter": (SPITTER, 2), "hive_egg": (HIVE_EGG, 2),
+              "siege_titan": (SIEGE_TITAN, 3), "hive_queen": (HIVE_QUEEN, 3),
+              "shield_drone": (SHIELD_DRONE, 2), "hunter": (HUNTER, 2), "mimic": (MIMIC, 2),
+              "carrier": (CARRIER, 3), "burrow_wyrm": (BURROW_WYRM, 3)}
+    for key, (rows, scale) in phase3.items():
+        if name.startswith(key + "_"):
+            return from_pixels(rows, scale)
     if name == "tower_base":
         return _tower_base()
     if name.startswith("turret_"):

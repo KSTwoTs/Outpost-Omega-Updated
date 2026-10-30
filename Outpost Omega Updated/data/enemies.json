@@ -2,6 +2,7 @@
   "skitter": {
     "name": "Skitter",
     "enabled": true,
+    "threat": 1, "unlock_wave": 1,
     "hp": 26, "speed": 85, "armor": 0, "radius": 9,
     "reward": 4, "score": 10, "core_damage": 2,
     "flying": false, "attack_dps": 6,
@@ -10,6 +11,7 @@
   "brute": {
     "name": "Brute",
     "enabled": true,
+    "threat": 6, "unlock_wave": 4,
     "hp": 150, "speed": 40, "armor": 4, "radius": 14,
     "reward": 15, "score": 30, "core_damage": 10,
     "flying": false, "attack_dps": 15,
@@ -18,6 +20,7 @@
   "glider": {
     "name": "Glider",
     "enabled": true,
+    "threat": 3, "unlock_wave": 3,
     "hp": 50, "speed": 70, "armor": 0, "radius": 10,
     "reward": 8, "score": 20, "core_damage": 5,
     "flying": true, "attack_dps": 0,
@@ -26,6 +29,7 @@
   "brood_sac": {
     "name": "Brood Sac",
     "enabled": true,
+    "threat": 4, "unlock_wave": 6,
     "hp": 60, "speed": 45, "armor": 1, "radius": 13,
     "reward": 12, "score": 25, "core_damage": 6,
     "flying": false, "attack_dps": 0,
@@ -35,6 +39,7 @@
   "saboteur": {
     "name": "Saboteur",
     "enabled": true,
+    "threat": 4, "unlock_wave": 5,
     "hp": 45, "speed": 60, "armor": 1, "radius": 10,
     "reward": 14, "score": 30, "core_damage": 4,
     "flying": false, "attack_dps": 8,
@@ -49,6 +54,137 @@
     "flying": false, "attack_dps": 30,
     "summon_interval": 8.0, "summon": {"enemy": "skitter", "count": 4},
     "shield_phases": [0.66, 0.33],
+    "intro": "The brood-mother has arrived",
     "description": "Boss. Shield phases; summons Skitters every 8 s."
+  },
+  "mender": {
+    "name": "Mender",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 8,
+    "hp": 70, "speed": 50, "armor": 1, "radius": 10,
+    "reward": 12, "score": 30, "core_damage": 4,
+    "flying": false, "attack_dps": 0,
+    "heal_range": 80, "heal_pct": 0.06,
+    "description": "Heals nearby aliens 6% max HP per second."
+  },
+  "juggernaut": {
+    "name": "Juggernaut",
+    "enabled": true,
+    "threat": 10, "unlock_wave": 10,
+    "hp": 420, "speed": 30, "armor": 6, "radius": 16,
+    "reward": 30, "score": 60, "core_damage": 15,
+    "flying": false, "attack_dps": 20,
+    "description": "Huge and armored. Can't be slowed, stunned or pushed."
+  },
+  "cloaker": {
+    "name": "Cloaker",
+    "enabled": true,
+    "threat": 3, "unlock_wave": 9,
+    "hp": 55, "speed": 70, "armor": 0, "radius": 9,
+    "reward": 10, "score": 25, "core_damage": 4,
+    "flying": false, "attack_dps": 6,
+    "reveal_range": 140,
+    "description": "Invisible to towers unless Vance or a Radar Relay is close."
+  },
+  "burrower": {
+    "name": "Burrower",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 7,
+    "hp": 90, "speed": 55, "armor": 2, "radius": 11,
+    "reward": 12, "score": 30, "core_damage": 6,
+    "flying": false, "attack_dps": 8,
+    "surface_time": 3.0, "under_time": 2.2,
+    "description": "Tunnels under the path; can't be hit while underground."
+  },
+  "spitter": {
+    "name": "Spitter",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 11,
+    "hp": 80, "speed": 50, "armor": 1, "radius": 10,
+    "reward": 12, "score": 30, "core_damage": 5,
+    "flying": false, "attack_dps": 6,
+    "spit_range": 130, "spit_damage": 18, "spit_cooldown": 5.0,
+    "description": "Stops to spit acid at towers in range."
+  },
+  "hive_egg": {
+    "name": "Hive Egg",
+    "enabled": true,
+    "threat": 0,
+    "hp": 80, "speed": 0, "armor": 2, "radius": 9,
+    "reward": 3, "score": 5, "core_damage": 0,
+    "flying": false, "attack_dps": 0,
+    "hatch_time": 6.0, "hatch": {"enemy": "skitter", "count": 4},
+    "description": "Laid by the Hive Queen. Hatches into Skitters."
+  },
+  "siege_titan": {
+    "name": "Siege Titan",
+    "enabled": true,
+    "hp": 1600, "speed": 18, "armor": 8, "radius": 26,
+    "reward": 350, "score": 1200, "core_damage": 60,
+    "flying": false, "attack_dps": 40,
+    "stomp_interval": 4.0, "stomp_range": 90, "stomp_damage": 30,
+    "crush_range": 44, "crush_dps": 25,
+    "intro": "It crushes towers as it walks",
+    "description": "Boss. Stomps towers near the path."
+  },
+  "hive_queen": {
+    "name": "Hive Queen",
+    "enabled": true,
+    "hp": 1300, "speed": 20, "armor": 5, "radius": 26,
+    "reward": 350, "score": 1200, "core_damage": 60,
+    "flying": false, "attack_dps": 30,
+    "lay_interval": 6.0, "egg": "hive_egg",
+    "intro": "Destroy her eggs before they hatch",
+    "description": "Boss. Lays eggs that hatch into Skitters."
+  },
+  "shield_drone": {
+    "name": "Shield Drone",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 12,
+    "hp": 60, "speed": 55, "armor": 0, "radius": 10,
+    "reward": 12, "score": 30, "core_damage": 3,
+    "flying": true, "attack_dps": 0,
+    "aura_range": 75,
+    "description": "Flies along the path; ground aliens under its bubble take half damage."
+  },
+  "hunter": {
+    "name": "Hunter",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 9,
+    "hp": 85, "speed": 75, "armor": 1, "radius": 10,
+    "reward": 14, "score": 35, "core_damage": 6,
+    "flying": false, "attack_dps": 22,
+    "description": "Ignores the path and hunts Commander Vance."
+  },
+  "mimic": {
+    "name": "Mimic",
+    "enabled": true,
+    "threat": 3, "unlock_wave": 8,
+    "hp": 70, "speed": 65, "armor": 1, "radius": 10,
+    "reward": 16, "score": 35, "core_damage": 5,
+    "flying": false, "attack_dps": 14,
+    "bite": 25, "disguise_time": 10.0,
+    "description": "Disguised as an Energy Crystal near the path. Bites when Vance comes close."
+  },
+  "carrier": {
+    "name": "Carrier",
+    "enabled": true,
+    "threat": 9, "unlock_wave": 14,
+    "hp": 260, "speed": 35, "armor": 2, "radius": 18,
+    "reward": 30, "score": 70, "core_damage": 12,
+    "flying": true, "attack_dps": 0,
+    "drop_interval": 5.0, "drop": {"enemy": "glider", "count": 2},
+    "description": "Big flyer that keeps dropping Gliders."
+  },
+  "burrow_wyrm": {
+    "name": "Burrow Wyrm",
+    "enabled": true,
+    "hp": 1500, "speed": 26, "armor": 6, "radius": 24,
+    "reward": 350, "score": 1200, "core_damage": 60,
+    "flying": false, "attack_dps": 35,
+    "surface_time": 5.0, "under_time": 2.5, "jump": [120, 220],
+    "emerge_range": 80, "emerge_damage": 40,
+    "intro": "It tunnels ahead and bursts out under your towers",
+    "description": "Boss. Tunnels forward along the path and erupts under towers."
   }
 }

@@ -7,7 +7,7 @@ from game.game_manager import GameManager
 
 
 def main():
-    GameManager().run()
+    GameManager().main_loop()
 
 
 if __name__ == "__main__":

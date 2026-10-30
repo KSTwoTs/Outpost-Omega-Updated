@@ -31,7 +31,16 @@ KEY_BINDINGS = {
     pygame.K_3: ("select_tower", 3),
     pygame.K_4: ("select_tower", 4),
     pygame.K_5: ("select_tower", 5),
+    pygame.K_6: ("select_tower", 6),
+    pygame.K_7: ("select_tower", 7),
+    pygame.K_8: ("select_tower", 8),
+    pygame.K_9: ("select_tower", 9),
+    pygame.K_0: ("select_tower", 10),
+    pygame.K_MINUS: ("select_tower", 11),
+    pygame.K_EQUALS: ("select_tower", 12),
+    pygame.K_BACKSLASH: ("select_tower", 13),
     pygame.K_RETURN: ("confirm", None),
+    pygame.K_f: ("cycle_speed", None),
 }
 
 MOVE_KEYS = {

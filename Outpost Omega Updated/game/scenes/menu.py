@@ -38,9 +38,13 @@ class MenuScene(Scene):
         super().__init__(game, **kwargs)
         self.stars = Starfield()
         cx = S.SCREEN_W // 2
+        run_label = "CONTINUE RUN" if game.run is not None and not game.run.over else "SIEGE RUN"
         self.buttons = [
-            Button((cx - 130, 380, 260, 54), "PLAY", "play"),
-            Button((cx - 130, 450, 260, 54), "QUIT", "quit"),
+            Button((cx - 130, 326, 260, 46), "PLAY", "play"),
+            Button((cx - 130, 378, 260, 46), run_label, "run"),
+            Button((cx - 130, 430, 260, 46), "DAILY CHALLENGE", "daily"),
+            Button((cx - 130, 482, 260, 46), "TECH LAB", "tech"),
+            Button((cx - 130, 534, 260, 46), "QUIT", "quit"),
         ]
         self.t = 0.0
 
@@ -58,6 +62,14 @@ class MenuScene(Scene):
     def activate(self, command):
         if command == "play":
             self.game.scenes.change("level_select")
+        elif command == "run":
+            if self.game.run is None or self.game.run.over:
+                self.game.start_run()
+            self.game.scenes.change("run_map")
+        elif command == "tech":
+            self.game.scenes.change("tech_lab")
+        elif command == "daily":
+            self.game.start_daily()
         elif command == "quit":
             self.game.running = False
 
@@ -85,6 +97,11 @@ class MenuScene(Scene):
             screen.blit(img, img.get_rect(center=(x, int(y))))
         mouse = self.input.mouse_pos()
         for b in self.buttons:
-            b.draw(screen, a, mouse, size=34)
+            b.draw(screen, a, mouse, size=28)
+        day = self.game.daily_info()["daily"]
+        best = self.game.save.get("daily", {}).get(day, {}).get("wave")
+        if best:
+            t = a.text(f"best wave {best}", 18, S.ENERGY)
+            screen.blit(t, t.get_rect(midleft=(S.SCREEN_W // 2 + 140, 453)))
         hint = a.text("CPSC 4160  -  Trenton McDonald", 20, S.TEXT_DIM)
         screen.blit(hint, (12, S.SCREEN_H - 26))

@@ -5,6 +5,7 @@ CPSC 4160 · 2D top-down tower defense with a playable hero · Python 3 + pygame
 ## Run it
 
 ```
+cd 'Outpost-Omega-Updated
 pip install -r requirements.txt
 python main.py
 ```
@@ -19,11 +20,14 @@ If you already have classic `pygame` installed, it works too. Don't install both
 | E (hold) | Repair a nearby damaged or EMP'd tower |
 | Click a drop | Collect it (or walk over it) |
 | Q, then click | Orbital Strike (1 s delay, 45 s cooldown). Right-click cancels |
-| 1–5 or HUD buttons | Pick a tower to build. Click a green tile to place it. Shift+click places several |
+| 1–9, 0, -, =, \\ or HUD buttons | Pick a tower to build. Click a green tile to place it. Shift+click places several |
 | Click a tower | Select it (HUD shows Upgrade / Sell / Targeting) |
-| Right-click a tower | Upgrade it |
+| Click the Core | Core upgrades: Gun (turret), Shield (soaks Core damage each wave), Regen |
+| Level-up panel | Click one of 3 perks when Vance levels up (the game keeps running) |
+| Right-click a tower | Upgrade it (in a Siege Run, a maxed tower opens the tier-4 branch choice) |
 | U / X / T | Upgrade / Sell (70% refund) / cycle targeting (first, last, strongest, closest) |
 | Space | Start the next wave early |
+| F | Game speed 1x / 2x / 3x |
 | Esc / P | Pause |
 | F1 | Debug overlay: waypoints, ranges, spatial-hash cells, hitboxes (boss shows its pixel-mask outline), FPS |
 
@@ -48,10 +52,110 @@ If you already have classic `pygame` installed, it works too. Don't install both
 - Effects: pooled particles, screen shake, hit flash, damage numbers, lightning, beams
 - Placeholder pixel-art sprites and synthesized sound effects (see "Art & sound")
 
+## Endless mode (Phase 1)
+
+Pick **ENDLESS** under the difficulty buttons in Level Select, then any sector.
+
+- Waves are generated forever from a threat budget that grows 12% per wave.
+  Each enemy has a `threat` cost and `unlock_wave` in `enemies.json`.
+- Past wave 10, enemy HP also grows 5% per wave (compounding).
+- Every 5th wave rolls a mutator: Swarm, Armored Tide, Blitz, Air Raid or Blackout.
+- Every 10th wave adds the Hive Overseer, +50% HP each time.
+- From wave 12, aliens can spawn as elites (2x HP and reward) with one affix:
+  Hasted, Armored, Regenerating, Shielded, Volatile or Vampiric.
+- During the build phase a panel in the top-right previews the next wave
+  (campaign levels show it too).
+- Best wave and score per sector are saved in `save.json` and shown on the
+  Level Select cards.
+- All tuning lives in `data/endless.json`; the generator is
+  `game/systems/endless.py` (no pygame, unit-testable).
+
+## Siege Run (Phase 2)
+
+Pick **SIEGE RUN** on the main menu. A run is 3 acts; each act is a branching
+map of 7 floors ending in a boss.
+
+- **Nodes:** Combat (3 generated waves on a random sector), Elite (3 waves,
+  60%+ elites, drops a relic), Supply Cache (shop), Event (a choice with a
+  cost), Boss (Hive Overseer, tougher each act).
+- **Core HP carries over** between sectors. Energy resets each sector.
+- **Tower cards:** you start with the Pulse Turret plus one random tower.
+  Other towers are unlocked through drafts, the shop and events.
+- **Augments:** after each win, draft 1 of 3 upgrades (24 in the pool,
+  tower-specific ones only show up for towers you own).
+- **Relics:** from elites, bosses, the shop and events. Cursed relics (red)
+  have a big upside and a real drawback.
+- **Scrap** is the in-run currency; **Salvage** is earned when a run ends and
+  spent in the **TECH LAB** on permanent upgrades for future runs.
+- **Tier-4 branches:** in a run, a tier-3 tower can take one of two branches
+  (e.g. Railgun becomes Overpenetrator or Executioner).
+- The run is saved to `save.json` every time you're on the map, so CONTINUE
+  RUN works after closing the game. Pausing in a sector offers ABANDON RUN.
+- Content lives in `data/run.json` (augments, relics, events, shop, rewards)
+  and `data/tech.json`. Logic is in `game/systems/run.py` (no pygame); screens
+  are in `game/scenes/run_scenes.py`.
+
+## Phase 3 content
+
+Pick **DAILY CHALLENGE** on the main menu for today's generated map (same for everyone,
+best wave saved per day). All modes are reachable from the main menu and Level Select.
+
+**New towers** (available in every mode; unlocked as tower cards in a Siege Run)
+
+| Key | Tower | What it does |
+|---|---|---|
+| 6 | Flamer | Short cone; damages and burns ground aliens |
+| 7 | Mortar | Lobbed shells with big splash; can't hit close or flying targets |
+| 8 | Gravity Well | Every few seconds pulls ground aliens back along the path |
+| 9 | Harvester | No attack; pays Energy after every wave |
+| 0 | Radar Relay | +15–25% range to nearby towers; reveals Cloakers and Burrowers |
+| - | Drone Bay | Drones hunt aliens anywhere in range, flyers included |
+| = | Barricade | Goes ON the path; aliens stop to chew through it; repair it with E |
+| \\ | Mine Layer | Scatters proximity mines on path tiles in range |
+
+**Combos:** Railgun hits on slowed aliens *Shatter* (2x damage); Missiles and Mortar
+shells *Detonate* (1.5x splash) on burning aliens; Tesla *Conducts* 2 extra jumps
+when its first target is slowed.
+
+**Veterancy:** towers rank up at 10 / 30 / 75 kills (+6% damage per rank, yellow chevrons).
+
+**New enemies:** Mender (heals nearby aliens), Juggernaut (can't be slowed, stunned or
+pushed), Cloaker (invisible unless Vance or a Radar Relay is close), Burrower
+(untargetable while tunnelling), Spitter (spits acid at towers), Shield Drone (flying;
+aliens under its bubble take half damage), Hunter (ignores the path and chases Vance),
+Mimic (disguised as an Energy Crystal; bites when Vance comes to collect it), Carrier
+(big flyer that keeps dropping Gliders). **New bosses:** Siege Titan (crushes and stomps
+towers), Hive Queen (lays eggs that hatch into Skitters), Burrow Wyrm (tunnels ahead and
+erupts under towers). Endless rotates all four bosses; a Siege Run has one per act.
+
+**New sectors**
+
+| Sector | Mechanic |
+|---|---|
+| 4 Magma Forge | Volcanic vents erupt during waves and knock nearby towers offline |
+| 5 Open Plains | No path: aliens walk around your towers, so you build the maze |
+| 6 Orbital Platform | Conveyor belts speed up or slow down aliens (and push Vance); airlocks swap the route every two waves |
+| 7 Derelict Ship | Pitch dark: only aliens near a tower, Vance or the Core can be seen or hit |
+| 8 Twin Cores | Two Cores share one HP pool, one lane each; Vance is the swing defender |
+| Uncharted | Endless only: a procedurally generated map every time (also appears in Siege Runs) |
+
+**Weather** (35% chance per sector in Endless and Siege Run): Sandstorm (-20% tower
+range), Blizzard (aliens 15% slower, Vance slides), Acid Rain (towers slowly corrode
+during waves, so keep repairing with E).
+
+**Commander:** pick a class in Level Select or the Tech Lab: Vanguard (+40% HP,
+faster, +60% blaster), Engineer (towers 10% cheaper, 2x repair speed), Tactician
+(Orbital Strike cooldown -35%, +25% damage). Vance also earns XP from every kill and
+picks a perk at each level (`data/perks.json`); in a Siege Run his level carries over.
+
+**Core upgrades:** click the Core: Gun (a turret on every Core), Shield (soaks
+10/20/35 Core damage each wave), Regen (+3/6/10 Core HP after each wave). 120/200/300 Energy.
+
 ## Still to build
 
 | Feature | Where |
 |---|---|
+| Playtesting and balance for all new content | Numbers live in `data/*.json` |
 | Unlock progression | Turned off for the demo; one line in `scenes/level_select.py` restores it |
 | Music | Drop `assets/sounds/music.ogg` in |
 

@@ -1,0 +1,165 @@
+{
+  "_comment": "Siege Run tuning. Augments, relics, events and tech all use the same effect list format; see game/systems/run.py (Modifiers) for every effect type.",
+
+  "acts": 3,
+  "floors_per_act": 7,
+  "floor_width": [2, 4],
+  "node_weights": {"combat": 45, "elite": 15, "cache": 15, "event": 25},
+  "elite_min_floor": 2,
+  "sectors": ["sector1", "sector2", "sector3", "sector4", "sector5", "sector6", "sector7", "sector8",
+              "procedural", "procedural"],
+
+  "waves_per_node": {"combat": 3, "elite": 3, "boss": 3},
+  "wave_depth": {"per_floor": 1, "per_act": 7},
+  "elite_node_chance": 0.6,
+  "boss": "hive_overseer",
+  "bosses_by_act": ["hive_overseer", "siege_titan", "hive_queen"],
+  "boss_hp_per_act": 0.5,
+
+  "start_towers": ["pulse"],
+  "random_start_towers": 1,
+  "start_pool": ["tesla", "cryo", "railgun", "missile", "flamer", "mortar", "drone", "mines"],
+  "start_scrap": 0,
+  "draft_choices": 3,
+  "tower_card_chance": 0.4,
+  "skip_scrap": 10,
+
+  "rewards": {
+    "combat": {"scrap": [22, 32], "steps": ["draft"]},
+    "elite":  {"scrap": [45, 60], "steps": ["draft", "relic"]},
+    "boss":   {"scrap": [70, 90], "steps": ["relic", "draft"], "heal": 0.3}
+  },
+  "relic_choices": 2,
+  "boss_relic_choices": 3,
+
+  "shop": {"tower": 60, "augment": 45, "relic": 90, "repair": 35, "repair_hp": 25,
+           "towers": 2, "augments": 3, "relics": 1},
+
+  "salvage": {"node": 4, "elite": 6, "boss": 25, "victory": 50},
+
+  "augments": {
+    "pulse_rapid":    {"name": "Rapid Cycler",      "requires": "pulse",   "desc": "Pulse Turret fire rate +25%",
+                       "effects": [{"type": "tower_stat", "tower": "pulse", "stat": "fire_rate", "mult": 1.25}]},
+    "pulse_caliber":  {"name": "Heavy Caliber",     "requires": "pulse",   "desc": "Pulse Turret damage +30%",
+                       "effects": [{"type": "tower_stat", "tower": "pulse", "stat": "damage", "mult": 1.3}]},
+    "tesla_arc":      {"name": "Arc Splitter",      "requires": "tesla",   "desc": "Tesla chains +2 enemies",
+                       "effects": [{"type": "tower_stat", "tower": "tesla", "stat": "chain", "add": 2}]},
+    "tesla_volt":     {"name": "High Voltage",      "requires": "tesla",   "desc": "Tesla Coil damage +25%",
+                       "effects": [{"type": "tower_stat", "tower": "tesla", "stat": "damage", "mult": 1.25}]},
+    "cryo_deep":      {"name": "Deep Freeze",       "requires": "cryo",    "desc": "Cryo slow +10%",
+                       "effects": [{"type": "tower_stat", "tower": "cryo", "stat": "slow", "add": 0.1}]},
+    "cryo_shatter":   {"name": "Brittle Shells",    "requires": "cryo",    "desc": "Slowed enemies take +25% damage",
+                       "effects": [{"type": "slowed_damage", "mult": 1.25}]},
+    "cryo_frost":     {"name": "Frostbite",         "requires": "cryo",    "desc": "Cryo Emitters deal +6 damage per second",
+                       "effects": [{"type": "tower_stat", "tower": "cryo", "stat": "dps", "add": 6}]},
+    "rail_capacitor": {"name": "Capacitor Bank",    "requires": "railgun", "desc": "Railgun damage +30%",
+                       "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "damage", "mult": 1.3}]},
+    "rail_scope":     {"name": "Long Scope",        "requires": "railgun", "desc": "Railgun range +15%",
+                       "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "range", "mult": 1.15}]},
+    "missile_payload":{"name": "Bigger Payload",    "requires": "missile", "desc": "Missile splash radius +25%",
+                       "effects": [{"type": "tower_stat", "tower": "missile", "stat": "splash", "mult": 1.25}]},
+    "missile_salvo":  {"name": "Salvo Loader",      "requires": "missile", "desc": "Missile Battery fire rate +25%",
+                       "effects": [{"type": "tower_stat", "tower": "missile", "stat": "fire_rate", "mult": 1.25}]},
+    "all_range":      {"name": "Sensor Array",      "desc": "All towers +10% range",
+                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.1}]},
+    "all_damage":     {"name": "Hardened Rounds",   "desc": "All towers +10% damage",
+                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.1}]},
+    "cheap_build":    {"name": "Prefab Kits",       "desc": "Towers and upgrades cost 15% less",
+                       "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.85}]},
+    "energy_reward":  {"name": "Bounty Contract",   "desc": "Kills give +20% Energy",
+                       "effects": [{"type": "kill_reward", "mult": 1.2}]},
+    "start_energy":   {"name": "Forward Depot",     "desc": "+75 starting Energy in every sector",
+                       "effects": [{"type": "start_energy", "add": 75}]},
+    "interest":       {"name": "Energy Bonds",      "desc": "After each wave, gain 5% of unspent Energy (max 40)",
+                       "effects": [{"type": "interest", "rate": 0.05, "cap": 40}]},
+    "crystal":        {"name": "Crystal Harvest",   "desc": "Every 12th kill drops an Energy Crystal",
+                       "effects": [{"type": "crystal_every", "kills": 12}]},
+    "orbital_cd":     {"name": "Uplink Priority",   "desc": "Orbital Strike cooldown -40%",
+                       "effects": [{"type": "orbital_cooldown", "mult": 0.6}]},
+    "orbital_power":  {"name": "Kinetic Rods",      "desc": "Orbital Strike damage +60%",
+                       "effects": [{"type": "orbital_damage", "mult": 1.6}]},
+    "blaster":        {"name": "Vance's Sidearm",   "desc": "Commander blaster damage +80%",
+                       "effects": [{"type": "blaster_damage", "mult": 1.8}]},
+    "core_plating":   {"name": "Core Plating",      "desc": "Core max HP +25 (healed now)",
+                       "effects": [{"type": "core_max", "add": 25}]},
+    "field_repair":   {"name": "Field Repair Crew", "desc": "Core heals 8 HP after every sector",
+                       "effects": [{"type": "node_heal", "add": 8}]},
+    "lucky":          {"name": "Scavenger Instinct","desc": "+6% item drop chance",
+                       "effects": [{"type": "drop_chance", "add": 0.06}]}
+  },
+
+  "relics": {
+    "quantum_battery": {"name": "Quantum Battery",  "desc": "+100 starting Energy in every sector",
+                        "effects": [{"type": "start_energy", "add": 100}]},
+    "targeting_ai":    {"name": "Targeting AI",     "desc": "All towers +15% range and +10% fire rate",
+                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.15},
+                                    {"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.1}]},
+    "salvage_drones":  {"name": "Salvage Drones",   "desc": "+40% Scrap from every reward",
+                        "effects": [{"type": "scrap", "mult": 1.4}]},
+    "repair_nanites":  {"name": "Repair Nanites",   "desc": "Core heals 15 HP after every sector",
+                        "effects": [{"type": "node_heal", "add": 15}]},
+    "orbital_relay":   {"name": "Orbital Relay",    "desc": "Orbital Strike cooldown -50%",
+                        "effects": [{"type": "orbital_cooldown", "mult": 0.5}]},
+    "overclocked":     {"name": "Overclocked Cores", "cursed": true, "desc": "+50% tower damage, but Core max HP is halved",
+                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.5},
+                                    {"type": "core_max", "mult": 0.5}]},
+    "glass_economy":   {"name": "Glass Economy",    "cursed": true, "desc": "+60% Energy from kills, but items never drop",
+                        "effects": [{"type": "kill_reward", "mult": 1.6}, {"type": "drop_chance", "set": 0}]},
+    "hair_trigger":    {"name": "Hair Trigger",     "cursed": true, "desc": "+35% tower fire rate, but -20% range",
+                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.35},
+                                    {"type": "tower_stat", "tower": "*", "stat": "range", "mult": 0.8}]},
+    "scrappers_oath":  {"name": "Scrapper's Oath",  "cursed": true, "desc": "Towers cost 30% less, but selling refunds nothing",
+                        "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.7}, {"type": "sell_refund", "set": 0}]}
+  },
+
+  "events": {
+    "crashed_drone": {
+      "title": "Crashed Drone",
+      "text": "A supply drone lies in the sand, its cargo pod still sealed. The repair would take parts you need elsewhere.",
+      "choices": [
+        {"label": "Repair it", "cost": {"scrap": 30}, "gain": {"augment": 1}, "sub": "-30 Scrap, gain a random augment"},
+        {"label": "Strip it for parts", "gain": {"scrap": 25}, "sub": "+25 Scrap"}
+      ]
+    },
+    "hive_cache": {
+      "title": "Hive Cache",
+      "text": "Glowing eggs pulse inside a cracked hive wall. Something valuable is buried in the resin, but the brood is waking.",
+      "choices": [
+        {"label": "Dig it out", "cost": {"core_hp": 15}, "gain": {"relic": 1}, "sub": "-15 Core HP, gain a random relic"},
+        {"label": "Burn it and move on", "gain": {"scrap": 10}, "sub": "+10 Scrap"}
+      ]
+    },
+    "mercenary": {
+      "title": "Mercenary Engineer",
+      "text": "A drifter with a toolbelt offers to join your outpost. She only takes payment up front.",
+      "choices": [
+        {"label": "Hire her", "cost": {"scrap": 40}, "gain": {"tower_card": 1}, "sub": "-40 Scrap, unlock a random tower"},
+        {"label": "Send her away", "gain": {}, "sub": "Nothing happens"}
+      ]
+    },
+    "black_market": {
+      "title": "Black Market Signal",
+      "text": "An encrypted channel offers military-grade tech. The seller's terms are strange, and the hardware runs hot.",
+      "choices": [
+        {"label": "Take the deal", "gain": {"curse": 1, "scrap": 40}, "sub": "Gain a cursed relic and +40 Scrap"},
+        {"label": "Close the channel", "gain": {}, "sub": "Nothing happens"}
+      ]
+    },
+    "shield_generator": {
+      "title": "Derelict Shield Generator",
+      "text": "An old shield generator still holds a charge. You can feed it into the Core now, or wire it in for good.",
+      "choices": [
+        {"label": "Drain it now", "gain": {"core_hp": 30}, "sub": "Heal 30 Core HP"},
+        {"label": "Wire it in", "cost": {"scrap": 25}, "gain": {"core_max": 15}, "sub": "-25 Scrap, Core max HP +15"}
+      ]
+    },
+    "refugees": {
+      "title": "Refugee Convoy",
+      "text": "Colonists fleeing the siege ask for an escort. It will cost you time, but they promise to repay the favor.",
+      "choices": [
+        {"label": "Escort them", "cost": {"core_hp": 10}, "gain": {"scrap": 50}, "sub": "-10 Core HP, +50 Scrap"},
+        {"label": "Share supplies", "cost": {"scrap": 15}, "gain": {"augment": 1}, "sub": "-15 Scrap, gain a random augment"}
+      ]
+    }
+  }
+}

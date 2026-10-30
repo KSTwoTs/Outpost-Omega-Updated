@@ -16,7 +16,7 @@ class CollisionSystem:
 
     def rebuild(self, enemies):
         self.hash.clear()
-        self.enemies = [e for e in enemies if e.targetable]
+        self.enemies = [e for e in enemies if e.targetable and not e.hidden]
         for e in self.enemies:
             self.hash.insert(e, e.pos.x, e.pos.y, e.radius)
 

@@ -1,0 +1,488 @@
+{
+  "name": "Sector 6 - Orbital Platform",
+  "id": "sector6",
+  "theme": "orbital",
+  "core_hp": 100,
+  "start_energy": 320,
+  "build_time": 15,
+  "enemy_hp_mult": 1.5,
+  "legend": {
+    ".": "buildable",
+    "#": "path",
+    "S": "spawn",
+    "C": "core",
+    "X": "blocked",
+    "~": "hazard",
+    "I": "ice",
+    "W": "wall / airlock"
+  },
+  "tiles": [
+    "........................................",
+    "........................................",
+    "..X...............................X.....",
+    "......#########################.........",
+    "......#.......................#.........",
+    "......#.......................#.........",
+    "......#.......................#.........",
+    "......#.....XX................#.........",
+    "......#.......................#.....XXXX",
+    "......#.......................#.....XXXX",
+    "S######...........XX..........#######CXX",
+    "......#.......................#.....XXXX",
+    "......#.......................#.....XXXX",
+    "......#.................XX....#.........",
+    "......#.......................#.........",
+    "......#.......................#.........",
+    "......#.......................#.........",
+    "..X...############W############...X.....",
+    "........................................",
+    "........................................"
+  ],
+  "conveyors": [
+    {
+      "tiles": [
+        [
+          8,
+          3
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          10,
+          3
+        ],
+        [
+          11,
+          3
+        ],
+        [
+          12,
+          3
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          14,
+          3
+        ],
+        [
+          15,
+          3
+        ],
+        [
+          16,
+          3
+        ],
+        [
+          17,
+          3
+        ],
+        [
+          19,
+          3
+        ],
+        [
+          20,
+          3
+        ],
+        [
+          21,
+          3
+        ],
+        [
+          22,
+          3
+        ],
+        [
+          23,
+          3
+        ],
+        [
+          24,
+          3
+        ],
+        [
+          25,
+          3
+        ],
+        [
+          26,
+          3
+        ],
+        [
+          27,
+          3
+        ],
+        [
+          28,
+          3
+        ]
+      ],
+      "dir": [
+        1,
+        0
+      ]
+    },
+    {
+      "tiles": [
+        [
+          8,
+          17
+        ],
+        [
+          9,
+          17
+        ],
+        [
+          10,
+          17
+        ],
+        [
+          11,
+          17
+        ],
+        [
+          12,
+          17
+        ],
+        [
+          13,
+          17
+        ],
+        [
+          14,
+          17
+        ],
+        [
+          15,
+          17
+        ],
+        [
+          16,
+          17
+        ],
+        [
+          17,
+          17
+        ],
+        [
+          19,
+          17
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          21,
+          17
+        ],
+        [
+          22,
+          17
+        ],
+        [
+          23,
+          17
+        ],
+        [
+          24,
+          17
+        ],
+        [
+          25,
+          17
+        ],
+        [
+          26,
+          17
+        ],
+        [
+          27,
+          17
+        ],
+        [
+          28,
+          17
+        ]
+      ],
+      "dir": [
+        -1,
+        0
+      ]
+    }
+  ],
+  "wall_events": [
+    {
+      "wave": 3,
+      "time": 0,
+      "grow": [
+        [
+          18,
+          3
+        ]
+      ],
+      "clear": [
+        [
+          18,
+          17
+        ]
+      ],
+      "message": "Airlocks cycling: aliens take the slow belt"
+    },
+    {
+      "wave": 5,
+      "time": 0,
+      "grow": [
+        [
+          18,
+          17
+        ]
+      ],
+      "clear": [
+        [
+          18,
+          3
+        ]
+      ],
+      "message": "Airlocks cycling: aliens take the fast belt"
+    },
+    {
+      "wave": 7,
+      "time": 0,
+      "grow": [
+        [
+          18,
+          3
+        ]
+      ],
+      "clear": [
+        [
+          18,
+          17
+        ]
+      ],
+      "message": "Airlocks cycling: aliens take the slow belt"
+    },
+    {
+      "wave": 9,
+      "time": 0,
+      "grow": [
+        [
+          18,
+          17
+        ]
+      ],
+      "clear": [
+        [
+          18,
+          3
+        ]
+      ],
+      "message": "Airlocks cycling: aliens take the fast belt"
+    }
+  ],
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 12,
+          "interval": 0.8,
+          "delay": 0,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "glider",
+          "count": 6,
+          "interval": 1.4,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 8,
+          "interval": 0.8,
+          "delay": 3,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 3,
+          "interval": 3,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "hunter",
+          "count": 2,
+          "interval": 3,
+          "delay": 4,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "shield_drone",
+          "count": 2,
+          "interval": 4,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 14,
+          "interval": 0.6,
+          "delay": 1,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "mimic",
+          "count": 3,
+          "interval": 2,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brute",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 2,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "carrier",
+          "count": 1,
+          "interval": 1,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 6,
+          "interval": 1.2,
+          "delay": 3,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "juggernaut",
+          "count": 2,
+          "interval": 6,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "shield_drone",
+          "count": 2,
+          "interval": 5,
+          "delay": 1,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 12,
+          "interval": 0.5,
+          "delay": 4,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "hunter",
+          "count": 4,
+          "interval": 2,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "spitter",
+          "count": 4,
+          "interval": 2,
+          "delay": 3,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "carrier",
+          "count": 2,
+          "interval": 6,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brute",
+          "count": 5,
+          "interval": 2,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "mender",
+          "count": 3,
+          "interval": 3,
+          "delay": 4,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "shield_drone",
+          "count": 3,
+          "interval": 3,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "juggernaut",
+          "count": 3,
+          "interval": 5,
+          "delay": 2,
+          "lane": 0
+        }
+      ],
+      "boss": "burrow_wyrm"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ keyboard produces, so the HUD and hotkeys share one code path."""
 import pygame
 
 from .. import settings as S
+from .endless import summarize
 from .input_system import Command
 
 
@@ -38,7 +39,10 @@ class Button:
 
 
 class UISystem:
-    TOWER_BTN_X = 240
+    TOWER_BTN_X = 236
+    TOWER_BTN_W = 30
+    TOWER_BTN_PITCH = 32
+    HOTKEYS = {11: "-", 12: "=", 13: "\\"}
 
     def __init__(self, assets, tower_data):
         self.assets = assets
@@ -48,8 +52,9 @@ class UISystem:
         self.tower_buttons = []
         order = sorted(tower_data.items(), key=lambda kv: kv[1]["key"])
         for i, (kind, d) in enumerate(order):
-            rect = (self.TOWER_BTN_X + i * 80, S.HUD_Y + 8, 74, 64)
-            b = Button(rect, "", "select_tower", d["key"], d.get("enabled", True), str(d["key"]))
+            rect = (self.TOWER_BTN_X + i * self.TOWER_BTN_PITCH, S.HUD_Y + 8, self.TOWER_BTN_W, 64)
+            hotkey = self.HOTKEYS.get(d["key"], str(d["key"] % 10))
+            b = Button(rect, "", "select_tower", d["key"], d.get("enabled", True), hotkey)
             b.kind = kind
             self.tower_buttons.append(b)
         y = S.HUD_Y + 44
@@ -58,6 +63,12 @@ class UISystem:
         self.btn_target = Button((840, y, 96, 28), "Target", "cycle_targeting", hotkey="T")
         self.btn_wave = Button((1110, S.HUD_Y + 8, 162, 30), "Start Wave", "start_wave", hotkey="Spc")
         self.btn_pause = Button((1236, 8, 36, 28), "II", "pause")
+        self.branch_tower = None   # tower whose tier-4 choice panel is open
+        self.core_selected = False # Omega Core upgrade panel
+        self.core_buttons = [Button((652, y, 92, 28), "", "core_upgrade", "turret"),
+                             Button((750, y, 84, 28), "", "core_upgrade", "shield"),
+                             Button((840, y, 96, 28), "", "core_upgrade", "regen")]
+        self.perk_visible = False
 
     # ---- messages ---------------------------------------------------------------
     def toast(self, text, color=S.WHITE):
@@ -86,11 +97,25 @@ class UISystem:
         """Return a Command if a HUD element was clicked, else None."""
         if self.btn_pause.hit(pos):
             return Command("pause")
+        if self.branch_tower is not None:
+            for i, rect in enumerate(self.branch_rects()):
+                if rect.collidepoint(pos):
+                    return Command("choose_branch", value=i)
+            self.branch_tower = None
+            return Command("hud_click")
+        if self.perk_visible:
+            for i, rect in enumerate(self.perk_rects()):
+                if rect.collidepoint(pos):
+                    return Command("choose_perk", value=i)
         if pos[1] < S.HUD_Y:
             return None
         for b in self.tower_buttons:
             if b.rect.collidepoint(pos):
                 return Command("select_tower", value=b.value)
+        if self.core_selected and not play.towers.selected:
+            for b in self.core_buttons:
+                if b.hit(pos):
+                    return Command("core_upgrade", value=b.value)
         if play.towers.selected:
             for b in (self.btn_upgrade, self.btn_sell, self.btn_target):
                 if b.hit(pos):
@@ -126,31 +151,50 @@ class UISystem:
             d = self.tower_data[b.kind]
             sel = towers.build_kind == b.kind
             b.draw(screen, a, mouse, selected=sel)
-            icon = a.get(f"turret_{b.kind}")
+            icon = pygame.transform.smoothscale(a.get(f"turret_{b.kind}"), (24, 24))
             if not b.enabled:
-                icon = icon.copy()
                 icon.set_alpha(70)
-            screen.blit(icon, icon.get_rect(center=(b.rect.centerx, b.rect.y + 26)))
+            screen.blit(icon, icon.get_rect(center=(b.rect.centerx, b.rect.y + 28)))
             if b.enabled:
                 color = S.ENERGY if session.energy >= d["cost"] else S.RED
-                cost = a.text(f"{d['cost']} E", 18, color, True)
+                cost = a.text(str(d["cost"]), 15, color, True)
             else:
-                cost = a.text("LOCKED", 16, S.TEXT_DIM, True)
+                cost = a.text("--", 16, S.TEXT_DIM, True)
             screen.blit(cost, cost.get_rect(center=(b.rect.centerx, b.rect.bottom - 10)))
 
         # Info panel
         px = 652
         t = towers.selected
         if t:
-            screen.blit(a.text(f"{t.name}  T{t.tier + 1}", 24, S.WHITE, True), (px, S.HUD_Y + 8))
-            info = f"HP {int(t.health.hp)}/{int(t.health.max_hp)}   Target: {t.targeting}"
+            title = f"{t.name}  T{t.tier + 1}" if t.branch is None else f"{t.branch_name}  T4"
+            screen.blit(a.text(title, 24, S.WHITE if t.branch is None else S.MAGENTA, True), (px, S.HUD_Y + 8))
+            extra = f"+{t.stats['income']}E/wave" if t.behavior == "income" else f"Target: {t.targeting}"
+            if t.kills:
+                extra += f"   Kills {t.kills}" + (f" (Vet {t.vet_rank})" if t.vet_rank else "")
+            info = f"HP {int(t.health.hp)}/{int(t.health.max_hp)}   {extra}"
             screen.blit(a.text(info, 18, S.TEXT_DIM), (px, S.HUD_Y + 27))
-            self.btn_upgrade.enabled = t.can_upgrade
-            up = f"{t.upgrade_cost}E" if t.can_upgrade else "MAX"
-            self.btn_upgrade.label = f"Up {up}"
+            self.btn_upgrade.enabled = t.can_upgrade or bool(t.branch_available)
+            if t.can_upgrade:
+                self.btn_upgrade.label = f"Up {t.upgrade_cost}E"
+            elif t.branch_available:
+                self.btn_upgrade.label = "Tier 4"
+            else:
+                self.btn_upgrade.label = "Up MAX"
             self.btn_sell.label = f"+{t.sell_value}E"
             for b in (self.btn_upgrade, self.btn_sell, self.btn_target):
                 b.draw(screen, a, mouse, size=20)
+        elif self.core_selected and not towers.build_kind:
+            core = play.core
+            screen.blit(a.text("OMEGA CORE upgrades", 24, S.CYAN, True), (px, S.HUD_Y + 8))
+            lv = core.levels
+            info = (f"Gun L{lv['turret']}   Shield {core.SHIELD[lv['shield']]}/wave   "
+                    f"Regen +{core.REGEN[lv['regen']]}")
+            screen.blit(a.text(info, 18, S.TEXT_DIM), (px, S.HUD_Y + 27))
+            for b in self.core_buttons:
+                cost = core.cost(b.value)
+                b.enabled = cost is not None
+                b.label = f"{core.NAMES[b.value]} {cost}" if cost is not None else f"{core.NAMES[b.value]} MAX"
+                b.draw(screen, a, mouse, size=18)
         elif towers.build_kind:
             d = self.tower_data[towers.build_kind]
             screen.blit(a.text(f"{d['name']}  ({d['cost']} E)", 24, S.WHITE, True), (px, S.HUD_Y + 8))
@@ -159,15 +203,22 @@ class UISystem:
                         (px, S.HUD_Y + 50))
         else:
             lines = ["WASD move   E repair   Q orbital strike",
-                     "1-5 build   click tower: select   F1 debug",
-                     "R-click tower: upgrade   Esc: pause"]
+                     "1-0 - = \\ build   click tower: select   F speed",
+                     "R-click tower: upgrade   Esc: pause   F1 debug"]
             for i, line in enumerate(lines):
                 screen.blit(a.text(line, 18, S.TEXT_DIM), (px, S.HUD_Y + 10 + i * 20))
 
         # Wave / Commander panel
         rx = 950
-        wave_txt = f"WAVE {waves.wave_number}/{waves.total_waves}"
-        screen.blit(a.text(wave_txt, 26, S.WHITE, True), (rx, S.HUD_Y + 8))
+        if waves.endless:
+            wave_txt = f"WAVE {waves.wave_number}"
+        else:
+            wave_txt = f"WAVE {waves.wave_number}/{waves.total_waves}"
+        label = a.text(wave_txt, 26, S.WHITE, True)
+        screen.blit(label, (rx, S.HUD_Y + 8))
+        if play.speed > 1:
+            screen.blit(a.text(f"{play.speed}x", 20, S.CYAN, True),
+                        (rx + label.get_width() + 8, S.HUD_Y + 11))
         if waves.phase == "build":
             secs = max(0, int(waves.countdown + 0.99))
             screen.blit(a.text(f"Next in {secs}s", 18, S.ENERGY), (rx, S.HUD_Y + 30))
@@ -176,7 +227,9 @@ class UISystem:
             left = waves.remaining_in_queue + play.enemies.alive_count
             screen.blit(a.text(f"Aliens left: {left}", 18, S.ALIEN_GREEN), (rx, S.HUD_Y + 30))
         cmd = player.commander
-        screen.blit(a.text("VANCE", 16, S.TEXT_DIM, True), (rx, S.HUD_Y + 50))
+        prog = play.progress
+        screen.blit(a.text(f"VANCE {prog.level}", 16, S.TEXT_DIM, True), (rx, S.HUD_Y + 50))
+        pygame.draw.rect(screen, S.ENERGY, (rx + 66, S.HUD_Y + 61, int(110 * prog.xp / prog.xp_needed()), 2))
         if cmd.alive:
             self.bar(screen, rx + 66, S.HUD_Y + 50, 110, 10, cmd.health.ratio, S.CYAN)
         else:
@@ -188,6 +241,105 @@ class UISystem:
         if orb.ready:
             screen.blit(a.text("Q READY", 16, S.ORANGE, True), (rx + 184, S.HUD_Y + 62))
 
+    def perk_rects(self):
+        w, h, gap = 250, 96, 16
+        x0 = S.MAP_W // 2 - (3 * w + 2 * gap) // 2
+        y = S.MAP_H - h - 14
+        return [pygame.Rect(x0 + i * (w + gap), y, w, h) for i in range(3)]
+
+    def render_perk_menu(self, screen, play, mouse):
+        choice = play.progress.current_choice
+        self.perk_visible = choice is not None and self.branch_tower is None
+        if not self.perk_visible:
+            return
+        a = self.assets
+        rects = self.perk_rects()
+        bg = rects[0].union(rects[-1]).inflate(20, 50).move(0, -14)
+        shade = pygame.Surface(bg.size, pygame.SRCALPHA)
+        shade.fill((*S.HUD_BG, 225))
+        screen.blit(shade, bg)
+        pending = len(play.progress.choices)
+        head = f"LEVEL UP! Vance is level {play.progress.level - pending + 1}: pick a perk"
+        if pending > 1:
+            head += f"  ({pending} waiting)"
+        t = a.text(head, 22, S.CYAN, True)
+        screen.blit(t, t.get_rect(midtop=(S.MAP_W // 2, bg.y + 6)))
+        perks = play.game.data["perks"]
+        for rect, pid in zip(rects, choice):
+            hover = rect.collidepoint(mouse)
+            pygame.draw.rect(screen, S.PANEL_HI if hover else S.PANEL, rect, border_radius=8)
+            pygame.draw.rect(screen, S.CYAN, rect, 3 if hover else 2, border_radius=8)
+            screen.blit(a.text(perks[pid]["name"], 26, S.WHITE, True), (rect.x + 12, rect.y + 14))
+            screen.blit(a.text(perks[pid]["desc"], 18, S.TEXT_DIM), (rect.x + 12, rect.y + 48))
+
+    def branch_rects(self):
+        w, h, gap = 300, 130, 20
+        x0 = S.MAP_W // 2 - w - gap // 2
+        y = S.MAP_H - h - 16
+        return [pygame.Rect(x0, y, w, h), pygame.Rect(x0 + w + gap, y, w, h)]
+
+    def render_branch_menu(self, screen, play, mouse):
+        t = self.branch_tower
+        if t is None:
+            return
+        if t not in play.towers.towers or not t.branch_available:
+            self.branch_tower = None
+            return
+        a = self.assets
+        head = a.text(f"{t.name}: choose a tier-4 branch (click outside to cancel)", 22, S.WHITE, True)
+        r0 = self.branch_rects()[0]
+        bg = pygame.Rect(r0.x - 10, r0.y - 34, 640, r0.h + 44)
+        shade = pygame.Surface(bg.size, pygame.SRCALPHA)
+        shade.fill((*S.HUD_BG, 230))
+        screen.blit(shade, bg)
+        screen.blit(head, head.get_rect(midtop=(S.MAP_W // 2, r0.y - 28)))
+        for rect, br in zip(self.branch_rects(), t.data["branches"]):
+            afford = play.session.energy >= br["cost"]
+            hover = rect.collidepoint(mouse)
+            pygame.draw.rect(screen, S.PANEL_HI if hover else S.PANEL, rect, border_radius=8)
+            pygame.draw.rect(screen, S.MAGENTA if afford else S.HUD_EDGE, rect, 3 if hover else 2,
+                             border_radius=8)
+            screen.blit(a.text(br["name"], 28, S.WHITE, True), (rect.x + 14, rect.y + 12))
+            screen.blit(a.text(br["desc"], 18, S.TEXT_DIM), (rect.x + 14, rect.y + 46))
+            stats = "  ".join(f"{k.replace('_', ' ')} {v:g}" for k, v in br["stats"].items()
+                              if k in ("damage", "range", "fire_rate", "chain", "slow", "splash", "dps"))
+            screen.blit(a.text(stats, 16, S.CYAN), (rect.x + 14, rect.y + 70))
+            screen.blit(a.text(f"{br['cost']} E", 24, S.ENERGY if afford else S.RED, True),
+                        (rect.x + 14, rect.bottom - 32))
+
+    def render_wave_preview(self, screen, play):
+        """Small panel in the top-right corner during the build phase."""
+        waves = play.waves
+        nxt = waves.next_wave
+        if waves.phase != "build" or not nxt:
+            return
+        a = self.assets
+        enemy_data = play.game.data["enemies"]
+        rows = summarize(nxt, enemy_data)
+        lines = [(f"NEXT: WAVE {waves.wave_number + 1}", S.WHITE, True)]
+        for name, count in rows:
+            boss = nxt.get("boss") and name == enemy_data.get(nxt["boss"], {}).get("name")
+            lines.append((f"BOSS  {name}" if boss else f"{count}x {name}",
+                          S.MAGENTA if boss else S.TEXT_DIM, bool(boss)))
+        mutator = nxt.get("mutator")
+        if mutator:
+            m = play.game.data["endless"]["mutators"][mutator]
+            lines.append((m["name"], S.ORANGE, True))
+            lines.append((m["desc"], S.ORANGE, False))
+        mods = nxt.get("mods") or {}
+        if mods.get("elite_chance", 0) > 0:
+            lines.append((f"Elite chance {int(mods['elite_chance'] * 100)}%", S.ENERGY, False))
+        surfs = [a.text(text, 18, color, bold) for text, color, bold in lines]
+        w = max(s.get_width() for s in surfs) + 20
+        h = 20 * len(surfs) + 12
+        x, y = S.MAP_W - w - 10, 46
+        panel = pygame.Surface((w, h), pygame.SRCALPHA)
+        panel.fill((*S.HUD_BG, 210))
+        screen.blit(panel, (x, y))
+        pygame.draw.rect(screen, S.HUD_EDGE, (x, y, w, h), 1, border_radius=4)
+        for i, s in enumerate(surfs):
+            screen.blit(s, (x + 10, y + 6 + i * 20))
+
     def render_overlays(self, screen, mouse, boss=None):
         a = self.assets
         self.btn_pause.draw(screen, a, mouse, size=22)
@@ -196,7 +348,7 @@ class UISystem:
             x = S.MAP_W // 2 - w // 2
             color = S.MAGENTA if boss.invulnerable else S.RED
             self.bar(screen, x, 12, w, 14, boss.health.ratio, color)
-            label = "HIVE OVERSEER" + ("  [SHIELDED]" if boss.invulnerable else "")
+            label = boss.stats.get("name", "BOSS").upper() + ("  [SHIELDED]" if boss.invulnerable else "")
             t = a.text(label, 20, S.WHITE, True)
             screen.blit(t, t.get_rect(center=(S.MAP_W // 2, 36)))
         for i, (surf, life, _text) in enumerate(reversed(self.toasts)):
@@ -234,7 +386,7 @@ class UISystem:
                 pygame.draw.line(screen, S.RED, (t.x, t.y), t.target.pos, 1)
         # Enemy hit circles + state
         for e in play.enemies.enemies:
-            if e.is_boss and e.targetable:
+            if hasattr(e, "mask_outline") and e.targetable:
                 if e.invulnerable:   # shield bubble is the hitbox while shielded
                     pygame.draw.circle(screen, S.MAGENTA, (int(e.pos.x), int(e.pos.y)), e.SHIELD_RADIUS, 1)
                 else:                # pixel-perfect pygame.mask outline
@@ -248,7 +400,7 @@ class UISystem:
         # Commander collision box
         c = play.player.commander
         pygame.draw.rect(screen, S.GREEN, (c.pos.x - c.half, c.pos.y - c.half, c.half * 2, c.half * 2), 1)
-        pygame.draw.circle(screen, S.GREEN, (int(c.pos.x), int(c.pos.y)), S.BLASTER_RANGE, 1)
+        pygame.draw.circle(screen, S.GREEN, (int(c.pos.x), int(c.pos.y)), int(c.blaster_range), 1)
         lines = [
             f"FPS {fps:.0f}",
             f"enemies {len(play.enemies.enemies)}  projectiles {len(play.projectiles.pool)}",

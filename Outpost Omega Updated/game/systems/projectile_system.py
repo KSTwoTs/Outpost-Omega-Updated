@@ -75,11 +75,15 @@ class ProjectileSystem:
     def on_hit(self, p, enemy):
         p.active = False
         if p.splash > 0:
-            self.enemies.splash(p.x, p.y, p.splash, p.damage, include_air=True)
+            splash, damage = p.splash, p.damage
+            if enemy.burn_timer > 0:   # combo: Detonate (missiles blow up burning aliens harder)
+                splash, damage = splash * 1.5, damage * 1.5
+                self.effects.floating_text(p.x, p.y - 20, "DETONATE", S.ORANGE, 20)
+            self.enemies.splash(p.x, p.y, splash, damage, include_air=True, source=p.source)
             self.effects.explosion(p.x, p.y, S.ORANGE, count=18)
             self.audio.play("explode")
         else:
-            self.enemies.damage(enemy, p.damage, ignore_armor=p.ignore_armor)
+            self.enemies.damage(enemy, p.damage, ignore_armor=p.ignore_armor, source=p.source)
             self.effects.sparks(p.x, p.y, p.color)
 
     def on_render(self, screen, offset):

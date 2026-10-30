@@ -1,0 +1,18 @@
+{
+  "vanguard": {
+    "name": "Vanguard",
+    "desc": "+40% HP, +15% move speed, +60% blaster damage",
+    "effects": [{"type": "cmd_hp", "mult": 1.4}, {"type": "cmd_speed", "mult": 1.15},
+                {"type": "blaster_damage", "mult": 1.6}]
+  },
+  "engineer": {
+    "name": "Engineer",
+    "desc": "Towers cost 10% less, repairs are twice as fast",
+    "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.9}, {"type": "repair_speed", "mult": 2.0}]
+  },
+  "tactician": {
+    "name": "Tactician",
+    "desc": "Orbital Strike cooldown -35%, damage +25%",
+    "effects": [{"type": "orbital_cooldown", "mult": 0.65}, {"type": "orbital_damage", "mult": 1.25}]
+  }
+}

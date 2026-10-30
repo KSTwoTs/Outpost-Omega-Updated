@@ -11,11 +11,16 @@ class _EndScene(Scene):
     title = ""
     color = S.WHITE
 
-    def __init__(self, game, level_id="sector1", difficulty=S.DEFAULT_DIFFICULTY,
-                 stars=0, score=0, kills=0, core=0.0, waves=0, **kwargs):
+    def __init__(self, game, level_id="sector1", difficulty=S.DEFAULT_DIFFICULTY, mode="campaign",
+                 stars=0, score=0, kills=0, core=0.0, waves=0, new_best=False, launch=None, daily=None,
+                 **kwargs):
         super().__init__(game, **kwargs)
         self.level_id = level_id
         self.difficulty = difficulty
+        self.mode = mode
+        self.new_best = new_best
+        self.daily = daily
+        self.launch = launch or dict(level_id=level_id, difficulty=difficulty, mode=mode)
         self.stars_earned = stars
         self.score = score
         self.kills = kills
@@ -47,7 +52,7 @@ class _EndScene(Scene):
     def activate(self, command):
         scenes = self.game.scenes
         if command == "retry":
-            scenes.change("play", level_id=self.level_id, difficulty=self.difficulty)
+            scenes.change("play", **self.launch)
         elif command == "next":
             scenes.change("play", level_id=self.next_level(), difficulty=self.difficulty)
         elif command == "select":
@@ -85,7 +90,7 @@ class WinScene(_EndScene):
     def next_level(self):
         ids = [s[0] for s in SECTORS]
         i = ids.index(self.level_id) if self.level_id in ids else -1
-        if 0 <= i < len(ids) - 1 and level_exists(ids[i + 1]):
+        if 0 <= i < len(ids) - 1 and ids[i + 1] != "procedural" and level_exists(ids[i + 1]):
             return ids[i + 1]
         return None
 
@@ -99,5 +104,13 @@ class LoseScene(_EndScene):
     color = S.RED
 
     def stats_lines(self):
-        return [f"You held out until wave {self.waves}", f"Score {self.score}",
-                f"Aliens destroyed {self.kills}"]
+        lines = [f"You held out until wave {self.waves}", f"Score {self.score}",
+                 f"Aliens destroyed {self.kills}"]
+        if self.daily:
+            best = self.game.save.get("daily", {}).get(self.daily, {}).get("wave", self.waves)
+            lines.append("NEW DAILY BEST!" if self.new_best else f"Today's best wave {best}")
+        elif self.mode == "endless":
+            key = "procedural" if self.level_id.startswith("proc_") else self.level_id
+            best = self.game.save.get("endless", {}).get(key, {}).get("wave", self.waves)
+            lines.append("NEW BEST WAVE!" if self.new_best else f"Best wave {best}")
+        return lines
