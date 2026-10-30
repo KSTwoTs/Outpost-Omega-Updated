@@ -1,0 +1,254 @@
+{
+  "name": "Sector 1 - Desert Outpost",
+  "id": "sector1",
+  "theme": "desert",
+  "core_hp": 100,
+  "start_energy": 250,
+  "build_time": 15,
+  "legend": {
+    ".": "buildable",
+    "#": "path",
+    "S": "spawn",
+    "C": "core",
+    "X": "blocked",
+    "~": "hazard",
+    "I": "ice",
+    "W": "hive wall"
+  },
+  "tiles": [
+    "......X.................................",
+    "............................X...........",
+    "...............XX.......................",
+    "S##########.............................",
+    "..........#.........................XX..",
+    "..........#.........###########.........",
+    "..........#.........#.........#.........",
+    "..........#.........#.........#.........",
+    "..........#.........#.........#.........",
+    "....XX....#.........#.........#..X......",
+    "....X.....#.........#....X....#.........",
+    "..........#.........#....XX...#.........",
+    "..........#.........#.........#.........",
+    "..........#.........#.........#....XXXX.",
+    "..........###########.........#....XXXX.",
+    "..............................######CXX.",
+    "..X................................XXXX.",
+    "...................................XXXX.",
+    "..............XX......XX................",
+    "........................................"
+  ],
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 8,
+          "interval": 1.0,
+          "delay": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 12,
+          "interval": 0.8,
+          "delay": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 10,
+          "interval": 0.7,
+          "delay": 0
+        },
+        {
+          "enemy": "brute",
+          "count": 2,
+          "interval": 3.0,
+          "delay": 4
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 10,
+          "interval": 0.6,
+          "delay": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 6,
+          "interval": 1.5,
+          "delay": 3
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 2,
+          "interval": 4.0,
+          "delay": 6
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 14,
+          "interval": 0.5,
+          "delay": 3
+        },
+        {
+          "enemy": "saboteur",
+          "count": 2,
+          "interval": 4.0,
+          "delay": 5
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 18,
+          "interval": 0.4,
+          "delay": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 6,
+          "interval": 1.2,
+          "delay": 2
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 4
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 6,
+          "interval": 2.0,
+          "delay": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 8,
+          "interval": 1.0,
+          "delay": 5
+        },
+        {
+          "enemy": "saboteur",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 3
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 24,
+          "interval": 0.35,
+          "delay": 0
+        },
+        {
+          "enemy": "brute",
+          "count": 5,
+          "interval": 2.0,
+          "delay": 5
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 3,
+          "interval": 2.5,
+          "delay": 8
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 8,
+          "interval": 1.6,
+          "delay": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 10,
+          "interval": 0.9,
+          "delay": 4
+        },
+        {
+          "enemy": "skitter",
+          "count": 22,
+          "interval": 0.4,
+          "delay": 8
+        },
+        {
+          "enemy": "saboteur",
+          "count": 3,
+          "interval": 2.5,
+          "delay": 6
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 8,
+          "interval": 1.6,
+          "delay": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 30,
+          "interval": 0.3,
+          "delay": 3
+        },
+        {
+          "enemy": "glider",
+          "count": 12,
+          "interval": 0.8,
+          "delay": 8
+        },
+        {
+          "enemy": "saboteur",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 10
+        }
+      ],
+      "boss": "hive_overseer"
+    }
+  ]
+}

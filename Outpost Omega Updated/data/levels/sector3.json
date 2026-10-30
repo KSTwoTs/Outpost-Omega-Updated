@@ -1,0 +1,396 @@
+{
+  "name": "Sector 3 - Hive Crash Site",
+  "id": "sector3",
+  "theme": "hive",
+  "core_hp": 100,
+  "start_energy": 350,
+  "build_time": 15,
+  "enemy_hp_mult": 1.05,
+  "legend": {
+    ".": "buildable",
+    "#": "path",
+    "S": "spawn",
+    "C": "core",
+    "X": "blocked",
+    "~": "acid (hurts Commander)",
+    "I": "ice (Commander slides)",
+    "W": "hive wall"
+  },
+  "tiles": [
+    "........................................",
+    ".................WW.....................",
+    "..~~~..................~~~..............",
+    "..~~~..................~~~...........WW.",
+    "........#############...................",
+    "........#...........#.........WW........",
+    "........#...~~~.....#.........W.........",
+    ".WW.....#...~~~.....#..W................",
+    "........#...........#..............XXXX.",
+    "........#...........#..............XXXX.",
+    "S###################################CXX.",
+    "........#...........#......#.....#.XXXX.",
+    "........#...~~~~....#......#.~~~.#.XXXX.",
+    "........#...~~~~....#......#.~~~.#......",
+    "........#...........#......#.....#......",
+    "..~~~...#...........#......#######......",
+    "..~~~...#############...................",
+    ".......................~~~~.............",
+    ".....WW..........W.....~~~~.............",
+    "........................................"
+  ],
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 10,
+          "interval": 0.8,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brute",
+          "count": 2,
+          "interval": 3.0,
+          "delay": 5,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 14,
+          "interval": 0.6,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 5,
+          "interval": 1.4,
+          "delay": 3,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 3,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 10,
+          "interval": 0.6,
+          "delay": 6,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "saboteur",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 18,
+          "interval": 0.45,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 6,
+          "interval": 1.2,
+          "delay": 5,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 6,
+          "interval": 2.0,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 3,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 14,
+          "interval": 0.5,
+          "delay": 6,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "glider",
+          "count": 12,
+          "interval": 0.8,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "saboteur",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 22,
+          "interval": 0.4,
+          "delay": 4,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 7,
+          "interval": 1.8,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 5,
+          "interval": 2.2,
+          "delay": 3,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 20,
+          "interval": 0.4,
+          "delay": 6,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 30,
+          "interval": 0.3,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "saboteur",
+          "count": 5,
+          "interval": 2.2,
+          "delay": 3,
+          "lane": 0
+        },
+        {
+          "enemy": "brute",
+          "count": 6,
+          "interval": 2.0,
+          "delay": 6,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 8,
+          "interval": 1.6,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 14,
+          "interval": 0.7,
+          "delay": 3,
+          "lane": 0
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 5,
+          "interval": 2.2,
+          "delay": 5,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 20,
+          "interval": 0.35,
+          "delay": 8,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 8,
+          "interval": 1.6,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 30,
+          "interval": 0.3,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "saboteur",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 5,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 12,
+          "interval": 0.8,
+          "delay": 8,
+          "lane": 0
+        }
+      ],
+      "boss": "hive_overseer"
+    }
+  ],
+  "wall_events": [
+    {
+      "wave": 2,
+      "time": 8,
+      "grow": [
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          10
+        ]
+      ],
+      "clear": [],
+      "message": "Hive walls are growing! The aliens are rerouting."
+    },
+    {
+      "wave": 4,
+      "time": 6,
+      "grow": [
+        [
+          30,
+          10
+        ]
+      ],
+      "clear": [],
+      "message": "New hive wall near the Core - the path has shifted!"
+    },
+    {
+      "wave": 6,
+      "time": 5,
+      "grow": [
+        [
+          14,
+          4
+        ],
+        [
+          14,
+          16
+        ]
+      ],
+      "clear": [
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          10
+        ]
+      ],
+      "message": "The hive walls are moving again!"
+    },
+    {
+      "wave": 8,
+      "time": 4,
+      "grow": [
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          10
+        ]
+      ],
+      "clear": [
+        [
+          14,
+          4
+        ]
+      ],
+      "message": "The hive reshapes the path!"
+    },
+    {
+      "wave": 10,
+      "time": 12,
+      "grow": [
+        [
+          14,
+          4
+        ]
+      ],
+      "clear": [
+        [
+          14,
+          16
+        ]
+      ],
+      "message": "The Overseer bends the hive walls!"
+    }
+  ]
+}

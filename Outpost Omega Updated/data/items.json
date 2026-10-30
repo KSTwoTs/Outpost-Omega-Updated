@@ -1,0 +1,9 @@
+{
+  "drop_chance": 0.15,
+  "items": {
+    "energy_crystal": {"name": "Energy Crystal", "weight": 60, "energy": 25},
+    "repair_kit":     {"name": "Repair Kit",     "weight": 15, "tower_heal": 0.40},
+    "overcharge":     {"name": "Overcharge Cell", "weight": 15, "duration": 10.0, "fire_rate_mult": 2.0},
+    "shield_battery": {"name": "Shield Battery", "weight": 10, "core_hp": 10}
+  }
+}

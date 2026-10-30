@@ -1,0 +1,296 @@
+{
+  "name": "Sector 2 - Frozen Relay Station",
+  "id": "sector2",
+  "theme": "frozen",
+  "core_hp": 100,
+  "start_energy": 350,
+  "build_time": 15,
+  "enemy_hp_mult": 1.0,
+  "legend": {
+    ".": "buildable",
+    "#": "path",
+    "S": "spawn",
+    "C": "core",
+    "X": "blocked",
+    "~": "acid (hurts Commander)",
+    "I": "ice (Commander slides)",
+    "W": "hive wall"
+  },
+  "tiles": [
+    "......S.................................",
+    "......#............IIII.....X...........",
+    ".IIII.#......XX....IIII.................",
+    ".IIII.#............IIII.................",
+    ".IIII.#............IIII.########........",
+    ".IIII.#.................#......#........",
+    "......###########.......#.IIII.#........",
+    "................#.......#.IIII.#....XX..",
+    "................#.......#.IIII.#........",
+    "..XX........X...#.......#.IIII.#........",
+    "................#.......#.IIII.#........",
+    ".........################.IIII.#........",
+    ".........#................IIII.#...XXXX.",
+    ".........#.IIII................#...XXXX.",
+    ".........#.IIII................#####CXX.",
+    ".........#.IIII.....XX.............XXXX.",
+    "S#########.IIII..................IIXXXX.",
+    "...........IIII............X.....IIIIII.",
+    "....X............................IIIIII.",
+    "........................................"
+  ],
+  "waves": [
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 8,
+          "interval": 1.0,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 6,
+          "interval": 1.0,
+          "delay": 4,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 10,
+          "interval": 0.7,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "glider",
+          "count": 4,
+          "interval": 1.5,
+          "delay": 4,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 12,
+          "interval": 0.6,
+          "delay": 2,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 14,
+          "interval": 0.5,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 3,
+          "lane": 1
+        },
+        {
+          "enemy": "glider",
+          "count": 5,
+          "interval": 1.2,
+          "delay": 6,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "saboteur",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "brute",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 14,
+          "interval": 0.5,
+          "delay": 5,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "glider",
+          "count": 10,
+          "interval": 0.9,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 20,
+          "interval": 0.4,
+          "delay": 2,
+          "lane": 1
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 6,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 6,
+          "interval": 2.0,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "saboteur",
+          "count": 3,
+          "interval": 3.0,
+          "delay": 3,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 18,
+          "interval": 0.4,
+          "delay": 5,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "skitter",
+          "count": 24,
+          "interval": 0.35,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "skitter",
+          "count": 20,
+          "interval": 0.4,
+          "delay": 2,
+          "lane": 1
+        },
+        {
+          "enemy": "brute",
+          "count": 5,
+          "interval": 2.0,
+          "delay": 6,
+          "lane": 1
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 7,
+          "interval": 1.8,
+          "delay": 0,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 10,
+          "interval": 0.8,
+          "delay": 3,
+          "lane": 1
+        },
+        {
+          "enemy": "saboteur",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 5,
+          "lane": 1
+        },
+        {
+          "enemy": "brood_sac",
+          "count": 4,
+          "interval": 2.5,
+          "delay": 8,
+          "lane": 0
+        }
+      ],
+      "boss": null
+    },
+    {
+      "groups": [
+        {
+          "enemy": "brute",
+          "count": 6,
+          "interval": 1.8,
+          "delay": 0,
+          "lane": 1
+        },
+        {
+          "enemy": "skitter",
+          "count": 22,
+          "interval": 0.35,
+          "delay": 2,
+          "lane": 0
+        },
+        {
+          "enemy": "glider",
+          "count": 7,
+          "interval": 1.0,
+          "delay": 6,
+          "lane": 1
+        },
+        {
+          "enemy": "saboteur",
+          "count": 2,
+          "interval": 3.0,
+          "delay": 8,
+          "lane": 0
+        }
+      ],
+      "boss": "hive_overseer"
+    }
+  ]
+}

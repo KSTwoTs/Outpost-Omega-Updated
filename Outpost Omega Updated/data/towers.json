@@ -1,0 +1,77 @@
+{
+  "pulse": {
+    "name": "Pulse Turret",
+    "key": 1,
+    "cost": 50,
+    "enabled": true,
+    "behavior": "projectile",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Fast single-target shots. The all-rounder.",
+    "tiers": [
+      {"damage": 8,  "range": 140, "fire_rate": 2.5, "projectile_speed": 520, "upgrade_cost": 0},
+      {"damage": 12, "range": 152, "fire_rate": 3.0, "projectile_speed": 560, "upgrade_cost": 60},
+      {"damage": 18, "range": 166, "fire_rate": 3.6, "projectile_speed": 600, "upgrade_cost": 100}
+    ]
+  },
+  "tesla": {
+    "name": "Tesla Coil",
+    "key": 2,
+    "cost": 120,
+    "enabled": true,
+    "behavior": "chain",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Chain lightning jumps between 3 enemies.",
+    "tiers": [
+      {"damage": 14, "range": 120, "fire_rate": 1.0, "chain": 3, "chain_range": 80, "upgrade_cost": 0},
+      {"damage": 20, "range": 130, "fire_rate": 1.2, "chain": 4, "chain_range": 90, "upgrade_cost": 110},
+      {"damage": 28, "range": 140, "fire_rate": 1.4, "chain": 5, "chain_range": 100, "upgrade_cost": 160}
+    ]
+  },
+  "cryo": {
+    "name": "Cryo Emitter",
+    "key": 3,
+    "cost": 90,
+    "enabled": true,
+    "behavior": "aura",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Slows enemies in range by 40%.",
+    "tiers": [
+      {"slow": 0.40, "range": 100, "dps": 0, "upgrade_cost": 0},
+      {"slow": 0.45, "range": 115, "dps": 0, "upgrade_cost": 70},
+      {"slow": 0.50, "range": 130, "dps": 4, "upgrade_cost": 110}
+    ]
+  },
+  "railgun": {
+    "name": "Railgun",
+    "key": 4,
+    "cost": 175,
+    "enabled": true,
+    "behavior": "pierce",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Long-range piercing shot through a line. Ignores armor.",
+    "tiers": [
+      {"damage": 60,  "range": 300, "fire_rate": 0.4, "upgrade_cost": 0},
+      {"damage": 90,  "range": 330, "fire_rate": 0.45, "upgrade_cost": 150},
+      {"damage": 130, "range": 360, "fire_rate": 0.5, "upgrade_cost": 220}
+    ]
+  },
+  "missile": {
+    "name": "Missile Battery",
+    "key": 5,
+    "cost": 150,
+    "enabled": true,
+    "behavior": "missile",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Homing splash missiles. Can hit flyers.",
+    "tiers": [
+      {"damage": 24, "range": 200, "fire_rate": 0.8, "splash": 56, "projectile_speed": 300, "turn_rate": 4.0, "upgrade_cost": 0},
+      {"damage": 34, "range": 215, "fire_rate": 0.9, "splash": 64, "projectile_speed": 320, "turn_rate": 4.5, "upgrade_cost": 130},
+      {"damage": 48, "range": 230, "fire_rate": 1.0, "splash": 72, "projectile_speed": 340, "turn_rate": 5.0, "upgrade_cost": 190}
+    ]
+  }
+}

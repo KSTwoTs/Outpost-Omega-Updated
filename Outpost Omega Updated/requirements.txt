@@ -1,0 +1,5 @@
+# Python 3.10+
+# pygame-ce is the maintained fork of pygame and still uses `import pygame`.
+# If you'd rather use classic pygame, swap the line below for: pygame>=2.5
+# (install only one of them, they conflict).
+pygame-ce>=2.4

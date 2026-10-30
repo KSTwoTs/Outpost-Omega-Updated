@@ -1,0 +1,54 @@
+{
+  "skitter": {
+    "name": "Skitter",
+    "enabled": true,
+    "hp": 26, "speed": 85, "armor": 0, "radius": 9,
+    "reward": 4, "score": 10, "core_damage": 2,
+    "flying": false, "attack_dps": 6,
+    "description": "Fast, low HP, arrives in swarms."
+  },
+  "brute": {
+    "name": "Brute",
+    "enabled": true,
+    "hp": 150, "speed": 40, "armor": 4, "radius": 14,
+    "reward": 15, "score": 30, "core_damage": 10,
+    "flying": false, "attack_dps": 15,
+    "description": "Slow and armored. Heavy Core damage."
+  },
+  "glider": {
+    "name": "Glider",
+    "enabled": true,
+    "hp": 50, "speed": 70, "armor": 0, "radius": 10,
+    "reward": 8, "score": 20, "core_damage": 5,
+    "flying": true, "attack_dps": 0,
+    "description": "Flies straight to the Core, ignoring the path."
+  },
+  "brood_sac": {
+    "name": "Brood Sac",
+    "enabled": true,
+    "hp": 60, "speed": 45, "armor": 1, "radius": 13,
+    "reward": 12, "score": 25, "core_damage": 6,
+    "flying": false, "attack_dps": 0,
+    "spawn_on_death": {"enemy": "skitter", "count": 3},
+    "description": "Bursts into 3 Skitters on death."
+  },
+  "saboteur": {
+    "name": "Saboteur",
+    "enabled": true,
+    "hp": 45, "speed": 60, "armor": 1, "radius": 10,
+    "reward": 14, "score": 30, "core_damage": 4,
+    "flying": false, "attack_dps": 8,
+    "emp_duration": 3.0, "emp_range": 70, "emp_damage": 10, "emp_cooldown": 9.0,
+    "description": "Stops near towers and EMPs them for 3 s."
+  },
+  "hive_overseer": {
+    "name": "Hive Overseer",
+    "enabled": true,
+    "hp": 1000, "speed": 22, "armor": 6, "radius": 28,
+    "reward": 300, "score": 1000, "core_damage": 50,
+    "flying": false, "attack_dps": 30,
+    "summon_interval": 8.0, "summon": {"enemy": "skitter", "count": 4},
+    "shield_phases": [0.66, 0.33],
+    "description": "Boss. Shield phases; summons Skitters every 8 s."
+  }
+}
