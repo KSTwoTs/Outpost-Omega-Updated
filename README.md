@@ -5,7 +5,7 @@ CPSC 4160 · 2D top-down tower defense with a playable hero · Python 3 + pygame
 ## Run it
 
 ```
-cd 'Outpost-Omega-Updated
+cd 'Outpost Omega Updated'
 pip install -r requirements.txt
 python main.py
 ```
