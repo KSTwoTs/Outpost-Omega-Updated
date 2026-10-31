@@ -65,7 +65,7 @@ If you already have classic `pygame` installed, it works too. Don't install both
 | Esc / P | Pause |
 | F1 | Debug overlay: waypoints, ranges, spatial-hash cells, hitboxes (boss shows its pixel-mask outline), FPS |
 
-## What works now (Milestone 2)
+## What works now 
 
 - Menu → Level Select (difficulty Easy/Normal/Hard, best stars, mini-map) → Play → Pause → Win/Lose
 - Three sectors, 10 waves each, boss on wave 10 (all unlocked for the demo):
