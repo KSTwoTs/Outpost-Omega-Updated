@@ -5,3 +5,10 @@
 dist/
 build/
 *.spec
+
+# Python bytecode caches (rebuilt automatically every time the game runs)
+__pycache__/
+*.pyc
+
+# Copies the Claude desktop app saves when files are shared in chat
+Claude outputs/
