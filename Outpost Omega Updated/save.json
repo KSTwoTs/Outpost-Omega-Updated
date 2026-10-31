@@ -1,14 +1,17 @@
 {
   "unlocked": 1,
   "sectors": {},
-  "tech": {},
+  "tech": {
+    "supply_lines": 1,
+    "reinforced_core": 1
+  },
   "difficulty": "Normal",
   "mode": "campaign",
   "commander": "engineer",
-  "salvage": 0,
+  "salvage": 4,
   "runs": {
-    "played": 1,
+    "played": 2,
     "wins": 0,
-    "best_act": 1
+    "best_act": 2
   }
 }

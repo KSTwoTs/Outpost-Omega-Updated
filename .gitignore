@@ -1,0 +1,7 @@
+# Local Python environment made by "Play Outpost Omega.bat"
+.venv/
+
+# Standalone build output from "Build Standalone EXE.bat"
+dist/
+build/
+*.spec
