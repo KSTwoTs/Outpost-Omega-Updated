@@ -11,6 +11,7 @@ import os
 import pygame
 
 from .. import settings as S
+from . import tower_art
 
 # Pixel-map palette: one character = one pixel.
 PALETTE = {
@@ -191,7 +192,7 @@ SPRITE_NAMES = [
     "turret_railgun", "turret_missile", "turret_flamer", "turret_mortar", "turret_gravity",
     "turret_harvester", "turret_radar", "turret_drone", "turret_barricade", "turret_mines", "core",
     "energy_crystal", "repair_kit", "overcharge", "shield_battery",
-]
+] + tower_art.variant_names()   # upgraded tower looks, branches, drones
 
 
 def from_pixels(rows, scale=2):
@@ -376,8 +377,17 @@ def build_placeholder(name):
             return from_pixels(rows, scale)
     if name == "tower_base":
         return _tower_base()
+    if name.startswith("tower_base_"):
+        level = name[len("tower_base_"):]
+        return tower_art.tower_base("b" if level == "b" else int(level[1]))
+    if name.startswith("drone_t"):
+        return tower_art.drone(int(name[-1]))
     if name.startswith("turret_"):
-        return _turret(name[len("turret_"):])
+        kind = name[len("turret_"):]
+        if kind[-3:-2] == "_" and kind[-2] in "tb":   # turret_<kind>_t1 / _b0 ...
+            art = tower_art.turret(kind[:-3], kind[-2:])
+            return art if art is not None else _turret(kind[:-3])
+        return _turret(kind)
     if name == "core":
         return _core()
     if name in ("energy_crystal", "repair_kit", "overcharge", "shield_battery"):

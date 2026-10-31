@@ -262,6 +262,14 @@ example `skitter_0.png`, `turret_pulse.png` or `core.png`. The full list is
 `SPRITE_NAMES` in `asset_manager.py`. Sounds work the same way: put
 `assets/sounds/shoot.wav` (or `.ogg`) in place to replace that placeholder beep.
 
+**Upgrade looks** (`systems/tower_art.py`): every tower changes appearance as
+it's upgraded. Tier 2 adds cyan trim and extra hardware, tier 3 goes gold and
+heavier, and tier-4 branches are magenta with their own silhouette (e.g.
+Minigun vs Marksman). Sprite names: `turret_<kind>_t1`, `turret_<kind>_t2`,
+`turret_<kind>_b0` / `_b1`, and base plates `tower_base_t1`, `_t2`, `_b`.
+Things towers spawn follow their tower's tier too: drones (`drone_t0`-`drone_t2`),
+mines and mortar shells. All of these can be replaced with PNGs the same way.
+
 ## Balancing
 
 These numbers are a first pass, tested with a scripted bot player. They are all

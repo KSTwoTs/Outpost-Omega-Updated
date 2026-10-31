@@ -164,14 +164,22 @@ class Tower:
         self.cooldown.update(dt, self.fire_rate_mult)
         self.fsm.update(dt)
 
+    @property
+    def look(self):
+        """Art suffix for the current upgrade: '' (tier 1), '_t1', '_t2' or '_b0' / '_b1'."""
+        if self.branch is not None:
+            return f"_b{self.branch}"
+        return f"_t{min(self.tier, 2)}" if self.tier > 0 else ""
+
     def render(self, screen, assets, offset):
         x, y = self.x + offset[0], self.y + offset[1]
-        assets.blit_centered(screen, "tower_base", (x, y))
+        look = self.look
+        assets.blit_centered(screen, "tower_base" + ("_b" if look.startswith("_b") else look), (x, y))
         if self.behavior in ("aura", "gravity", "income", "support"):
             angle = (self.pulse_t * 40) % 360   # slow spin
         else:
             angle = -math.degrees(self.angle)
-        assets.blit_centered(screen, f"turret_{self.kind}", (x, y), angle=angle)
+        assets.blit_centered(screen, f"turret_{self.kind}{look}", (x, y), angle=angle)
         # Tier pips
         for i in range(self.tier + 1):
             pygame.draw.rect(screen, S.ENERGY, (x - 10 + i * 8, y + 11, 5, 3))

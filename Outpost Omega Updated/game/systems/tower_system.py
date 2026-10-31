@@ -7,6 +7,7 @@ import pygame
 from .. import settings as S
 from ..core.spatial_hash import dist_sq
 from ..entities.tower import Tower
+from .tower_art import draw_mine
 
 
 # ---- targeting strategies --------------------------------------------------
@@ -508,29 +509,27 @@ class TowerSystem:
 
     def on_render(self, screen, assets, offset):
         blink = (pygame.time.get_ticks() // 300) % 2
-        for x, y, _d, _s, _o in self.mines:
-            p = (int(x + offset[0]), int(y + offset[1]))
-            pygame.draw.circle(screen, (22, 22, 34), p, 6)
-            pygame.draw.circle(screen, S.STEEL_DARK, p, 5)
-            pygame.draw.circle(screen, S.RED if blink else (110, 20, 20), p, 2)
+        for x, y, _d, _s, owner in self.mines:   # mines/drones/shells match their tower's tier
+            draw_mine(screen, (x + offset[0], y + offset[1]), min(owner.tier, 2), blink)
         for t in self.towers:
             t.render(screen, assets, offset)
-            for d in t.__dict__.get("drones", []):
-                x, y = d["x"] + offset[0], d["y"] + offset[1]
-                a = d["a"]
-                pts = [(x + math.cos(a) * 7, y + math.sin(a) * 7),
-                       (x + math.cos(a + 2.4) * 5, y + math.sin(a + 2.4) * 5),
-                       (x + math.cos(a - 2.4) * 5, y + math.sin(a - 2.4) * 5)]
-                pygame.draw.polygon(screen, (22, 22, 34), pts)
-                pygame.draw.circle(screen, S.GREEN, (int(x), int(y)), 2)
-        for x, y, left, total, sx, sy, _d, splash, _owner in self.shells:
+            drones = t.__dict__.get("drones", [])
+            if drones:
+                name = f"drone_t{min(t.tier, 2)}"
+                for d in drones:
+                    assets.blit_centered(screen, name, (d["x"] + offset[0], d["y"] + offset[1]),
+                                         angle=-math.degrees(d["a"]))
+        for x, y, left, total, sx, sy, _d, splash, owner in self.shells:
             k = 1 - left / total
             px = sx + (x - sx) * k + offset[0]
             py = sy + (y - sy) * k - math.sin(k * math.pi) * 90 + offset[1]
+            tier = min(owner.tier, 2)
             pygame.draw.circle(screen, (40, 30, 30), (int(x + offset[0]), int(y + offset[1])),
                                int(4 + 8 * k), 1)
-            pygame.draw.circle(screen, (22, 22, 34), (int(px), int(py)), 6)
-            pygame.draw.circle(screen, S.ORANGE, (int(px), int(py)), 4)
+            pygame.draw.circle(screen, (22, 22, 34), (int(px), int(py)), 6 + tier)
+            pygame.draw.circle(screen, (S.ORANGE, S.RED, S.ENERGY)[tier], (int(px), int(py)), 4 + tier)
+            if tier:
+                pygame.draw.circle(screen, S.WHITE, (int(px) - 1, int(py) - 1), tier)
         if self.selected:
             self.draw_range(screen, self.selected.x + offset[0], self.selected.y + offset[1],
                             self.selected.range, S.CYAN)
