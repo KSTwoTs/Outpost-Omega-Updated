@@ -84,6 +84,9 @@ class PlayScene(Scene):
         items_data = mods.items_data(data["items"])
         self.kill_mult = mods.mult("kill_reward")
         self.interest = mods.interest()
+        self.wave_energy = int(mods.add("wave_energy"))
+        self.wave_heal = mods.add("wave_heal")
+        build_bonus = mods.add("build_time")
         self.crystal_every = mods.crystal_every()
         self.speed = 1           # simulation steps per frame step (F cycles 1x/2x/3x)
         self.new_best = False
@@ -131,7 +134,7 @@ class PlayScene(Scene):
         if self.run:
             waves = self.run.node_waves(self.run.node, data["endless"], data["enemies"],
                                         lanes=self.level.lane_count)
-        self.waves = WaveSystem(ev, waves, lvl.get("build_time", S.BUILD_PHASE_TIME),
+        self.waves = WaveSystem(ev, waves, max(3.0, lvl.get("build_time", S.BUILD_PHASE_TIME) + build_bonus),
                                 generator=generator)
         self.ui = UISystem(self.assets, tower_data)
         self.core = CoreUpgrades(self)
@@ -314,6 +317,13 @@ class PlayScene(Scene):
             if gain > 0:
                 self.session.energy += gain
                 self.ui.toast(f"Energy Bonds: +{gain} Energy", S.ENERGY)
+        if self.wave_energy and not self.result:
+            self.session.energy += self.wave_energy
+            self.ui.toast(f"Supply drop: +{self.wave_energy} Energy", S.ENERGY)
+        s = self.session
+        if self.wave_heal and not self.result and s.core_hp < s.core_max:
+            s.core_hp = min(s.core_max, s.core_hp + self.wave_heal)
+            self.ui.toast(f"Core repaired +{self.wave_heal:g} HP", S.GREEN)
         if self.endless or number < self.waves.total_waves:
             self.ui.toast(f"Wave {number} cleared - build phase", S.GREEN)
 

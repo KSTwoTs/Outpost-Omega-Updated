@@ -31,6 +31,11 @@ class EndlessWaveGenerator:
             self.cache[i] = self._generate(i)
         return self.cache[n]
 
+    def wave_at(self, n, allow_mutator=True):
+        """A fresh (uncached) wave at depth n. Siege Run uses this so a long fight
+        can hold several waves at the same depth without repeating one."""
+        return self._generate(n, allow_mutator)
+
     def budget(self, n):
         return self.cfg["budget_base"] * self.cfg["budget_growth"] ** (n - 1)
 
@@ -69,8 +74,8 @@ class EndlessWaveGenerator:
         weights = [base.get(k, 1.0) * pool[k]["threat"] ** bias for k in kinds]
         return self.rng.choices(kinds, weights)[0]
 
-    def _generate(self, n):
-        mutator = self._pick_mutator(n)
+    def _generate(self, n, allow_mutator=True):
+        mutator = self._pick_mutator(n) if allow_mutator else None
         mut = self.cfg.get("mutators", {}).get(mutator, {})
         budget = self.budget(n) * mut.get("budget_mult", 1.0)
         pool = self.unlocked(n)

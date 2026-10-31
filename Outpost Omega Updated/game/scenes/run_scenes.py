@@ -12,11 +12,11 @@ from .menu import Starfield
 from .scene_manager import Scene
 
 NODE_STYLE = {
-    "combat": ("COMBAT", S.ALIEN_GREEN, "C", "3 waves on a random sector"),
-    "elite": ("ELITE", S.ORANGE, "E", "3 waves, mostly elites. Drops a relic"),
+    "combat": ("COMBAT", S.ALIEN_GREEN, "C", "{waves} waves on a random sector"),
+    "elite": ("ELITE", S.ORANGE, "E", "{waves} waves, mostly elites. Drops a relic"),
     "cache": ("SUPPLY CACHE", S.ENERGY, "$", "Spend Scrap on towers, augments, relics, repairs"),
     "event": ("EVENT", S.CYAN, "?", "Something unexpected"),
-    "boss": ("BOSS", S.MAGENTA, "B", "The Hive Overseer. Ends the act"),
+    "boss": ("BOSS", S.MAGENTA, "B", "{waves} waves and a boss. Ends the act"),
 }
 KIND_STYLE = {"augment": ("AUGMENT", S.CYAN), "tower": ("TOWER", S.ALIEN_GREEN),
               "relic": ("RELIC", S.ENERGY), "repair": ("REPAIR", S.GREEN)}
@@ -48,6 +48,21 @@ def blit_lines(screen, lines, x, y, gap=2, center=False):
     return y
 
 
+def rarity_color(run, kind, oid, default=S.WHITE):
+    """Color for an augment/relic's rarity tier (red for cursed)."""
+    rarity = run.rarity_of(kind, oid)
+    if rarity == "cursed":
+        return S.RED
+    tier = run.cfg.get("rarity", {}).get("tiers", {}).get(rarity)
+    return tuple(tier["color"]) if tier else default
+
+
+def act_title(run):
+    if getattr(run, "endless", False):
+        return f"SIEGE RUN  -  ACT {run.act}  (ENDLESS)"
+    return f"SIEGE RUN  -  ACT {run.act}/{run.cfg['acts']}"
+
+
 def card_style(run, kind, oid):
     label, color = KIND_STYLE[kind]
     if kind == "repair":
@@ -56,6 +71,11 @@ def card_style(run, kind, oid):
     name, desc, cursed = run.describe(kind, oid)
     if cursed:
         label, color = "CURSED RELIC", S.RED
+    elif kind in ("augment", "relic"):
+        rarity = run.rarity_of(kind, oid)
+        tier = run.cfg.get("rarity", {}).get("tiers", {}).get(rarity)
+        if tier:
+            label, color = f"{tier['name']} {label}", tuple(tier["color"])
     return name, desc, label, color
 
 
@@ -86,7 +106,7 @@ def draw_run_bar(screen, a, run, title=None):
     """Top strip: act, Core HP, Scrap and owned towers."""
     pygame.draw.rect(screen, S.HUD_BG, (0, 0, S.SCREEN_W, 72))
     pygame.draw.line(screen, S.HUD_EDGE, (0, 72), (S.SCREEN_W, 72), 2)
-    screen.blit(a.text(title or f"SIEGE RUN  -  ACT {run.act}/{run.cfg['acts']}", 30, S.CYAN, True), (20, 10))
+    screen.blit(a.text(title or act_title(run), 30, S.CYAN, True), (20, 10))
     cls = getattr(run, "commander", None) or "vanguard"
     screen.blit(a.text(f"{cls.title()}   Sectors cleared {run.nodes_cleared}   Kills {run.kills}", 18,
                        S.TEXT_DIM), (20, 44))
@@ -237,7 +257,8 @@ class RunMapScene(_RunScene):
         self.render_loadout(screen, mouse)
         if hovered:
             label, color, _l, desc = NODE_STYLE[hovered["type"]]
-            lines = [label, desc]
+            waves = run.waves_for(hovered["type"])
+            lines = [label, desc.format(waves=waves)]
             if hovered["type"] in ("combat", "elite", "boss"):
                 names = {"sector1": "Desert Outpost", "sector2": "Frozen Relay Station",
                          "sector3": "Hive Crash Site", "sector4": "Magma Forge", "sector5": "Open Plains",
@@ -261,9 +282,13 @@ class RunMapScene(_RunScene):
             aug = run.cfg["augments"][aid]
             col, row = divmod(i, 5)
             pos = (40 + col * 200, 598 + row * 21)
-            surf = a.text(aug["name"], 18, S.WHITE)
+            col_c = rarity_color(run, "augment", aid)
+            surf = a.text(aug["name"], 18, col_c)
             screen.blit(surf, pos)
-            self.tips.append((surf.get_rect(topleft=pos), [aug["name"], aug["desc"]], S.CYAN))
+            self.tips.append((surf.get_rect(topleft=pos),
+                              [aug["name"], f"{run.rarity_of('augment', aid).title()} augment", aug["desc"]], col_c))
+        if len(run.augments) > 18:
+            screen.blit(a.text(f"+{len(run.augments) - 18} more", 16, S.TEXT_DIM), (40 + 3 * 200, 598 + 4 * 21))
         if not run.augments:
             screen.blit(a.text("None yet. Win sectors to draft them.", 18, S.TEXT_DIM), (40, 598))
         rx = 880
@@ -272,11 +297,13 @@ class RunMapScene(_RunScene):
             rel = run.cfg["relics"][rid]
             col, row = divmod(i, 5)
             pos = (rx + col * 180, 598 + row * 21)
-            color = S.RED if rel.get("cursed") else S.WHITE
+            color = rarity_color(run, "relic", rid)
             surf = a.text(rel["name"], 18, color)
             screen.blit(surf, pos)
-            self.tips.append((surf.get_rect(topleft=pos), [rel["name"], rel["desc"]],
-                              S.RED if rel.get("cursed") else S.ENERGY))
+            self.tips.append((surf.get_rect(topleft=pos),
+                              [rel["name"], f"{run.rarity_of('relic', rid).title()} relic", rel["desc"]], color))
+        if len(run.relics) > 10:
+            screen.blit(a.text(f"+{len(run.relics) - 10} more", 16, S.TEXT_DIM), (rx + 180, 598 + 4 * 21 + 18))
         if not run.relics:
             screen.blit(a.text("Beat elites and bosses for relics.", 18, S.TEXT_DIM), (rx, 598))
 
@@ -291,21 +318,27 @@ class RunRewardScene(_RunScene):
         self.steps = list(self.reward.get("steps", []))
         self.options = []
         self.btn_skip = Button((S.SCREEN_W // 2 - 120, 560, 240, 50), "SKIP", "skip")
-        self.next_step()
+        cx = S.SCREEN_W // 2
+        self.btn_victory = Button((cx - 330, 430, 310, 70), "CLAIM VICTORY", "victory")
+        self.btn_push = Button((cx + 20, 430, 310, 70), "PUSH ON", "push")
+        self.deciding = bool(self.reward.get("milestone"))   # final boss down: cash out or go endless
+        if not self.deciding:
+            self.next_step()
 
     def next_step(self):
         self.options = []
+        source = self.reward.get("node", "combat")
         while self.steps and not self.options:
             step = self.steps.pop(0)
             if step == "draft":
-                self.options = self.run.draft_options()
+                self.options = self.run.draft_options(source)
                 self.title = "CHOOSE AN UPGRADE"
                 self.btn_skip.label = f"SKIP (+{self.run.cfg.get('skip_scrap', 10)} Scrap)"
                 self.skip_scrap = self.run.cfg.get("skip_scrap", 10)
             else:
                 boss = self.reward.get("node") == "boss"
                 n = self.run.cfg["boss_relic_choices" if boss else "relic_choices"]
-                self.options = self.run.relic_options(n)
+                self.options = self.run.relic_options(n, source)
                 self.title = "CHOOSE A RELIC"
                 self.btn_skip.label = "SKIP"
                 self.skip_scrap = 0
@@ -325,10 +358,22 @@ class RunRewardScene(_RunScene):
 
     def on_update(self, dt):
         super().on_update(dt)
-        if not self.options:
+        if not self.options and not self.deciding:
             self.done()
 
     def handle_command(self, cmd):
+        if cmd.name == "click" and self.deciding:
+            if self.btn_victory.hit(cmd.pos):
+                self.audio.play("click")
+                self.deciding = False
+                self.run.claim_victory()
+                self.game.scenes.change("run_end")
+            elif self.btn_push.hit(cmd.pos):
+                self.audio.play("upgrade")
+                self.deciding = False
+                self.reward["next_act"] = self.run.push_on()
+                self.next_step()
+            return
         if cmd.name != "click" or not self.options:
             return
         for rect, (kind, oid) in zip(self.card_rects(), self.options):
@@ -343,7 +388,29 @@ class RunRewardScene(_RunScene):
                 self.run.gain_scrap(self.skip_scrap)
             self.next_step()
 
+    def render_decision(self, screen):
+        a, cx = self.assets, S.SCREEN_W // 2
+        self.bg.draw(screen)
+        draw_run_bar(screen, a, self.run)
+        t = a.text("CAMPAIGN COMPLETE", 56, S.CYAN, True)
+        screen.blit(t, t.get_rect(center=(cx, 140)))
+        acts = self.run.cfg["acts"]
+        salvage = self.run.cfg["salvage"]["victory"]
+        lines = [f"All {acts} acts cleared. The hive isn't finished with you, though.",
+                 f"CLAIM VICTORY ends the run now as a win (+{salvage} Salvage bonus).",
+                 "PUSH ON banks the win and keeps going: new acts, tougher waves, every boss in rotation,",
+                 "until the Core falls. You keep this boss's rewards and all Salvage earned along the way."]
+        for i, line in enumerate(lines):
+            s = a.text(line, 24 if i else 28, S.WHITE if i == 0 else S.TEXT_DIM, i == 0)
+            screen.blit(s, s.get_rect(center=(cx, 220 + i * 40)))
+        mouse = self.input.mouse_pos()
+        self.btn_victory.draw(screen, a, mouse, size=30)
+        self.btn_push.draw(screen, a, mouse, size=30)
+
     def on_render(self, screen):
+        if self.deciding:
+            self.render_decision(screen)
+            return
         if not self.options:
             return
         a = self.assets
@@ -518,10 +585,15 @@ class RunEndScene(_RunScene):
         cx = S.SCREEN_W // 2
         if run is None:
             return
-        title, color = ("VICTORY", S.CYAN) if run.victory else ("RUN OVER", S.RED)
-        t = a.text(title, 90, color, True)
+        if getattr(run, "endless", False):
+            title, color = "ENDLESS SIEGE OVER", S.ENERGY
+            reached = f"Campaign won, then held out until act {run.act}"
+        else:
+            title, color = ("VICTORY", S.CYAN) if run.victory else ("RUN OVER", S.RED)
+            reached = f"Reached act {run.act} of {run.cfg['acts']}"
+        t = a.text(title, 90 if len(title) < 12 else 70, color, True)
         screen.blit(t, t.get_rect(center=(cx, 120)))
-        lines = [f"Reached act {run.act} of {run.cfg['acts']}",
+        lines = [reached,
                  f"Sectors cleared {run.nodes_cleared}   Elites {run.elites}   Bosses {run.bosses}",
                  f"Aliens destroyed {run.kills}   Score {run.score}",
                  f"{len(run.augments)} augments   {len(run.relics)} relics   {len(run.towers)} towers"]

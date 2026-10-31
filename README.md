@@ -1,6 +1,6 @@
 # Outpost Omega: Alien Siege
 
-2D top-down tower defense with a playable hero · Python 3 + pygame-ce
+CPSC 4160 · 2D top-down tower defense with a playable hero · Python 3 + pygame-ce
 
 ## Run it
 
@@ -128,6 +128,24 @@ map of 7 floors ending in a boss.
 - Content lives in `data/run.json` (augments, relics, events, shop, rewards)
   and `data/tech.json`. Logic is in `game/systems/run.py` (no pygame); screens
   are in `game/scenes/run_scenes.py`.
+
+### Long fights, endless acts and rarity
+
+- **Waves per fight:** 10 in Act 1, +5 per act (15, 20, ...), capped at 30.
+  Each wave has 1.6x the enemies of an Endless wave at the same threat level.
+  Threat climbs about once every 3 waves inside a fight. Tune `waves_per_node`,
+  `enemy_count_mult` and `wave_depth.per_wave` in `data/run.json`.
+- **Endless acts:** after the Act 3 boss you choose **CLAIM VICTORY** (run ends
+  as a win) or **PUSH ON**. Pushing on banks the win and keeps generating acts
+  until the Core falls, rotating through every boss (`endless_bosses`).
+- **Rarity:** every augment and relic is Common, Rare, Epic or Legendary (cursed
+  relics are their own pool). Cards are colored by tier. Each draft, relic pick,
+  shop slot and event rolls a tier from `rarity.odds` for that source (bosses
+  never roll Common), shifted toward rarer tiers every act (`act_bonus`) and by
+  luck effects. Rarer cards cost more in the Supply Cache.
+- **Pool:** 53 augments and 24 relics (8 cursed). New effect types:
+  `build_time`, `wave_energy`, `wave_heal`, `salvage`, `shop_discount`,
+  `relic_choices`, `rarity_luck` (see the top of `game/systems/run.py`).
 
 ## Phase 3 content
 

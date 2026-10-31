@@ -24,6 +24,23 @@ Effect types:
     node_heal        add         (Core HP healed after each sector)
     scrap            mult        draft_choices   add        extra_tower_card  add
     slowed_damage    mult        (damage taken by slowed enemies)
+    cmd_hp, cmd_speed, repair_speed   mult (Commander)
+    build_time       add         (seconds of build phase between waves, min 3)
+    wave_energy      add         (Energy after every wave)
+    wave_heal        add         (Core HP after every wave)
+    salvage          mult        (Salvage when the run ends)
+    shop_discount    mult        (Supply Cache prices)
+    relic_choices    add         (extra relic cards to choose from)
+    rarity_luck      add         (boosts the odds of Rare / Epic / Legendary rolls)
+
+Endless acts: after the final act's boss the player picks CLAIM VICTORY (run ends
+as a win) or PUSH ON. Pushing on banks the win and keeps generating acts until the
+Core falls.
+
+Rarity: every augment and relic has a "rarity" (common / rare / epic / legendary;
+cursed relics are their own pool). Drafts, relic picks, the shop and events roll a
+tier from cfg["rarity"]["odds"][source], shifted toward rarer tiers each act and by
+rarity_luck, then pick a card of that tier (falling back to the nearest tier).
 """
 import copy
 import random
@@ -89,8 +106,9 @@ class Modifiers:
                     tier[stat] = tier[stat] * e.get("mult", 1.0) + e.get("add", 0)
                 if "damage" in tier:
                     tier["damage"] = round(tier["damage"])
-                if "chain" in tier:
-                    tier["chain"] = int(round(tier["chain"]))
+                for int_stat in ("chain", "drones", "max_mines"):
+                    if int_stat in tier:
+                        tier[int_stat] = int(round(tier[int_stat]))
                 if "slow" in tier:
                     tier["slow"] = min(0.8, tier["slow"])
         return data
@@ -149,6 +167,7 @@ class RunState:
         self.score = 0
         self.over = False
         self.victory = False
+        self.endless = False            # True once the player pushes on past the final act
         self.salvage_earned = 0
         self.shop = None
         self.commander = None           # Commander class id, set by GameManager.start_run
@@ -157,7 +176,7 @@ class RunState:
     # ---- saving -----------------------------------------------------------------
     SAVED = ("seed", "tech_effects", "augments", "relics", "event_effects", "towers", "scrap",
              "act", "floor", "map", "core_hp", "nodes_cleared", "elites", "bosses", "kills",
-             "score", "shop", "commander", "cmd_level", "cmd_xp", "cmd_perks")
+             "score", "shop", "commander", "cmd_level", "cmd_xp", "cmd_perks", "endless")
 
     def to_dict(self):
         """Everything needed to resume the run (JSON-safe), kept in save.json."""
@@ -184,6 +203,7 @@ class RunState:
         run.visited = set(data.get("visited", []))
         run.node = run.node_by_id(data["node_id"]) if data.get("node_id") else None
         run.position = run.node_by_id(data["position_id"]) if data.get("position_id") else None
+        run.endless = bool(run.endless)
         run.over = False
         run.victory = False
         run.salvage_earned = 0
@@ -313,25 +333,48 @@ class RunState:
         depth = self.cfg["wave_depth"]
         return 1 + (self.act - 1) * depth["per_act"] + node["floor"] * depth["per_floor"]
 
+    def waves_for(self, kind):
+        """How many waves a combat/elite/boss fight has in the current act."""
+        cfg = self.cfg["waves_per_node"]
+        if "base" in cfg:
+            return min(cfg.get("max", 999), cfg["base"] + cfg.get("per_act", 0) * (self.act - 1))
+        return cfg.get(kind, 3)
+
     def node_waves(self, node, endless_cfg, enemy_data, lanes=1):
         kind = node["type"]
-        count = self.cfg["waves_per_node"].get(kind, 3)
+        count = self.waves_for(kind)
         start = self.wave_start(node)
+        step = self.cfg["wave_depth"].get("per_wave", 1.0)
         gen = EndlessWaveGenerator(endless_cfg, enemy_data, lanes=lanes,
                                    seed=self.seed * 31 + self.act * 101 + node["floor"] * 7 + node["index"])
+        mult = self.cfg.get("enemy_count_mult", 1.0)
+        min_interval = endless_cfg.get("min_interval", 0.25)
         waves = []
+        prev_depth = None
         for i in range(count):
-            w = copy.deepcopy(gen.wave(start + i))
+            depth = start + int(i * step)
+            w = copy.deepcopy(gen.wave_at(depth, allow_mutator=depth != prev_depth))
+            prev_depth = depth
+            if mult != 1.0:
+                for g in w["groups"]:
+                    g["count"] = max(1, round(g["count"] * mult))
+                    g["interval"] = round(max(min_interval, g["interval"] / mult ** 0.5), 2)
             w["boss"] = None
             w["mods"]["boss_hp_mult"] = 1.0
             if kind == "elite":
                 w["mods"]["elite_chance"] = max(w["mods"]["elite_chance"], self.cfg.get("elite_node_chance", 0.6))
             waves.append(w)
         if kind == "boss" and waves:
-            bosses = self.cfg.get("bosses_by_act") or [self.cfg.get("boss", "hive_overseer")]
-            waves[-1]["boss"] = bosses[min(self.act, len(bosses)) - 1]
+            waves[-1]["boss"] = self.boss_for_act()
             waves[-1]["mods"]["boss_hp_mult"] = 1 + self.cfg.get("boss_hp_per_act", 0.5) * (self.act - 1)
         return waves
+
+    def boss_for_act(self):
+        bosses = self.cfg.get("bosses_by_act") or [self.cfg.get("boss", "hive_overseer")]
+        if self.act <= len(bosses):
+            return bosses[self.act - 1]
+        cycle = self.cfg.get("endless_bosses") or bosses   # endless acts rotate every boss
+        return cycle[(self.act - 1) % len(cycle)]
 
     def complete_node(self, core_hp=None, kills=0, score=0):
         """A node is done (combat won, shop left, event resolved). Returns the reward summary."""
@@ -358,18 +401,29 @@ class RunState:
             self.elites += 1
         if node["type"] == "boss":
             self.bosses += 1
-            if self.act >= self.cfg["acts"]:
-                reward["steps"] = []
-                self.finish(victory=True)
+            if self.act == self.cfg["acts"] and not self.endless:
+                reward["milestone"] = True   # RunRewardScene asks: claim victory or push on
             else:
-                self.act += 1
-                self.floor = -1
-                self.position = None
-                self.node = None
-                self.map = self.generate_map()
+                self.next_act()
                 reward["next_act"] = self.act
         self.shop = None
         return reward
+
+    def next_act(self):
+        self.act += 1
+        self.floor = -1
+        self.position = None
+        self.node = None
+        self.map = self.generate_map()
+
+    def claim_victory(self):
+        self.finish(victory=True)
+
+    def push_on(self):
+        """Keep going after the final boss. The win is banked (counted when the run ends)."""
+        self.endless = True
+        self.next_act()
+        return self.act
 
     def fail(self, kills=0, score=0):
         self.kills += kills
@@ -381,10 +435,11 @@ class RunState:
         if self.over:
             return
         self.over = True
-        self.victory = victory
+        self.victory = victory or self.endless   # pushing on already beat the final boss
         s = self.cfg["salvage"]
-        self.salvage_earned = (self.nodes_cleared * s["node"] + self.elites * s["elite"]
-                               + self.bosses * s["boss"] + (s["victory"] if victory else 0))
+        earned = (self.nodes_cleared * s["node"] + self.elites * s["elite"]
+                  + self.bosses * s["boss"] + (s["victory"] if self.victory else 0))
+        self.salvage_earned = round(earned * self.mods.mult("salvage"))
 
     # ---- rewards --------------------------------------------------------------
     def augment_pool(self):
@@ -395,18 +450,61 @@ class RunState:
         return [rid for rid, r in self.cfg["relics"].items()
                 if rid not in self.relics and (cursed is None or bool(r.get("cursed")) == cursed)]
 
-    def draft_options(self):
+    # ---- rarity ---------------------------------------------------------------
+    def rarity_of(self, kind, oid):
+        """'common' / 'rare' / 'epic' / 'legendary' / 'cursed', or None for towers and repairs."""
+        if kind not in ("augment", "relic"):
+            return None
+        src = self.cfg["augments" if kind == "augment" else "relics"][oid]
+        return "cursed" if src.get("cursed") else src.get("rarity", "common")
+
+    def rarity_weights(self, source):
+        r = self.cfg.get("rarity", {})
+        odds = r.get("odds", {})
+        weights = dict(odds.get(source) or odds.get("combat") or {"common": 1})
+        luck = self.mods.add("rarity_luck")
+        bonus = r.get("act_bonus", {})
+        for tier in weights:
+            if tier != "common":
+                weights[tier] *= (1 + bonus.get(tier, 0) * (self.act - 1)) * (1 + luck)
+        return weights
+
+    def roll_rarity(self, source):
+        weights = self.rarity_weights(source)
+        tiers = [t for t, w in weights.items() if w > 0]
+        return self.rng.choices(tiers, [weights[t] for t in tiers])[0] if tiers else "common"
+
+    def pick_by_rarity(self, pool, table, n, source):
+        """Up to n distinct ids from pool, each rolled at a rarity tier for this source."""
+        order = self.cfg.get("rarity", {}).get("order", ["common", "rare", "epic", "legendary"])
+        left, out = list(pool), []
+        while left and len(out) < n:
+            tier = self.roll_rarity(source)
+            i = order.index(tier) if tier in order else 0
+            pick = None
+            for t in [order[i]] + order[:i][::-1] + order[i + 1:]:   # rolled tier, then lower, then higher
+                matches = [x for x in left if table[x].get("rarity", "common") == t]
+                if matches:
+                    pick = self.rng.choice(matches)
+                    break
+            if pick is None:
+                pick = self.rng.choice(left)
+            left.remove(pick)
+            out.append(pick)
+        return out
+
+    def draft_options(self, source="combat"):
         n = self.cfg.get("draft_choices", 3) + int(self.mods.add("draft_choices"))
         options = []
         if self.unowned_towers() and self.rng.random() < self.cfg.get("tower_card_chance", 0.4):
             options.append(("tower", self.rng.choice(self.unowned_towers())))
-        pool = self.augment_pool()
-        options += [("augment", a) for a in self.rng.sample(pool, min(n - len(options), len(pool)))]
-        return options
+        picks = self.pick_by_rarity(self.augment_pool(), self.cfg["augments"], n - len(options), source)
+        return options + [("augment", a) for a in picks]
 
-    def relic_options(self, n):
-        pool = self.relic_pool()
-        return [("relic", r) for r in self.rng.sample(pool, min(n, len(pool)))]
+    def relic_options(self, n, source="elite"):
+        n += int(self.mods.add("relic_choices"))
+        picks = self.pick_by_rarity(self.relic_pool(cursed=False), self.cfg["relics"], n, source)
+        return [("relic", r) for r in picks]
 
     def take(self, kind, oid):
         if kind == "tower":
@@ -428,17 +526,24 @@ class RunState:
     # ---- supply cache ------------------------------------------------------------
     def make_shop(self):
         s = self.cfg["shop"]
+        tiers = self.cfg.get("rarity", {}).get("tiers", {})
+        discount = self.mods.mult("shop_discount")
+
+        def price(base, rarity=None):
+            mult = tiers.get(rarity, {}).get("price", 1.0) if rarity else 1.0
+            return max(5, int(5 * round(base * mult * discount / 5)))
+
         offers = []
         towers = self.unowned_towers()
         for t in self.rng.sample(towers, min(s["towers"], len(towers))):
-            offers.append({"kind": "tower", "id": t, "price": s["tower"], "sold": False})
-        pool = self.augment_pool()
-        for a in self.rng.sample(pool, min(s["augments"], len(pool))):
-            offers.append({"kind": "augment", "id": a, "price": s["augment"], "sold": False})
-        relics = self.relic_pool(cursed=False)
-        for r in self.rng.sample(relics, min(s["relics"], len(relics))):
-            offers.append({"kind": "relic", "id": r, "price": s["relic"], "sold": False})
-        offers.append({"kind": "repair", "id": "repair", "price": s["repair"], "sold": False})
+            offers.append({"kind": "tower", "id": t, "price": price(s["tower"]), "sold": False})
+        for a in self.pick_by_rarity(self.augment_pool(), self.cfg["augments"], s["augments"], "shop"):
+            offers.append({"kind": "augment", "id": a, "sold": False,
+                           "price": price(s["augment"], self.rarity_of("augment", a))})
+        for r in self.pick_by_rarity(self.relic_pool(cursed=False), self.cfg["relics"], s["relics"], "shop"):
+            offers.append({"kind": "relic", "id": r, "sold": False,
+                           "price": price(s["relic"], self.rarity_of("relic", r))})
+        offers.append({"kind": "repair", "id": "repair", "price": price(s["repair"]), "sold": False})
         return offers
 
     def buy(self, offer):
@@ -481,18 +586,19 @@ class RunState:
             self.add_event_effect({"type": "core_max", "add": gain["core_max"]})
             lines.append(f"Core max HP +{gain['core_max']}")
         for _ in range(gain.get("augment", 0)):
-            pool = self.augment_pool()
-            if pool:
-                a = self.rng.choice(pool)
+            for a in self.pick_by_rarity(self.augment_pool(), self.cfg["augments"], 1, "event"):
                 self.add_augment(a)
-                lines.append(f"Augment: {self.cfg['augments'][a]['name']}")
-        for key, cursed in (("relic", False), ("curse", True)):
-            for _ in range(gain.get(key, 0)):
-                pool = self.relic_pool(cursed=cursed)
-                if pool:
-                    r = self.rng.choice(pool)
-                    self.add_relic(r)
-                    lines.append(f"Relic: {self.cfg['relics'][r]['name']}")
+                lines.append(f"{self.rarity_of('augment', a).title()} augment: {self.cfg['augments'][a]['name']}")
+        for _ in range(gain.get("relic", 0)):
+            for r in self.pick_by_rarity(self.relic_pool(cursed=False), self.cfg["relics"], 1, "event"):
+                self.add_relic(r)
+                lines.append(f"{self.rarity_of('relic', r).title()} relic: {self.cfg['relics'][r]['name']}")
+        for _ in range(gain.get("curse", 0)):
+            pool = self.relic_pool(cursed=True)
+            if pool:
+                r = self.rng.choice(pool)
+                self.add_relic(r)
+                lines.append(f"Cursed relic: {self.cfg['relics'][r]['name']}")
         for _ in range(gain.get("tower_card", 0)):
             t = self.unlock_random_tower()
             if t:
