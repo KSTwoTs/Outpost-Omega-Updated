@@ -1,8 +1,42 @@
 # Outpost Omega: Alien Siege
 
-CPSC 4160 · 2D top-down tower defense with a playable hero · Python 3 + pygame-ce
+2D top-down tower defense with a playable hero · Python 3 + pygame-ce
 
 ## Run it
+
+### Windows (one click)
+
+Double-click **`Play Outpost Omega.bat`** in the repo root.
+
+- **First run:** it finds Python 3.10+ (or installs Python 3.12 for your user
+  account with `winget` if none is found), creates a private `.venv` inside
+  `Outpost Omega Updated/`, and installs `pygame-ce` into it. Needs internet.
+- **After that:** it just launches the game.
+- If the game crashes, the window stays open so you can read the error.
+- Something broken? Delete `Outpost Omega Updated/.venv` and run it again to
+  rebuild the environment from scratch.
+
+Because the game uses its own `.venv`, it never conflicts with a `pygame` or
+`pygame-ce` install elsewhere on your PC.
+
+### Standalone build (no Python needed to play)
+
+After running `Play Outpost Omega.bat` once, double-click
+**`Build Standalone EXE.bat`**. It uses PyInstaller to produce:
+
+- `dist/Outpost Omega/Outpost Omega.exe`: the playable game
+- `dist/Outpost Omega.zip`: the same folder zipped for sharing (unzip, then run the `.exe`)
+
+Notes:
+- The packaged game keeps its own `save.json` (inside `_internal/`), separate
+  from your development copy.
+- The `.exe` is unsigned, so Windows SmartScreen may warn on first launch;
+  click **More info > Run anyway**.
+- If the zip step reports a file in use, close the game (or wait for antivirus
+  to finish scanning) and run the build again, or right-click the folder in
+  `dist/` and choose **Compress to ZIP file**.
+
+### Manual (any OS)
 
 ```
 cd 'Outpost Omega Updated'
@@ -164,6 +198,8 @@ The grading write-up (items developed) is in `readme.txt`.
 ## Project layout
 
 ```
+Play Outpost Omega.bat      one-click launcher (repo root; sets up .venv on first run)
+Build Standalone EXE.bat    packages the game into dist/ with PyInstaller (repo root)
 main.py                     entry point
 data/towers.json            tower stats per tier
 data/enemies.json           enemy stats
