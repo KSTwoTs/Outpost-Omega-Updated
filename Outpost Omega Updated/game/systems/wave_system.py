@@ -94,12 +94,16 @@ class WaveSystem:
                 self.start_next_wave()
         elif self.phase == WAVE:
             self.wave_time += dt
+            spawned = False
             while self.queue and self.queue[0][0] <= self.wave_time:
                 _, _, enemy_type, lane = heapq.heappop(self.queue)
                 self.spawned_this_wave += 1
+                spawned = True
                 self.events.publish("spawn_enemy", enemy_type=enemy_type,
                                     wave=self.wave_number, lane=lane)
-            if not self.queue and enemies_alive == 0:
+            # enemies_alive was counted before this frame's spawns, so if anything just
+            # spawned (e.g. the boss, after the rest of the wave is dead) wait a frame.
+            if not spawned and not self.queue and enemies_alive == 0:
                 self.events.publish("wave_cleared", number=self.wave_number)
                 if not self.endless and self.wave_number >= self.total_waves:
                     self.phase = DONE

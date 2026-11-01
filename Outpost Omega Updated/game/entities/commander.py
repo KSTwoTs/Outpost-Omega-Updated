@@ -59,7 +59,7 @@ class Repair(State):
 class Downed(State):
     def enter(self, c):
         c.vel.update(0, 0)
-        c.respawn_timer = S.CMD_RESPAWN
+        c.respawn_timer = c.respawn_time
         c.system.events.publish("commander_downed", commander=c)
 
     def update(self, c, dt):
@@ -85,6 +85,9 @@ class Commander(pygame.sprite.Sprite):
         self.max_speed = S.CMD_MAX_SPEED          # Commander class can change these
         self.repair_time = S.REPAIR_TIME
         self.blaster_range = S.BLASTER_RANGE
+        self.damage_taken = 1.0                   # hero / augment armor
+        self.respawn_time = S.CMD_RESPAWN
+        self.skin = None                          # hero palette id (asset name suffix)
         self.respawn_timer = 0.0
         self.hurt_timer = 0.0
         self.facing_left = False
@@ -99,6 +102,10 @@ class Commander(pygame.sprite.Sprite):
         }, "idle")
 
     @property
+    def skin_suffix(self):
+        return f"~{self.skin}" if self.skin else ""
+
+    @property
     def alive(self):
         return self.fsm.name != "downed"
 
@@ -110,7 +117,7 @@ class Commander(pygame.sprite.Sprite):
     def take_damage(self, amount):
         if not self.alive or amount <= 0:
             return
-        self.health.damage(amount, ignore_armor=True)
+        self.health.damage(amount * self.damage_taken, ignore_armor=True)
         self.hurt_timer = 0.15
         if self.health.is_dead:
             self.fsm.change("downed")
@@ -181,13 +188,13 @@ class Commander(pygame.sprite.Sprite):
     def render(self, screen, assets, offset):
         x, y = self.pos.x + offset[0], self.pos.y + offset[1]
         if not self.alive:
-            assets.blit_centered(screen, "commander_down", (x, y))
+            assets.blit_centered(screen, "commander_down" + self.skin_suffix, (x, y))
             t = max(0.0, self.respawn_timer)
             label = assets.text(f"{t:.1f}s", 18, S.WHITE)
             screen.blit(label, label.get_rect(center=(x, y - 20)))
             return
         pygame.draw.ellipse(screen, (90, 70, 50), (x - 10, y + 10, 20, 7))
-        frame = f"commander_{int(self.anim_t) % 2}"
+        frame = f"commander_{int(self.anim_t) % 2}{self.skin_suffix}"
         tint = "white" if self.hurt_timer > 0 else None
         assets.blit_centered(screen, frame, (x, y), flip=self.facing_left, tint=tint)
         if self.fsm.name == "shoot":

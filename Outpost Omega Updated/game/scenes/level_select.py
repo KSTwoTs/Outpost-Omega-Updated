@@ -65,7 +65,7 @@ class LevelSelectScene(Scene):
             Button((cx - 165, 556, 160, 42), "CAMPAIGN", "mode", "campaign"),
             Button((cx + 5, 556, 160, 42), "ENDLESS", "mode", "endless"),
         ]
-        self.picker = CommanderPicker(game, 608)
+        self.picker = CommanderPicker(game, 608, mode=lambda: game.mode)
 
     @staticmethod
     def make_thumbnail(level_id, size=(150, 75)):

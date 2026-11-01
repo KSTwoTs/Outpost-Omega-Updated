@@ -19,6 +19,7 @@ from . import settings as S
 from .scenes import (EventScene, LevelSelectScene, LoseScene, MenuScene, PauseScene, PlayScene,
                      RunEndScene, RunMapScene, RunRewardScene, SceneManager, ShopScene,
                      TechLabScene, WinScene)
+from .systems import asset_manager
 from .systems.asset_manager import AssetManager
 from .systems.audio_system import AudioSystem
 from .systems.input_system import InputSystem
@@ -34,7 +35,12 @@ class GameManager:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption(S.TITLE)
-        self.screen = pygame.display.set_mode((S.SCREEN_W, S.SCREEN_H))
+        # The game always draws onto a fixed 1280x720 canvas (self.screen). The real
+        # window can be any size: present() scales the canvas to fit it (letterboxed),
+        # and InputSystem maps mouse positions back onto the canvas.
+        self.fullscreen = False
+        self.window = pygame.display.set_mode((S.SCREEN_W, S.SCREEN_H), pygame.RESIZABLE)
+        self.screen = pygame.Surface((S.SCREEN_W, S.SCREEN_H)).convert()
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -65,6 +71,9 @@ class GameManager:
         self.commander_class = self.save.get("commander", "vanguard")
         if self.commander_class not in self.data["commanders"]:
             self.commander_class = next(iter(self.data["commanders"]))
+        for cid, hero in self.data["commanders"].items():   # hero sprite recolors
+            if hero.get("palette"):
+                asset_manager.HERO_PALETTES[cid] = hero["palette"]
 
         self.scenes = SceneManager(self)
         self.scenes.register("menu", MenuScene)
@@ -203,7 +212,31 @@ class GameManager:
 
     def on_render(self):
         self.scenes.on_render(self.screen)
+        self.present()
+
+    def present(self):
+        """Scale the canvas into the window, keeping the 16:9 shape (black bars fill the rest)."""
+        window = pygame.display.get_surface()
+        ww, wh = window.get_size()
+        if (ww, wh) == (S.SCREEN_W, S.SCREEN_H):
+            window.blit(self.screen, (0, 0))
+            InputSystem.viewport = (0, 0, 1.0)
+        else:
+            scale = min(ww / S.SCREEN_W, wh / S.SCREEN_H)
+            w, h = max(1, int(S.SCREEN_W * scale)), max(1, int(S.SCREEN_H * scale))
+            x, y = (ww - w) // 2, (wh - h) // 2
+            window.fill((0, 0, 0))
+            window.blit(pygame.transform.smoothscale(self.screen, (w, h)), (x, y))
+            InputSystem.viewport = (x, y, scale)
         pygame.display.flip()
+
+    def toggle_fullscreen(self):
+        """F11: borderless fullscreen at the desktop resolution, or back to a window."""
+        self.fullscreen = not self.fullscreen
+        if self.fullscreen:
+            self.window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        else:
+            self.window = pygame.display.set_mode((S.SCREEN_W, S.SCREEN_H), pygame.RESIZABLE)
 
     def main_loop(self):
         self.on_start()
@@ -212,6 +245,9 @@ class GameManager:
             frame = min(self.clock.tick(S.FPS) / 1000.0, S.MAX_FRAME_TIME)
             accumulator += frame
             for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                    self.toggle_fullscreen()
+                    continue
                 self.scenes.handle_event(event)
                 if self.input.quit_requested:
                     self.running = False

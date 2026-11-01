@@ -195,12 +195,16 @@ SPRITE_NAMES = [
 ] + tower_art.variant_names()   # upgraded tower looks, branches, drones
 
 
-def from_pixels(rows, scale=2):
+HERO_PALETTES = {}   # hero id -> {pixel letter: color}; GameManager fills it from commanders.json
+
+
+def from_pixels(rows, scale=2, palette=None):
     width = max(len(r) for r in rows)
     surf = pygame.Surface((width * scale, len(rows) * scale), pygame.SRCALPHA)
+    pal = dict(PALETTE, **(palette or {}))
     for y, row in enumerate(rows):
         for x, ch in enumerate(row.ljust(width, ".")):
-            color = PALETTE.get(ch)
+            color = pal.get(ch)
             if color:
                 surf.fill(color, (x * scale, y * scale, scale, scale))
     return surf
@@ -347,6 +351,14 @@ def _item(kind):
 
 
 def build_placeholder(name):
+    if "~" in name:   # hero recolor, e.g. commander_0~ignis
+        base, hero = name.split("~", 1)
+        rows = {"commander_0": COMMANDER_TOP + COMMANDER_LEGS[0], "commander_1": COMMANDER_TOP + COMMANDER_LEGS[1],
+                "commander_down": COMMANDER_DOWN}.get(base)
+        if rows is not None:
+            pal = {k: tuple(v) for k, v in HERO_PALETTES.get(hero, {}).items()}
+            return from_pixels(rows, palette=pal)
+        return build_placeholder(base)
     if name == "commander_0":
         return from_pixels(COMMANDER_TOP + COMMANDER_LEGS[0])
     if name == "commander_1":
@@ -386,7 +398,9 @@ def build_placeholder(name):
         kind = name[len("turret_"):]
         if kind[-3:-2] == "_" and kind[-2] in "tb":   # turret_<kind>_t1 / _b0 ...
             art = tower_art.turret(kind[:-3], kind[-2:])
-            return art if art is not None else _turret(kind[:-3])
+            return art if art is not None else build_placeholder(f"turret_{kind[:-3]}")
+        if kind in tower_art.NEW_TOWERS:
+            return tower_art.turret(kind, "t0")
         return _turret(kind)
     if name == "core":
         return _core()

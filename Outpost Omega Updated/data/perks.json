@@ -7,5 +7,15 @@
   "sprinter":     {"name": "Sprinter", "desc": "Move 15% faster"},
   "field_tech":   {"name": "Field Tech", "desc": "Repairs 50% faster"},
   "uplink":       {"name": "Priority Uplink", "desc": "Orbital Strike recharges 20% faster"},
-  "salvager":     {"name": "Salvager", "desc": "+2 Energy per kill"}
+  "salvager":     {"name": "Salvager", "desc": "+2 Energy per kill"},
+  "second_wind":  {"name": "Second Wind", "desc": "Respawn 40% faster"},
+  "kinetic":      {"name": "Kinetic Payload", "desc": "Orbital Strike damage +40%"},
+  "wide_strike":  {"name": "Wide Strike", "desc": "Orbital Strike radius +30%"},
+  "supply_run":   {"name": "Supply Run", "desc": "+60 Energy right now"},
+  "core_medic":   {"name": "Core Medic", "desc": "Repair the Core 15 HP right now"},
+  "plating":      {"name": "Armor Plating", "desc": "Take 25% less damage"},
+  "tuning":       {"name": "Tower Tuning", "desc": "All towers +8% damage"},
+  "calibration":  {"name": "Calibration", "desc": "All towers +6% range"},
+  "hollow_point": {"name": "Hollow Points", "desc": "Blaster +15% damage, +10% range"},
+  "coolant":      {"name": "Coolant Flush", "desc": "Blaster & Orbital recharge +10%"}
 }

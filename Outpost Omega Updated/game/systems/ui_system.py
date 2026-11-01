@@ -42,7 +42,8 @@ class UISystem:
     TOWER_BTN_X = 236
     TOWER_BTN_W = 30
     TOWER_BTN_PITCH = 32
-    HOTKEYS = {11: "-", 12: "=", 13: "\\"}
+    TOWER_BAR_W = 412          # buttons shrink to fit when there are more towers
+    HOTKEYS = {11: "-", 12: "=", 13: "\\", 14: "Z", 15: "C", 16: "V", 17: "B"}
 
     def __init__(self, assets, tower_data):
         self.assets = assets
@@ -51,8 +52,10 @@ class UISystem:
         self.banner = None       # [title, subtitle, life]
         self.tower_buttons = []
         order = sorted(tower_data.items(), key=lambda kv: kv[1]["key"])
+        pitch = min(self.TOWER_BTN_PITCH, self.TOWER_BAR_W // max(1, len(order)))
+        width = pitch - 2
         for i, (kind, d) in enumerate(order):
-            rect = (self.TOWER_BTN_X + i * self.TOWER_BTN_PITCH, S.HUD_Y + 8, self.TOWER_BTN_W, 64)
+            rect = (self.TOWER_BTN_X + i * pitch, S.HUD_Y + 8, width, 64)
             hotkey = self.HOTKEYS.get(d["key"], str(d["key"] % 10))
             b = Button(rect, "", "select_tower", d["key"], d.get("enabled", True), hotkey)
             b.kind = kind
@@ -65,9 +68,10 @@ class UISystem:
         self.btn_pause = Button((1236, 8, 36, 28), "II", "pause")
         self.branch_tower = None   # tower whose tier-4 choice panel is open
         self.core_selected = False # Omega Core upgrade panel
-        self.core_buttons = [Button((652, y, 92, 28), "", "core_upgrade", "turret"),
-                             Button((750, y, 84, 28), "", "core_upgrade", "shield"),
-                             Button((840, y, 96, 28), "", "core_upgrade", "regen")]
+        cols = ((652, 92), (750, 84), (840, 96))
+        kinds = ("turret", "shield", "regen", "reactor", "nova", "plating")
+        self.core_buttons = [Button((cols[i % 3][0], S.HUD_Y + 30 + (i // 3) * 25, cols[i % 3][1], 22),
+                                    "", "core_upgrade", k) for i, k in enumerate(kinds)]
         self.perk_visible = False
 
     # ---- messages ---------------------------------------------------------------
@@ -151,13 +155,14 @@ class UISystem:
             d = self.tower_data[b.kind]
             sel = towers.build_kind == b.kind
             b.draw(screen, a, mouse, selected=sel)
-            icon = pygame.transform.smoothscale(a.get(f"turret_{b.kind}"), (24, 24))
+            size = min(24, b.rect.w - 2)
+            icon = pygame.transform.smoothscale(a.get(f"turret_{b.kind}"), (size, size))
             if not b.enabled:
                 icon.set_alpha(70)
             screen.blit(icon, icon.get_rect(center=(b.rect.centerx, b.rect.y + 28)))
             if b.enabled:
                 color = S.ENERGY if session.energy >= d["cost"] else S.RED
-                cost = a.text(str(d["cost"]), 15, color, True)
+                cost = a.text(str(d["cost"]), 15 if b.rect.w >= 28 else 13, color, True)
             else:
                 cost = a.text("--", 16, S.TEXT_DIM, True)
             screen.blit(cost, cost.get_rect(center=(b.rect.centerx, b.rect.bottom - 10)))
@@ -185,16 +190,14 @@ class UISystem:
                 b.draw(screen, a, mouse, size=20)
         elif self.core_selected and not towers.build_kind:
             core = play.core
-            screen.blit(a.text("OMEGA CORE upgrades", 24, S.CYAN, True), (px, S.HUD_Y + 8))
-            lv = core.levels
-            info = (f"Gun L{lv['turret']}   Shield {core.SHIELD[lv['shield']]}/wave   "
-                    f"Regen +{core.REGEN[lv['regen']]}")
-            screen.blit(a.text(info, 18, S.TEXT_DIM), (px, S.HUD_Y + 27))
+            screen.blit(a.text("OMEGA CORE upgrades", 22, S.CYAN, True), (px, S.HUD_Y + 7))
             for b in self.core_buttons:
                 cost = core.cost(b.value)
                 b.enabled = cost is not None
                 b.label = f"{core.NAMES[b.value]} {cost}" if cost is not None else f"{core.NAMES[b.value]} MAX"
-                b.draw(screen, a, mouse, size=18)
+                b.draw(screen, a, mouse, size=16)
+                for i in range(core.levels[b.value]):   # level pips
+                    pygame.draw.rect(screen, S.CYAN, (b.rect.right - 6, b.rect.y + 3 + i * 6, 3, 4))
         elif towers.build_kind:
             d = self.tower_data[towers.build_kind]
             screen.blit(a.text(f"{d['name']}  ({d['cost']} E)", 24, S.WHITE, True), (px, S.HUD_Y + 8))
@@ -203,8 +206,8 @@ class UISystem:
                         (px, S.HUD_Y + 50))
         else:
             lines = ["WASD move   E repair   Q orbital strike",
-                     "1-0 - = \\ build   click tower: select   F speed",
-                     "R-click tower: upgrade   Esc: pause   F1 debug"]
+                     "1-0 - = \\ Z C V B build   click tower: select",
+                     "R-click tower: upgrade   F speed   Esc: pause"]
             for i, line in enumerate(lines):
                 screen.blit(a.text(line, 18, S.TEXT_DIM), (px, S.HUD_Y + 10 + i * 20))
 
@@ -228,7 +231,8 @@ class UISystem:
             screen.blit(a.text(f"Aliens left: {left}", 18, S.ALIEN_GREEN), (rx, S.HUD_Y + 30))
         cmd = player.commander
         prog = play.progress
-        screen.blit(a.text(f"VANCE {prog.level}", 16, S.TEXT_DIM, True), (rx, S.HUD_Y + 50))
+        screen.blit(a.text(f"{getattr(play, 'hero_name', 'VANCE')[:7]} {prog.level}", 14, S.TEXT_DIM, True),
+                    (rx, S.HUD_Y + 51))
         pygame.draw.rect(screen, S.ENERGY, (rx + 66, S.HUD_Y + 61, int(110 * prog.xp / prog.xp_needed()), 2))
         if cmd.alive:
             self.bar(screen, rx + 66, S.HUD_Y + 50, 110, 10, cmd.health.ratio, S.CYAN)
@@ -259,7 +263,8 @@ class UISystem:
         shade.fill((*S.HUD_BG, 225))
         screen.blit(shade, bg)
         pending = len(play.progress.choices)
-        head = f"LEVEL UP! Vance is level {play.progress.level - pending + 1}: pick a perk"
+        name = getattr(play, "hero_name", "VANCE").title()
+        head = f"LEVEL UP! {name} is level {play.progress.level - pending + 1}: pick a perk"
         if pending > 1:
             head += f"  ({pending} waiting)"
         t = a.text(head, 22, S.CYAN, True)

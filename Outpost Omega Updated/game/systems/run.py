@@ -32,6 +32,16 @@ Effect types:
     shop_discount    mult        (Supply Cache prices)
     relic_choices    add         (extra relic cards to choose from)
     rarity_luck      add         (boosts the odds of Rare / Epic / Legendary rolls)
+    tower_hp         mult        (tower HP, Barricade HP included)
+    upgrade_discount mult        (tier 2/3 upgrade costs)
+    branch_discount  mult        (tier-4 branch costs)
+    boss_damage      mult        elite_damage  mult       (damage dealt to bosses / elites)
+    crit_chance      add         crit_damage   add        (tower crits; base crit is x2)
+    execute          set         (tower hits kill non-boss aliens below this HP fraction)
+    core_shield      add         (free Core shield every wave)
+    vet_bonus        mult        (veterancy damage per rank)
+    orbital_radius   mult        blaster_range mult       respawn_time mult
+    cmd_armor        mult        (damage the Commander takes)
 
 Endless acts: after the final act's boss the player picks CLAIM VICTORY (run ends
 as a win) or PUSH ON. Pushing on banks the win and keeps generating acts until the
@@ -49,6 +59,13 @@ from .endless import EndlessWaveGenerator
 
 
 # ---- effects --------------------------------------------------------------------
+def hero_allowed(hero, mode):
+    """Commanders with a "modes" list (the newer heroes) only appear in those modes:
+    "campaign", "endless" or "run"."""
+    modes = hero.get("modes")
+    return not modes or mode in modes
+
+
 class Modifiers:
     def __init__(self, effects):
         self.effects = list(effects)
@@ -86,6 +103,9 @@ class Modifiers:
         """A copy of towers.json with run upgrades baked in. Towers not owned are disabled
         (the HUD already shows those as LOCKED)."""
         data = copy.deepcopy(base)
+        hp_mult = self.mult("tower_hp")
+        up_mult = self.mult("upgrade_discount")
+        branch_mult = self.mult("branch_discount")
         for kind, d in data.items():
             d["enabled"] = d.get("enabled", True) and kind in owned
             cost_mult = 1.0
@@ -93,12 +113,15 @@ class Modifiers:
                 if e.get("tower", "*") in ("*", kind):
                     cost_mult *= e.get("mult", 1.0)
             d["cost"] = max(1, round(d["cost"] * cost_mult))
+            d["hp"] = round(d.get("hp", 100) * hp_mult)
             stat_effects = [e for e in self.of("tower_stat") if e.get("tower", "*") in ("*", kind)]
             for br in d.get("branches", []):
-                br["cost"] = max(1, round(br["cost"] * cost_mult))
+                br["cost"] = max(1, round(br["cost"] * cost_mult * branch_mult))
             for tier in d["tiers"] + [br["stats"] for br in d.get("branches", [])]:
                 if tier.get("upgrade_cost"):
-                    tier["upgrade_cost"] = max(1, round(tier["upgrade_cost"] * cost_mult))
+                    tier["upgrade_cost"] = max(1, round(tier["upgrade_cost"] * cost_mult * up_mult))
+                if "max_hp" in tier:
+                    tier["max_hp"] = round(tier["max_hp"] * hp_mult)
                 for e in stat_effects:
                     stat = e["stat"]
                     if stat not in tier:
@@ -106,11 +129,13 @@ class Modifiers:
                     tier[stat] = tier[stat] * e.get("mult", 1.0) + e.get("add", 0)
                 if "damage" in tier:
                     tier["damage"] = round(tier["damage"])
-                for int_stat in ("chain", "drones", "max_mines"):
+                for int_stat in ("chain", "drones", "max_mines", "beams", "income"):
                     if int_stat in tier:
                         tier[int_stat] = int(round(tier[int_stat]))
                 if "slow" in tier:
                     tier["slow"] = min(0.8, tier["slow"])
+            if "max_hp" in d["tiers"][0]:   # Barricades start at their tier-1 HP
+                d["hp"] = round(d["tiers"][0]["max_hp"])
         return data
 
     def items_data(self, base):

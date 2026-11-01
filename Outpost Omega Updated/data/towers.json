@@ -107,6 +107,10 @@
       {"damage": 6, "range": 90, "fire_rate": 6.0, "cone": 0.45, "burn_dps": 6, "burn_time": 2.0, "upgrade_cost": 0},
       {"damage": 8, "range": 100, "fire_rate": 6.0, "cone": 0.5, "burn_dps": 10, "burn_time": 2.5, "upgrade_cost": 80},
       {"damage": 11, "range": 110, "fire_rate": 7.0, "cone": 0.55, "burn_dps": 16, "burn_time": 3.0, "upgrade_cost": 130}
+    ],
+    "branches": [
+      {"name": "Dragon's Breath", "desc": "Long, wide cone of fire that roasts whole groups", "cost": 220, "stats": {"damage": 14, "range": 140, "fire_rate": 7.0, "cone": 0.8, "burn_dps": 20, "burn_time": 3.0}},
+      {"name": "Napalm Sprayer", "desc": "Sticky fire: brutal burns that last 6 seconds", "cost": 220, "stats": {"damage": 10, "range": 115, "fire_rate": 7.0, "cone": 0.55, "burn_dps": 45, "burn_time": 6.0}}
     ]
   },
   "mortar": {
@@ -122,6 +126,10 @@
       {"damage": 45, "range": 260, "min_range": 80, "fire_rate": 0.35, "splash": 70, "flight_time": 1.1, "upgrade_cost": 0},
       {"damage": 65, "range": 290, "min_range": 80, "fire_rate": 0.4, "splash": 80, "flight_time": 1.0, "upgrade_cost": 130},
       {"damage": 95, "range": 320, "min_range": 80, "fire_rate": 0.45, "splash": 92, "flight_time": 0.9, "upgrade_cost": 190}
+    ],
+    "branches": [
+      {"name": "Siege Cannon", "desc": "Colossal shells with a huge blast radius", "cost": 300, "stats": {"damage": 260, "range": 360, "min_range": 90, "fire_rate": 0.3, "splash": 115, "flight_time": 1.0}},
+      {"name": "Rapid Battery", "desc": "Fires three times as fast with lighter shells", "cost": 300, "stats": {"damage": 60, "range": 320, "min_range": 70, "fire_rate": 1.3, "splash": 70, "flight_time": 0.7}}
     ]
   },
   "gravity": {
@@ -137,6 +145,10 @@
       {"range": 100, "fire_rate": 0.25, "pull": 45, "upgrade_cost": 0},
       {"range": 115, "fire_rate": 0.3, "pull": 60, "upgrade_cost": 110},
       {"range": 130, "fire_rate": 0.35, "pull": 80, "upgrade_cost": 160}
+    ],
+    "branches": [
+      {"name": "Singularity", "desc": "Huge pull that also crushes aliens for damage", "cost": 260, "stats": {"range": 140, "fire_rate": 0.33, "pull": 150, "damage": 45}},
+      {"name": "Stasis Field", "desc": "Frequent pulses that freeze aliens in place", "cost": 260, "stats": {"range": 135, "fire_rate": 0.6, "pull": 40, "stun": 1.2}}
     ]
   },
   "harvester": {
@@ -152,6 +164,10 @@
       {"range": 0, "income": 25, "upgrade_cost": 0},
       {"range": 0, "income": 45, "upgrade_cost": 100},
       {"range": 0, "income": 70, "upgrade_cost": 140}
+    ],
+    "branches": [
+      {"name": "Energy Refinery", "desc": "Doubles output: +140 Energy per wave", "cost": 220, "stats": {"range": 0, "income": 140}},
+      {"name": "Overflow Core", "desc": "+90 Energy per wave and repairs the Core 4 HP", "cost": 220, "stats": {"range": 0, "income": 90, "core_heal": 4}}
     ]
   },
   "radar": {
@@ -167,6 +183,10 @@
       {"range": 110, "buff": 0.15, "upgrade_cost": 0},
       {"range": 130, "buff": 0.2, "upgrade_cost": 90},
       {"range": 150, "buff": 0.25, "upgrade_cost": 130}
+    ],
+    "branches": [
+      {"name": "Targeting Uplink", "desc": "Nearby towers get +25% range and +20% damage", "cost": 240, "stats": {"range": 150, "buff": 0.25, "damage_buff": 0.2}},
+      {"name": "Overwatch Array", "desc": "Huge coverage: +30% range to towers within 260", "cost": 240, "stats": {"range": 260, "buff": 0.3}}
     ]
   },
   "drone": {
@@ -182,6 +202,10 @@
       {"range": 170, "drones": 2, "damage": 6, "fire_rate": 2.0, "speed": 240, "upgrade_cost": 0},
       {"range": 190, "drones": 3, "damage": 8, "fire_rate": 2.2, "speed": 260, "upgrade_cost": 130},
       {"range": 210, "drones": 4, "damage": 11, "fire_rate": 2.5, "speed": 280, "upgrade_cost": 180}
+    ],
+    "branches": [
+      {"name": "Drone Swarm", "desc": "Launches 8 drones", "cost": 280, "stats": {"range": 230, "drones": 8, "damage": 9, "fire_rate": 2.6, "speed": 300}},
+      {"name": "Gunship Wing", "desc": "3 heavy gunships with big guns", "cost": 280, "stats": {"range": 240, "drones": 3, "damage": 42, "fire_rate": 1.6, "speed": 240}}
     ]
   },
   "barricade": {
@@ -197,6 +221,10 @@
       {"range": 0, "max_hp": 300, "upgrade_cost": 0},
       {"range": 0, "max_hp": 550, "upgrade_cost": 50},
       {"range": 0, "max_hp": 900, "upgrade_cost": 80}
+    ],
+    "branches": [
+      {"name": "Bulwark Wall", "desc": "2200 HP of armor plating", "cost": 140, "stats": {"range": 0, "max_hp": 2200}},
+      {"name": "Shock Barricade", "desc": "1200 HP and shocks aliens chewing on it for 30 damage a second", "cost": 140, "stats": {"range": 0, "max_hp": 1200, "thorns": 30}}
     ]
   },
   "mines": {
@@ -212,6 +240,86 @@
       {"range": 120, "fire_rate": 0.4, "max_mines": 3, "damage": 40, "splash": 48, "upgrade_cost": 0},
       {"range": 135, "fire_rate": 0.5, "max_mines": 4, "damage": 60, "splash": 54, "upgrade_cost": 110},
       {"range": 150, "fire_rate": 0.6, "max_mines": 5, "damage": 85, "splash": 60, "upgrade_cost": 160}
+    ],
+    "branches": [
+      {"name": "Minefield", "desc": "Keeps up to 12 mines armed at once", "cost": 260, "stats": {"range": 170, "fire_rate": 1.2, "max_mines": 12, "damage": 75, "splash": 56}},
+      {"name": "Cluster Charges", "desc": "Fewer, massive mines", "cost": 260, "stats": {"range": 160, "fire_rate": 0.5, "max_mines": 5, "damage": 230, "splash": 90}}
+    ]
+  },
+  "laser": {
+    "name": "Laser Lance",
+    "key": 14,
+    "cost": 160,
+    "enabled": true,
+    "behavior": "beam",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Continuous beam that burns hotter the longer it stays on one alien.",
+    "tiers": [
+      {"dps": 10, "range": 150, "ramp": 2.5, "ramp_time": 3.0, "beams": 1, "upgrade_cost": 0},
+      {"dps": 16, "range": 165, "ramp": 3.0, "ramp_time": 3.0, "beams": 1, "upgrade_cost": 140},
+      {"dps": 26, "range": 180, "ramp": 3.5, "ramp_time": 3.0, "beams": 1, "upgrade_cost": 200}
+    ],
+    "branches": [
+      {"name": "Prism Lance", "desc": "Splits into 3 beams on different aliens", "cost": 300, "stats": {"dps": 22, "range": 185, "ramp": 2.5, "ramp_time": 2.5, "beams": 3}},
+      {"name": "Annihilator", "desc": "One beam that ramps up to 6x damage", "cost": 300, "stats": {"dps": 40, "range": 210, "ramp": 6.0, "ramp_time": 4.0, "beams": 1}}
+    ]
+  },
+  "acid": {
+    "name": "Acid Spitter",
+    "key": 15,
+    "cost": 110,
+    "enabled": true,
+    "behavior": "acid",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Lobs acid that pools on the path, melting aliens and their armor.",
+    "tiers": [
+      {"range": 150, "fire_rate": 0.5, "radius": 34, "dps": 8, "duration": 4.0, "shred": 2, "upgrade_cost": 0},
+      {"range": 165, "fire_rate": 0.55, "radius": 38, "dps": 12, "duration": 4.5, "shred": 3, "upgrade_cost": 100},
+      {"range": 180, "fire_rate": 0.6, "radius": 42, "dps": 18, "duration": 5.0, "shred": 4, "upgrade_cost": 150}
+    ],
+    "branches": [
+      {"name": "Corrosive Bath", "desc": "Strips 8 armor and melts faster", "cost": 240, "stats": {"range": 180, "fire_rate": 0.6, "radius": 42, "dps": 26, "duration": 5.0, "shred": 8}},
+      {"name": "Toxic Flood", "desc": "Huge pools that last 9 seconds", "cost": 240, "stats": {"range": 190, "fire_rate": 0.5, "radius": 70, "dps": 18, "duration": 9.0, "shred": 4}}
+    ]
+  },
+  "repair": {
+    "name": "Repair Bay",
+    "key": 16,
+    "cost": 120,
+    "enabled": true,
+    "behavior": "repair",
+    "hp": 120,
+    "can_target_air": false,
+    "description": "No attack. Repairs towers in range, even broken ones.",
+    "tiers": [
+      {"range": 110, "heal": 6, "upgrade_cost": 0},
+      {"range": 125, "heal": 10, "upgrade_cost": 90},
+      {"range": 140, "heal": 16, "upgrade_cost": 130}
+    ],
+    "branches": [
+      {"name": "Nanite Forge", "desc": "Repairs 35 HP a second over a wide area", "cost": 220, "stats": {"range": 170, "heal": 35}},
+      {"name": "Overclock Station", "desc": "Repairs, and towers in range fire 25% faster", "cost": 220, "stats": {"range": 140, "heal": 12, "haste": 0.25}}
+    ]
+  },
+  "sonic": {
+    "name": "Sonic Disruptor",
+    "key": 17,
+    "cost": 130,
+    "enabled": true,
+    "behavior": "shockwave",
+    "hp": 110,
+    "can_target_air": false,
+    "description": "Shockwaves hit every ground alien in range and stun them briefly.",
+    "tiers": [
+      {"damage": 18, "range": 90, "fire_rate": 0.5, "stun": 0.3, "upgrade_cost": 0},
+      {"damage": 28, "range": 100, "fire_rate": 0.55, "stun": 0.4, "upgrade_cost": 110},
+      {"damage": 42, "range": 110, "fire_rate": 0.6, "stun": 0.5, "upgrade_cost": 160}
+    ],
+    "branches": [
+      {"name": "Earthshaker", "desc": "Slow, huge quakes that stun for 1.2 seconds", "cost": 260, "stats": {"damage": 70, "range": 125, "fire_rate": 0.4, "stun": 1.2}},
+      {"name": "Resonance Cannon", "desc": "Rapid pulses that ignore armor", "cost": 260, "stats": {"damage": 34, "range": 110, "fire_rate": 1.3, "stun": 0.2, "pierce_armor": true}}
     ]
   }
 }

@@ -20,7 +20,7 @@ from ..systems.effects_system import EffectsSystem
 from ..systems.endless import EndlessWaveGenerator
 from ..systems.environment import WEATHER, VentSystem, WeatherSystem
 from ..systems.progression import CommanderProgress, CoreUpgrades, apply_perk
-from ..systems.run import Modifiers
+from ..systems.run import Modifiers, hero_allowed
 from ..systems.enemy_system import EnemySystem
 from ..systems.level_system import LevelSystem
 from ..systems.player_system import PlayerSystem
@@ -77,7 +77,11 @@ class PlayScene(Scene):
         # Commander class + (in a Siege Run) augments, relics and tech all become one effect list.
         self.commander_class = (self.run.commander if self.run and self.run.commander
                                 else game.commander_class)
-        cls_effects = data["commanders"].get(self.commander_class, {}).get("effects", [])
+        hero = data["commanders"].get(self.commander_class, {})
+        if mode == "campaign" and not hero_allowed(hero, "campaign"):   # heroes are Endless / Siege Run only
+            self.commander_class = next(c for c, h in data["commanders"].items() if hero_allowed(h, "campaign"))
+            hero = data["commanders"][self.commander_class]
+        cls_effects = hero.get("effects", [])
         mods = Modifiers((self.run.effects if self.run else []) + cls_effects)
         owned = self.run.towers if self.run else list(data["towers"])
         tower_data = mods.tower_data(data["towers"], owned)
@@ -126,6 +130,18 @@ class PlayScene(Scene):
         self.towers.sell_refund = mods.set("sell_refund", S.SELL_REFUND)
         self.enemies.slowed_damage_mult = mods.mult("slowed_damage")
         self.towers.allow_branches = self.run is not None
+        cmd.blaster_range = S.BLASTER_RANGE * mods.mult("blaster_range")
+        cmd.damage_taken = mods.mult("cmd_armor")
+        cmd.respawn_time = S.CMD_RESPAWN * mods.mult("respawn_time")
+        cmd.skin = self.commander_class if hero.get("palette") else None
+        self.hero_name = hero.get("callsign", "VANCE")
+        self.player.orbital_radius = S.ORBITAL_RADIUS * mods.mult("orbital_radius")
+        self.enemies.boss_damage_mult = mods.mult("boss_damage")
+        self.enemies.elite_damage_mult = mods.mult("elite_damage")
+        self.enemies.crit_chance = mods.add("crit_chance")
+        self.enemies.crit_mult = 2.0 + mods.add("crit_damage")
+        self.enemies.execute = max([e.get("set", 0) for e in mods.of("execute")] + [0])
+        self.towers.vet_bonus_mult = mods.mult("vet_bonus")
         generator = None
         if self.endless:
             generator = EndlessWaveGenerator(data["endless"], data["enemies"],
@@ -138,6 +154,7 @@ class PlayScene(Scene):
                                 generator=generator)
         self.ui = UISystem(self.assets, tower_data)
         self.core = CoreUpgrades(self)
+        self.core.bonus_shield = mods.add("core_shield")
         self.kill_bonus = 0
         r = self.run
         self.progress = CommanderProgress(data["perks"],
@@ -170,7 +187,7 @@ class PlayScene(Scene):
         ev.subscribe("walls_changed", self.on_walls_changed)
         ev.subscribe("tower_emp", lambda **_: self.ui.toast("EMP! Towers disabled - repair them with E", S.CYAN))
         ev.subscribe("commander_respawned",
-                     lambda **_: self.ui.toast("Commander Vance is back online", S.CYAN))
+                     lambda **_: self.ui.toast(f"Commander {self.hero_name.title()} is back online", S.CYAN))
 
     def roll_weather(self, data):
         """Endless and Siege Run sectors sometimes get weather; the campaign never does."""
@@ -242,7 +259,7 @@ class PlayScene(Scene):
         if self.progress.add_xp(max(1, enemy.score // 10)):
             c = self.player.commander
             self.effects.ring(c.pos.x, c.pos.y, 30, S.CYAN, 0.6, width=3)
-            self.ui.toast(f"Vance reached level {self.progress.level}! Pick a perk", S.CYAN)
+            self.ui.toast(f"{self.hero_name.title()} reached level {self.progress.level}! Pick a perk", S.CYAN)
             self.audio.play("upgrade")
         self.session.energy += reward
         self.session.score += enemy.score

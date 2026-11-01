@@ -54,15 +54,16 @@ If you already have classic `pygame` installed, it works too. Don't install both
 | E (hold) | Repair a nearby damaged or EMP'd tower |
 | Click a drop | Collect it (or walk over it) |
 | Q, then click | Orbital Strike (1 s delay, 45 s cooldown). Right-click cancels |
-| 1–9, 0, -, =, \\ or HUD buttons | Pick a tower to build. Click a green tile to place it. Shift+click places several |
+| 1–9, 0, -, =, \\, Z, C, V, B or HUD buttons | Pick a tower to build. Click a green tile to place it. Shift+click places several |
 | Click a tower | Select it (HUD shows Upgrade / Sell / Targeting) |
-| Click the Core | Core upgrades: Gun (turret), Shield (soaks Core damage each wave), Regen |
-| Level-up panel | Click one of 3 perks when Vance levels up (the game keeps running) |
+| Click the Core | Core upgrades: Gun, Shield, Regen, Reactor, Nova, Plating |
+| Level-up panel | Click one of 3 perks when your Commander levels up (the game keeps running) |
 | Right-click a tower | Upgrade it (in a Siege Run, a maxed tower opens the tier-4 branch choice) |
 | U / X / T | Upgrade / Sell (70% refund) / cycle targeting (first, last, strongest, closest) |
 | Space | Start the next wave early |
 | F | Game speed 1x / 2x / 3x |
 | Esc / P | Pause |
+| F11 | Toggle fullscreen. The window can also be resized or maximized; the game scales to fit |
 | F1 | Debug overlay: waypoints, ranges, spatial-hash cells, hitboxes (boss shows its pixel-mask outline), FPS |
 
 ## What works now 
@@ -143,7 +144,7 @@ map of 7 floors ending in a boss.
   shop slot and event rolls a tier from `rarity.odds` for that source (bosses
   never roll Common), shifted toward rarer tiers every act (`act_bonus`) and by
   luck effects. Rarer cards cost more in the Supply Cache.
-- **Pool:** 53 augments and 24 relics (8 cursed). New effect types:
+- **Pool:** 93 augments and 40 relics (11 cursed). Effect types added along the way:
   `build_time`, `wave_energy`, `wave_heal`, `salvage`, `shop_discount`,
   `relic_choices`, `rarity_luck` (see the top of `game/systems/run.py`).
 
@@ -202,6 +203,36 @@ picks a perk at each level (`data/perks.json`); in a Siege Run his level carries
 
 **Core upgrades:** click the Core: Gun (a turret on every Core), Shield (soaks
 10/20/35 Core damage each wave), Regen (+3/6/10 Core HP after each wave). 120/200/300 Energy.
+
+## Phase 4 content
+
+**More towers** (every mode; tower cards in a Siege Run)
+
+| Key | Tower | What it does |
+|---|---|---|
+| Z | Laser Lance | Continuous beam whose damage ramps up the longer it holds one alien |
+| C | Acid Spitter | Lobs acid that pools on the path, melting aliens and stripping their armor |
+| V | Repair Bay | No attack; repairs towers in range, broken ones included |
+| B | Sonic Disruptor | Shockwaves hit every ground alien in range and stun them |
+
+**Tier-4 branches for every tower** (Siege Run): Flamer (Dragon's Breath / Napalm
+Sprayer), Mortar (Siege Cannon / Rapid Battery), Gravity Well (Singularity / Stasis
+Field), Harvester (Energy Refinery / Overflow Core), Radar Relay (Targeting Uplink /
+Overwatch Array), Drone Bay (Drone Swarm / Gunship Wing), Barricade (Bulwark Wall /
+Shock Barricade), Mine Layer (Minefield / Cluster Charges), Laser Lance (Prism Lance /
+Annihilator), Acid Spitter (Corrosive Bath / Toxic Flood), Repair Bay (Nanite Forge /
+Overclock Station), Sonic Disruptor (Earthshaker / Resonance Cannon). Every tier and
+branch has its own look (`systems/tower_art.py`).
+
+**Heroes** (Endless and Siege Run only; hidden in the campaign): Ignis (fire), Rime
+(frost), Bastion (defense), Kestrel (drones and mines), Ledger (economy) and Hawk
+(sniper), each with their own colors. They're the entries in `data/commanders.json`
+with a `modes` list; `palette` recolors the Commander sprite.
+
+**Perks:** 18 Commander perks (10 new, e.g. Second Wind, Wide Strike, Tower Tuning).
+**Core upgrades:** Reactor (+15/30/50 Energy a wave), Nova (shockwave around the Core
+every 10 s), Plating (+20/40/70 Core max HP). **Tech Lab:** 20 upgrades, most with
+more ranks.
 
 ## Still to build
 

@@ -28,6 +28,11 @@ class EnemySystem:
         self.elite_data = elite_data or {}
         self.mods = {}             # current wave's endless modifiers
         self.slowed_damage_mult = 1.0   # Siege Run "Brittle Shells" augment
+        self.boss_damage_mult = 1.0     # augments / heroes (see Modifiers in systems/run.py)
+        self.elite_damage_mult = 1.0
+        self.crit_chance = 0.0          # tower hits only
+        self.crit_mult = 2.0
+        self.execute = 0.0              # non-boss aliens below this HP fraction die to tower hits
         self.env_speed_mult = 1.0       # Blizzard weather
         events.subscribe("spawn_enemy", self.on_spawn_enemy)
         events.subscribe("wave_started", self.on_wave_started)
@@ -99,8 +104,16 @@ class EnemySystem:
         """source = the tower that dealt it (veterancy bonus + kill credit), or None."""
         if not enemy.targetable:
             return 0
+        crit = False
         if source is not None:
-            amount *= getattr(source, "vet_mult", 1.0)
+            amount *= getattr(source, "vet_mult", 1.0) * (1.0 + getattr(source, "damage_buff", 0.0))
+            if self.crit_chance and random.random() < self.crit_chance:
+                amount *= self.crit_mult
+                crit = True
+        if enemy.is_boss:
+            amount *= self.boss_damage_mult
+        elif enemy.affix:
+            amount *= self.elite_damage_mult
         if enemy.aura_shield > 0:   # under a Shield Drone's bubble
             amount *= 0.5
         if enemy.invulnerable:
@@ -119,7 +132,12 @@ class EnemySystem:
         dealt = enemy.health.damage(amount, ignore_armor=ignore_armor)
         if dealt and not quiet:
             enemy.flash_timer = 0.08
-            self.effects.number(enemy.pos.x, enemy.pos.y - enemy.radius, dealt)
+            self.effects.number(enemy.pos.x, enemy.pos.y - enemy.radius, dealt,
+                                *((S.ENERGY,) if crit else ()))
+        if (self.execute and source is not None and not enemy.is_boss and not enemy.health.is_dead
+                and enemy.health.ratio < self.execute):
+            enemy.health.damage(enemy.health.hp + 1, ignore_armor=True)
+            self.effects.floating_text(enemy.pos.x, enemy.pos.y - 24, "EXECUTED", S.RED, 16)
         if enemy.health.is_dead:
             if source is not None and hasattr(source, "record_kill"):
                 source.record_kill()

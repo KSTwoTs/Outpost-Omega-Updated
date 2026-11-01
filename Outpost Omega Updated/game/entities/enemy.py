@@ -225,6 +225,13 @@ class Enemy(pygame.sprite.Sprite):
     def apply_stun(self, duration):
         self.stun_timer = max(self.stun_timer, duration)
 
+    def corrode(self, shred, duration):
+        """Acid: armor drops by `shred` while the timer runs (restored afterwards)."""
+        if not hasattr(self, "base_armor"):
+            self.base_armor = self.health.armor
+        self.corrode_timer = max(getattr(self, "corrode_timer", 0.0), duration)
+        self.health.armor = max(0, min(self.health.armor, self.base_armor - shred))
+
     def apply_burn(self, dps, duration):
         self.burn_dps = max(self.burn_dps, dps)
         self.burn_timer = max(self.burn_timer, duration)
@@ -246,6 +253,10 @@ class Enemy(pygame.sprite.Sprite):
             self.slow_timer -= dt
             if self.slow_timer <= 0:
                 self.slow = 0.0
+        if getattr(self, "corrode_timer", 0) > 0:
+            self.corrode_timer -= dt
+            if self.corrode_timer <= 0:
+                self.health.armor = self.base_armor
         if self.burn_timer > 0:
             self.burn_timer -= dt
             self.system.damage(self, self.burn_dps * dt, ignore_armor=True, quiet=True)

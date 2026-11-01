@@ -27,6 +27,7 @@ class PlayerSystem:
         self.commander = Commander(self, self.find_spawn())
         self.orbital = Cooldown(S.ORBITAL_COOLDOWN, ready=True)
         self.orbital_damage = S.ORBITAL_DAMAGE   # Siege Run augments can raise this
+        self.orbital_radius = S.ORBITAL_RADIUS
         self.aiming_orbital = False
         self.strikes = []   # [x, y, time_left]
 
@@ -68,10 +69,10 @@ class PlayerSystem:
         return True
 
     def _detonate(self, x, y):
-        self.enemies.splash(x, y, S.ORBITAL_RADIUS, self.orbital_damage, include_air=True, knockback=24)
+        self.enemies.splash(x, y, self.orbital_radius, self.orbital_damage, include_air=True, knockback=24)
         for _ in range(3):
             self.effects.explosion(x, y, S.ORANGE, count=30)
-        self.effects.ring(x, y, S.ORBITAL_RADIUS, S.WHITE, 0.5, width=4)
+        self.effects.ring(x, y, self.orbital_radius, S.WHITE, 0.5, width=4)
         self.effects.shake(0.7)
         self.effects.flash(S.WHITE, 0.15)
         self.audio.play("explode")
@@ -91,7 +92,7 @@ class PlayerSystem:
         for x, y, t in self.strikes:
             # Shrinking targeting circle while the strike charges.
             frac = t / S.ORBITAL_DELAY
-            r = int(S.ORBITAL_RADIUS * (0.3 + 0.7 * frac))
+            r = int(self.orbital_radius * (0.3 + 0.7 * frac))
             pygame.draw.circle(screen, S.RED, (int(x + offset[0]), int(y + offset[1])), r, 2)
             pygame.draw.line(screen, S.RED, (x - 8, y), (x + 8, y), 2)
             pygame.draw.line(screen, S.RED, (x, y - 8), (x, y + 8), 2)
@@ -99,9 +100,9 @@ class PlayerSystem:
     def render_aim(self, screen, mouse):
         if not self.aiming_orbital or mouse[1] >= S.MAP_H:
             return
-        size = S.ORBITAL_RADIUS * 2 + 4
+        size = self.orbital_radius * 2 + 4
         surf = pygame.Surface((size, size), pygame.SRCALPHA)
         c = size // 2
-        pygame.draw.circle(surf, (*S.RED, 50), (c, c), S.ORBITAL_RADIUS)
-        pygame.draw.circle(surf, (*S.RED, 200), (c, c), S.ORBITAL_RADIUS, 2)
+        pygame.draw.circle(surf, (*S.RED, 50), (c, c), self.orbital_radius)
+        pygame.draw.circle(surf, (*S.RED, 200), (c, c), self.orbital_radius, 2)
         screen.blit(surf, (mouse[0] - c, mouse[1] - c))

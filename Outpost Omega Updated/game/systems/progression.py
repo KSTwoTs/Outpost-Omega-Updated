@@ -68,20 +68,63 @@ def apply_perk(play, perk):
         play.player.orbital.duration *= 0.8
     elif perk == "salvager":
         play.kill_bonus += 2
+    elif perk == "second_wind":
+        cmd.respawn_time *= 0.6
+    elif perk == "kinetic":
+        play.player.orbital_damage *= 1.4
+    elif perk == "wide_strike":
+        play.player.orbital_radius *= 1.3
+    elif perk == "supply_run":
+        play.session.energy += 60
+    elif perk == "core_medic":
+        s = play.session
+        s.core_hp = min(s.core_max, s.core_hp + 15)
+    elif perk == "plating":
+        cmd.damage_taken *= 0.75
+    elif perk == "tuning":
+        _scale_tower_stats(play, ("damage", "dps", "burn_dps"), 1.08)
+    elif perk == "calibration":
+        _scale_tower_stats(play, ("range",), 1.06)
+    elif perk == "hollow_point":
+        cmd.blaster_damage *= 1.15
+        cmd.blaster_range *= 1.1
+    elif perk == "coolant":
+        cmd.blaster.duration /= 1.1
+        play.player.orbital.duration *= 0.9
+
+
+def _scale_tower_stats(play, stats, mult):
+    """Perks that buff every tower patch this sector's copy of the tower data
+    (built towers share it, so they update immediately)."""
+    for d in play.towers.data.values():
+        for tier in d["tiers"] + [br["stats"] for br in d.get("branches", [])]:
+            for stat in stats:
+                if stat in tier:
+                    tier[stat] = round(tier[stat] * mult, 2)
 
 
 class CoreUpgrades:
     COSTS = [120, 200, 300]
+    KIND_COSTS = {"reactor": [100, 160, 240], "nova": [150, 240, 340], "plating": [90, 150, 220]}
     TURRET_DAMAGE = [0, 8, 14, 22]
     TURRET_RATE = 2.0
     TURRET_RANGE = 170
     SHIELD = [0, 10, 20, 35]      # Core damage soaked per wave
     REGEN = [0, 3, 6, 10]         # Core HP restored after each wave
-    NAMES = {"turret": "Gun", "shield": "Shield", "regen": "Regen"}
+    REACTOR = [0, 15, 30, 50]     # Energy after each wave
+    NOVA = [0, 25, 50, 90]        # shockwave damage around the Core every NOVA_EVERY seconds
+    NOVA_EVERY = 10.0
+    NOVA_RANGE = 130
+    PLATING = [0, 20, 40, 70]     # extra Core max HP (this sector)
+    ORDER = ("turret", "shield", "regen", "reactor", "nova", "plating")
+    NAMES = {"turret": "Gun", "shield": "Shield", "regen": "Regen",
+             "reactor": "Reactor", "nova": "Nova", "plating": "Plating"}
 
     def __init__(self, play):
         self.play = play
-        self.levels = {"turret": 0, "shield": 0, "regen": 0}
+        self.levels = {k: 0 for k in self.ORDER}
+        self.nova_timer = self.NOVA_EVERY
+        self.bonus_shield = 0       # free shield every wave (augments)
         self.shield_hp = 0.0
         self.cooldowns = [0.0 for _ in play.level.core_positions]
         self.angles = [0.0 for _ in play.level.core_positions]
@@ -90,7 +133,8 @@ class CoreUpgrades:
 
     def cost(self, kind):
         lvl = self.levels[kind]
-        return self.COSTS[lvl] if lvl < len(self.COSTS) else None
+        costs = self.KIND_COSTS.get(kind, self.COSTS)
+        return costs[lvl] if lvl < len(costs) else None
 
     def upgrade(self, kind):
         cost = self.cost(kind)
@@ -106,17 +150,26 @@ class CoreUpgrades:
         self.levels[kind] += 1
         if kind == "shield":
             self.shield_hp = max(self.shield_hp, self.SHIELD[self.levels["shield"]])
+        if kind == "plating":
+            lvl = self.levels["plating"]
+            gain = self.PLATING[lvl] - self.PLATING[lvl - 1]
+            s.core_max += gain
+            s.core_hp += gain
         for x, y in self.play.level.core_positions:
             self.play.effects.ring(x, y, 40, S.CYAN, 0.5, width=4)
         self.play.audio.play("upgrade")
         return True
 
     def on_wave_started(self, **_):
-        self.shield_hp = self.SHIELD[self.levels["shield"]]
+        self.shield_hp = self.SHIELD[self.levels["shield"]] + self.bonus_shield
 
     def on_wave_cleared(self, **_):
         heal = self.REGEN[self.levels["regen"]]
         s = self.play.session
+        energy = self.REACTOR[self.levels["reactor"]]
+        if energy and not self.play.result:
+            s.energy += energy
+            self.play.ui.toast(f"Core reactor: +{energy} Energy", S.ENERGY)
         if heal and s.core_hp < s.core_max:
             s.core_hp = min(s.core_max, s.core_hp + heal)
             self.play.ui.toast(f"Core regenerated {heal} HP", S.GREEN)
@@ -127,7 +180,30 @@ class CoreUpgrades:
         self.shield_hp -= soaked
         return damage - soaked
 
+    def update_nova(self, dt):
+        lvl = self.levels["nova"]
+        if not lvl:
+            return
+        self.nova_timer -= dt
+        if self.nova_timer > 0:
+            return
+        play = self.play
+        hit = False
+        for x, y in play.level.core_positions:
+            for e in play.collision.enemies_in_range(x, y, self.NOVA_RANGE, True):
+                play.enemies.damage(e, self.NOVA[lvl])
+                e.apply_stun(0.5)
+                hit = True
+            if hit:
+                play.effects.ring(x, y, self.NOVA_RANGE, S.CYAN, 0.45, width=4)
+        if hit:
+            play.audio.play("shield")
+            self.nova_timer = self.NOVA_EVERY
+        else:
+            self.nova_timer = 0.5   # wait for something to come close
+
     def on_update(self, dt):
+        self.update_nova(dt)
         lvl = self.levels["turret"]
         if not lvl:
             return

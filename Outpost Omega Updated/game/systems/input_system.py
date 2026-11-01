@@ -39,6 +39,10 @@ KEY_BINDINGS = {
     pygame.K_MINUS: ("select_tower", 11),
     pygame.K_EQUALS: ("select_tower", 12),
     pygame.K_BACKSLASH: ("select_tower", 13),
+    pygame.K_z: ("select_tower", 14),
+    pygame.K_c: ("select_tower", 15),
+    pygame.K_v: ("select_tower", 16),
+    pygame.K_b: ("select_tower", 17),
     pygame.K_RETURN: ("confirm", None),
     pygame.K_f: ("cycle_speed", None),
 }
@@ -53,8 +57,17 @@ REPAIR_KEYS = (pygame.K_e,)
 
 
 class InputSystem:
+    # (x offset, y offset, scale) of the game canvas inside the window; GameManager.present
+    # updates it every frame so clicks land in the right place when the window is resized.
+    viewport = (0, 0, 1.0)
+
     def __init__(self):
         self.quit_requested = False
+
+    @classmethod
+    def to_canvas(cls, pos):
+        x0, y0, scale = cls.viewport
+        return (int((pos[0] - x0) / scale), int((pos[1] - y0) / scale))
 
     def process(self, event):
         """Return a list of Commands for one pygame event."""
@@ -67,9 +80,9 @@ class InputSystem:
                 cmds.append(Command(bound[0], value=bound[1]))
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                cmds.append(Command("click", pos=event.pos))
+                cmds.append(Command("click", pos=self.to_canvas(event.pos)))
             elif event.button == 3:
-                cmds.append(Command("right_click", pos=event.pos))
+                cmds.append(Command("right_click", pos=self.to_canvas(event.pos)))
         return cmds
 
     @staticmethod
@@ -93,6 +106,6 @@ class InputSystem:
     def shift_held():
         return bool(pygame.key.get_mods() & pygame.KMOD_SHIFT)
 
-    @staticmethod
-    def mouse_pos():
-        return pygame.mouse.get_pos()
+    @classmethod
+    def mouse_pos(cls):
+        return cls.to_canvas(pygame.mouse.get_pos())

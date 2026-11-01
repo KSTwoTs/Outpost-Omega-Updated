@@ -609,7 +609,7 @@ class RunEndScene(_RunScene):
 
 # ---- tech lab ---------------------------------------------------------------------------------
 class TechLabScene(Scene):
-    CARD_W, CARD_H, GAP = 280, 190, 20
+    CARD_W, CARD_H, GAP, COLS = 232, 98, 10, 5
 
     def __init__(self, game, **kwargs):
         super().__init__(game, **kwargs)
@@ -619,10 +619,10 @@ class TechLabScene(Scene):
         self.picker = CommanderPicker(game, 590)
 
     def card_rects(self):
-        cols = 4
+        cols = self.COLS
         x0 = S.SCREEN_W // 2 - (cols * self.CARD_W + (cols - 1) * self.GAP) // 2
         return [pygame.Rect(x0 + (i % cols) * (self.CARD_W + self.GAP),
-                            170 + (i // cols) * (self.CARD_H + self.GAP), self.CARD_W, self.CARD_H)
+                            146 + (i // cols) * (self.CARD_H + self.GAP), self.CARD_W, self.CARD_H)
                 for i in range(len(self.ids))]
 
     def handle_command(self, cmd):
@@ -645,10 +645,10 @@ class TechLabScene(Scene):
     def on_render(self, screen):
         a = self.assets
         self.bg.draw(screen)
-        t = a.text("COMMAND TECH LAB", 60, S.CYAN, True)
-        screen.blit(t, t.get_rect(center=(S.SCREEN_W // 2, 70)))
+        t = a.text("COMMAND TECH LAB", 56, S.CYAN, True)
+        screen.blit(t, t.get_rect(center=(S.SCREEN_W // 2, 56)))
         s = a.text(f"Salvage: {self.game.salvage}", 30, S.ENERGY, True)
-        screen.blit(s, s.get_rect(center=(S.SCREEN_W // 2, 122)))
+        screen.blit(s, s.get_rect(center=(S.SCREEN_W // 2, 104)))
         mouse = self.input.mouse_pos()
         ranks = self.game.tech_ranks
         for rect, tid in zip(self.card_rects(), self.ids):
@@ -661,13 +661,14 @@ class TechLabScene(Scene):
             pygame.draw.rect(screen, S.PANEL_HI if hover else S.PANEL, rect, border_radius=10)
             edge = S.GREEN if maxed else (S.CYAN if afford else S.HUD_EDGE)
             pygame.draw.rect(screen, edge, rect, 3 if hover else 2, border_radius=10)
-            screen.blit(a.text(node["name"], 24, S.WHITE, True), (rect.x + 14, rect.y + 12))
-            blit_lines(screen, wrap(a, node["desc"], 18, rect.w - 28, S.TEXT_DIM), rect.x + 14, rect.y + 44)
+            screen.blit(a.text(node["name"], 20, S.WHITE, True), (rect.x + 10, rect.y + 8))
+            blit_lines(screen, wrap(a, node["desc"], 16, rect.w - 20, S.TEXT_DIM)[:2], rect.x + 10, rect.y + 28)
             for i in range(maxr):
-                pip = pygame.Rect(rect.x + 14 + i * 26, rect.bottom - 64, 20, 12)
-                pygame.draw.rect(screen, S.CYAN if i < rank else S.STEEL_DARK, pip, border_radius=3)
+                pip = pygame.Rect(rect.x + 10 + i * 18, rect.bottom - 18, 14, 8)
+                pygame.draw.rect(screen, S.CYAN if i < rank else S.STEEL_DARK, pip, border_radius=2)
             label, color = ("MAXED", S.GREEN) if maxed else (f"{cost} Salvage", S.ENERGY if afford else S.RED)
-            screen.blit(a.text(label, 22, color, True), (rect.x + 14, rect.bottom - 40))
+            lab = a.text(label, 18, color, True)
+            screen.blit(lab, lab.get_rect(bottomright=(rect.right - 10, rect.bottom - 8)))
         self.picker.draw(screen, a, mouse)
         hint = a.text("Upgrades and the Commander apply when a new Siege Run starts.", 20, S.TEXT_DIM)
         screen.blit(hint, hint.get_rect(center=(S.SCREEN_W // 2, S.SCREEN_H - 40)))

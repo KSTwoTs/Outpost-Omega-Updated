@@ -47,6 +47,8 @@ class Tower:
         self.tier = 0
         self.branch = None               # tier-4 branch index (Siege Run only)
         self.range_buff = 0.0            # from nearby Radar Relays, refreshed every frame
+        self.damage_buff = 0.0           # Targeting Uplink relays
+        self.haste = 0.0                 # Overclock Station repair bays
         self.kills = 0                   # veterancy
         self.spent = data["cost"]
         self.health = Health(data.get("hp", 100))
@@ -79,7 +81,7 @@ class Tower:
 
     @property
     def vet_mult(self):
-        return 1.0 + VET_BONUS * self.vet_rank
+        return 1.0 + VET_BONUS * getattr(self.system, "vet_bonus_mult", 1.0) * self.vet_rank
 
     def record_kill(self):
         before = self.vet_rank
@@ -125,7 +127,7 @@ class Tower:
 
     @property
     def fire_rate_mult(self):
-        return 2.0 if self.overcharge_timer > 0 else 1.0
+        return (2.0 if self.overcharge_timer > 0 else 1.0) * (1.0 + self.haste)
 
     def _interval(self):
         rate = self.stats.get("fire_rate", 1.0)
@@ -175,7 +177,7 @@ class Tower:
         x, y = self.x + offset[0], self.y + offset[1]
         look = self.look
         assets.blit_centered(screen, "tower_base" + ("_b" if look.startswith("_b") else look), (x, y))
-        if self.behavior in ("aura", "gravity", "income", "support"):
+        if self.behavior in ("aura", "gravity", "income", "support", "repair", "shockwave"):
             angle = (self.pulse_t * 40) % 360   # slow spin
         else:
             angle = -math.degrees(self.angle)

@@ -7,7 +7,7 @@ import pygame
 from .. import settings as S
 from ..core.spatial_hash import dist_sq
 from ..entities.tower import Tower
-from .tower_art import draw_mine
+from .tower_art import draw_beam, draw_mine, draw_puddle
 
 
 # ---- targeting strategies --------------------------------------------------
@@ -43,6 +43,7 @@ class TowerSystem:
         self.allow_branches = False # tier-4 branches are a Siege Run feature
         self.shells = []            # mortar shells in flight: [x, y, t_left, t_total, sx, sy, damage, splash, owner]
         self.mines = []             # armed mines: [x, y, damage, splash, owner]
+        self.puddles = []           # acid pools: [x, y, radius, dps, t_left, t_total, shred, owner]
         self.barricades = []        # active barricades (enemies stop and chew), refreshed every frame
         events.subscribe("wave_cleared", self.on_wave_cleared)
         self.build_kind = None      # tower type being placed (build mode)
@@ -61,8 +62,12 @@ class TowerSystem:
             "income": self._behavior_none,
             "drones": self._behavior_drones,
             "mines": self._behavior_mines,
-            "barricade": self._behavior_none,
+            "barricade": self._behavior_barricade,
             "support": self._behavior_none,
+            "beam": self._behavior_beam,
+            "acid": self._behavior_acid,
+            "repair": self._behavior_repair,
+            "shockwave": self._behavior_shockwave,
         }
 
     # ---- build mode ------------------------------------------------------------
@@ -165,6 +170,9 @@ class TowerSystem:
             return False
         self.session.energy -= cost
         tower.choose_branch(index)
+        if "max_hp" in tower.stats:   # Barricade branches
+            tower.health.max_hp = tower.stats["max_hp"]
+            tower.health.hp = tower.health.max_hp
         self.effects.ring(tower.x, tower.y, 36, S.MAGENTA, 0.5, width=4)
         self.effects.burst(tower.x, tower.y, S.MAGENTA, 20, 160, 0.5, 3)
         self.audio.play("upgrade")
@@ -176,9 +184,13 @@ class TowerSystem:
         total = 0
         for t in self.towers:
             if t.behavior == "income" and not t.health.is_dead:
-                gain = t.stats.get("income", 0)
+                gain = int(round(t.stats.get("income", 0)))
                 total += gain
                 self.effects.floating_text(t.x, t.y - 18, f"+{gain}", S.ENERGY, 20)
+                heal = t.stats.get("core_heal", 0)   # Overflow Core branch
+                s = self.session
+                if heal and s.core_hp < s.core_max:
+                    s.core_hp = min(s.core_max, s.core_hp + heal)
         if total:
             self.session.energy += total
             self.events.publish("toast", text=f"Harvesters: +{total} Energy", color=S.ENERGY)
@@ -394,13 +406,118 @@ class TowerSystem:
         if not candidates or not tower.cooldown.ready:
             return
         tower.cooldown.trigger()
-        pull = tower.stats["pull"]
+        st = tower.stats
+        pull = st["pull"]
         for e in candidates:
             e.knockback(pull)
             e.apply_slow(0.3, 1.0)
+            if st.get("stun"):      # Stasis Field
+                e.apply_stun(st["stun"])
+            if st.get("damage"):    # Singularity
+                self.enemies.damage(e, st["damage"], quiet=True, source=tower)
         self.effects.ring(tower.x, tower.y, tower.range, S.MAGENTA, 0.5, width=4)
         self.effects.ring(tower.x, tower.y, tower.range * 0.5, S.MAGENTA, 0.4, width=2)
         self.audio.play("shield")
+
+    def _behavior_barricade(self, tower, dt):
+        """Barricade: just sits on the path. Shock Barricade zaps whatever is chewing it."""
+        tower.target = None
+        thorns = tower.stats.get("thorns", 0)
+        if thorns:
+            for e in self.collision.enemies_in_range(tower.x, tower.y, 26, False):
+                self.enemies.damage(e, thorns * dt, ignore_armor=True, quiet=True, source=tower)
+            if random.random() < dt * 3:
+                self.effects.lightning([(tower.x, tower.y), (tower.x + random.uniform(-18, 18),
+                                                             tower.y + random.uniform(-18, 18))], S.CYAN)
+
+    def _behavior_beam(self, tower, dt):
+        """Laser Lance: continuous beam(s). Damage ramps from dps up to dps x ramp while
+        the beam stays on the same alien; switching targets resets the ramp."""
+        st = tower.stats
+        candidates = self.collision.enemies_in_range(tower.x, tower.y, tower.range, tower.can_target_air)
+        beams = int(st.get("beams", 1))
+        locks = tower.__dict__.setdefault("locks", {})     # enemy -> seconds held
+        targets = []
+        first = pick_target(tower, candidates)
+        if first is not None:
+            targets.append(first)
+            rest = sorted((e for e in candidates if e is not first),
+                          key=lambda e: dist_sq(first.pos.x, first.pos.y, e.pos.x, e.pos.y))
+            targets += rest[:beams - 1]
+        tower.target = first
+        tower.beam_targets = targets
+        for e in list(locks):
+            if e not in targets:
+                del locks[e]
+        if first is not None:
+            tower.aim_at(first.pos.x, first.pos.y)
+        ramp_time = max(0.1, st.get("ramp_time", 3.0))
+        for e in targets:
+            held = locks.get(e, 0.0) + dt
+            locks[e] = held
+            mult = 1.0 + (st.get("ramp", 1.0) - 1.0) * min(1.0, held / ramp_time)
+            self.enemies.damage(e, st["dps"] * mult * dt * tower.fire_rate_mult, ignore_armor=True,
+                                quiet=True, source=tower)
+        if targets and random.random() < dt * 6:
+            self.audio.play("zap")
+
+    def _behavior_acid(self, tower, dt):
+        """Acid Spitter: lobs acid at the target's feet; the pool damages and strips armor."""
+        st = tower.stats
+        candidates = self.collision.enemies_in_range(tower.x, tower.y, tower.range, False)
+        target = pick_target(tower, candidates)
+        tower.target = target
+        if target is None:
+            return
+        tower.aim_at(target.pos.x, target.pos.y)
+        if not tower.cooldown.ready:
+            return
+        tower.cooldown.trigger()
+        x, y = target.future_position(0.4)
+        self.puddles.append([x, y, st["radius"], st["dps"], st["duration"], st["duration"],
+                             st.get("shred", 0), tower])
+        self.effects.burst(x, y, S.ACID, 10, 120, 0.35, 3)
+        self.effects.muzzle(tower.x, tower.y, tower.angle)
+        self.audio.play("shoot")
+
+    def update_puddles(self, dt):
+        for p in self.puddles:
+            p[4] -= dt
+            x, y, radius, dps, _left, _total, shred, owner = p
+            for e in self.collision.enemies_in_range(x, y, radius, False):
+                self.enemies.damage(e, dps * dt, ignore_armor=True, quiet=True, source=owner)
+                if shred:
+                    e.corrode(shred, 1.0)
+        self.puddles = [p for p in self.puddles if p[4] > 0 and p[7] in self.towers]
+
+    def _behavior_repair(self, tower, dt):
+        """Repair Bay: heals every tower in range, including broken ones."""
+        tower.target = None
+        heal = tower.stats.get("heal", 0) * dt
+        r2 = tower.range ** 2
+        healing = False
+        for t in self.towers:
+            if t is not tower and t.health.ratio < 1 and dist_sq(t.x, t.y, tower.x, tower.y) <= r2:
+                t.health.heal(heal)
+                healing = True
+        if healing and int(tower.pulse_t * 2) != int((tower.pulse_t - dt) * 2):
+            self.effects.ring(tower.x, tower.y, tower.range, S.GREEN, 0.5, width=2)
+
+    def _behavior_shockwave(self, tower, dt):
+        """Sonic Disruptor: a shockwave hits every ground alien in range and stuns it."""
+        st = tower.stats
+        candidates = self.collision.enemies_in_range(tower.x, tower.y, tower.range, tower.can_target_air)
+        tower.target = candidates[0] if candidates else None
+        if not candidates or not tower.cooldown.ready:
+            return
+        tower.cooldown.trigger()
+        for e in candidates:
+            self.enemies.damage(e, st["damage"], ignore_armor=bool(st.get("pierce_armor")), source=tower)
+            e.apply_stun(st.get("stun", 0))
+        self.effects.ring(tower.x, tower.y, tower.range, S.STEEL_LIGHT, 0.35, width=3)
+        self.effects.ring(tower.x, tower.y, tower.range * 0.6, S.WHITE, 0.25, width=2)
+        self.effects.shake(0.04)
+        self.audio.play("explode")
 
     def _behavior_drones(self, tower, dt):
         """Drone Bay: drones swarm the target anywhere in range and shoot it up close."""
@@ -473,13 +590,20 @@ class TowerSystem:
     def update_buffs(self):
         """Radar Relays raise the range of towers around them (strongest relay wins)."""
         relays = [t for t in self.towers if t.behavior == "support" and t.fsm.name == "active"]
+        hasters = [t for t in self.towers if t.stats.get("haste") and t.fsm.name == "active"]
         for t in self.towers:
-            best = 0.0
+            best, dmg, haste = 0.0, 0.0, 0.0
             if t.behavior != "support":
                 for r in relays:
                     if dist_sq(t.x, t.y, r.x, r.y) <= r.stats["range"] ** 2:
                         best = max(best, r.stats.get("buff", 0.0))
+                        dmg = max(dmg, r.stats.get("damage_buff", 0.0))
+            for h in hasters:   # Overclock Station
+                if h is not t and dist_sq(t.x, t.y, h.x, h.y) <= h.range ** 2:
+                    haste = max(haste, h.stats["haste"])
             t.range_buff = best
+            t.damage_buff = dmg
+            t.haste = haste
 
     def update_shells(self, dt):
         for s in self.shells:
@@ -506,9 +630,13 @@ class TowerSystem:
             t.update(dt)
         self.update_shells(dt)
         self.update_mines()
+        self.update_puddles(dt)
 
     def on_render(self, screen, assets, offset):
         blink = (pygame.time.get_ticks() // 300) % 2
+        for x, y, radius, _dps, left, total, _sh, owner in self.puddles:
+            draw_puddle(screen, (x + offset[0], y + offset[1]), radius, min(1.0, left / 0.6),
+                        min(owner.tier, 2) if owner.branch is None else 2)
         for x, y, _d, _s, owner in self.mines:   # mines/drones/shells match their tower's tier
             draw_mine(screen, (x + offset[0], y + offset[1]), min(owner.tier, 2), blink)
         for t in self.towers:
@@ -519,6 +647,11 @@ class TowerSystem:
                 for d in drones:
                     assets.blit_centered(screen, name, (d["x"] + offset[0], d["y"] + offset[1]),
                                          angle=-math.degrees(d["a"]))
+        for t in self.towers:
+            if t.behavior == "beam" and t.fsm.name == "active":
+                for e in getattr(t, "beam_targets", []):
+                    draw_beam(screen, (t.x + offset[0], t.y + offset[1]), (e.pos.x + offset[0], e.pos.y + offset[1]),
+                              t.locks.get(e, 0.0) / max(0.1, t.stats.get("ramp_time", 3.0)), t.branch)
         for x, y, left, total, sx, sy, _d, splash, owner in self.shells:
             k = 1 - left / total
             px = sx + (x - sx) * k + offset[0]

@@ -1,18 +1,89 @@
 {
   "vanguard": {
     "name": "Vanguard",
+    "callsign": "VANCE",
     "desc": "+40% HP, +15% move speed, +60% blaster damage",
     "effects": [{"type": "cmd_hp", "mult": 1.4}, {"type": "cmd_speed", "mult": 1.15},
                 {"type": "blaster_damage", "mult": 1.6}]
   },
   "engineer": {
     "name": "Engineer",
+    "callsign": "VANCE",
     "desc": "Towers cost 10% less, repairs are twice as fast",
     "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.9}, {"type": "repair_speed", "mult": 2.0}]
   },
   "tactician": {
     "name": "Tactician",
+    "callsign": "VANCE",
     "desc": "Orbital Strike cooldown -35%, damage +25%",
     "effects": [{"type": "orbital_cooldown", "mult": 0.65}, {"type": "orbital_damage", "mult": 1.25}]
+  },
+  "ignis": {
+    "name": "Ignis",
+    "callsign": "IGNIS",
+    "modes": ["endless", "run"],
+    "desc": "Pyro: Flamer and Acid Spitter +35% damage, burns +40%, Mortar +20% damage",
+    "palette": {"S": [240, 170, 130], "s": [200, 90, 60], "d": [120, 50, 40], "c": [255, 200, 60],
+                "o": [255, 90, 40], "y": [255, 230, 120]},
+    "effects": [{"type": "tower_stat", "tower": "flamer", "stat": "damage", "mult": 1.35},
+                {"type": "tower_stat", "tower": "flamer", "stat": "burn_dps", "mult": 1.4},
+                {"type": "tower_stat", "tower": "acid", "stat": "dps", "mult": 1.35},
+                {"type": "tower_stat", "tower": "mortar", "stat": "damage", "mult": 1.2}]
+  },
+  "rime": {
+    "name": "Rime",
+    "callsign": "RIME",
+    "modes": ["endless", "run"],
+    "desc": "Cryo: Cryo slow +10%, slowed aliens take +25% damage, +20% Commander HP",
+    "palette": {"S": [225, 240, 255], "s": [150, 190, 230], "d": [80, 110, 160], "c": [200, 250, 255],
+                "o": [120, 200, 255], "y": [255, 255, 255]},
+    "effects": [{"type": "tower_stat", "tower": "cryo", "stat": "slow", "add": 0.1},
+                {"type": "slowed_damage", "mult": 1.25}, {"type": "cmd_hp", "mult": 1.2}]
+  },
+  "bastion": {
+    "name": "Bastion",
+    "callsign": "BASTION",
+    "modes": ["endless", "run"],
+    "desc": "Defender: towers +50% HP, Core repairs 2 HP a wave, takes 30% less damage",
+    "palette": {"S": [230, 215, 160], "s": [170, 150, 90], "d": [100, 85, 50], "c": [255, 214, 60],
+                "o": [140, 152, 168], "y": [255, 240, 160]},
+    "effects": [{"type": "tower_hp", "mult": 1.5}, {"type": "wave_heal", "add": 2},
+                {"type": "cmd_armor", "mult": 0.7}]
+  },
+  "kestrel": {
+    "name": "Kestrel",
+    "callsign": "KESTREL",
+    "modes": ["endless", "run"],
+    "desc": "Swarm: Drone Bays +1 drone and +25% damage, Mine Layers +2 mines, Sonic +20%",
+    "palette": {"S": [190, 235, 170], "s": [110, 170, 90], "d": [60, 100, 50], "c": [110, 230, 60],
+                "o": [80, 220, 110], "y": [220, 255, 160]},
+    "effects": [{"type": "tower_stat", "tower": "drone", "stat": "drones", "add": 1},
+                {"type": "tower_stat", "tower": "drone", "stat": "damage", "mult": 1.25},
+                {"type": "tower_stat", "tower": "mines", "stat": "max_mines", "add": 2},
+                {"type": "tower_stat", "tower": "sonic", "stat": "damage", "mult": 1.2}]
+  },
+  "ledger": {
+    "name": "Ledger",
+    "callsign": "LEDGER",
+    "modes": ["endless", "run"],
+    "desc": "Economist: +120 start Energy, +12 a wave, upgrades -15%, but blaster -40%",
+    "palette": {"S": [240, 225, 180], "s": [120, 110, 140], "d": [60, 55, 80], "c": [255, 214, 60],
+                "o": [255, 214, 60], "y": [255, 255, 200]},
+    "effects": [{"type": "start_energy", "add": 120}, {"type": "wave_energy", "add": 12},
+                {"type": "kill_reward", "mult": 1.1}, {"type": "upgrade_discount", "mult": 0.85},
+                {"type": "blaster_damage", "mult": 0.6}]
+  },
+  "hawk": {
+    "name": "Hawk",
+    "callsign": "HAWK",
+    "modes": ["endless", "run"],
+    "desc": "Sniper: Railgun and Laser +25% damage and +15% range, 10% tower crits",
+    "palette": {"S": [200, 200, 210], "s": [90, 90, 110], "d": [45, 45, 60], "c": [235, 60, 60],
+                "o": [235, 60, 60], "y": [255, 180, 180]},
+    "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "damage", "mult": 1.25},
+                {"type": "tower_stat", "tower": "railgun", "stat": "range", "mult": 1.15},
+                {"type": "tower_stat", "tower": "laser", "stat": "dps", "mult": 1.25},
+                {"type": "tower_stat", "tower": "laser", "stat": "range", "mult": 1.15},
+                {"type": "blaster_range", "mult": 1.4}, {"type": "crit_chance", "add": 0.1}]
   }
 }
