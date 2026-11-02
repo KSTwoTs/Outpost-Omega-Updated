@@ -234,6 +234,27 @@ with a `modes` list; `palette` recolors the Commander sprite.
 every 10 s), Plating (+20/40/70 Core max HP). **Tech Lab:** 20 upgrades, most with
 more ranks.
 
+## Phase 5 (in progress)
+
+Nothing below is built yet. Full details and the task checklist are in `DESIGN.md`.
+
+| Area | Planned |
+|---|---|
+| Towers | Shield Projector, Decoy Beacon, Plasma Fence, Chrono Spire, Mirror Array, Flak Cannon, Ion Cannon, Hacker Spire, Magnet Coil, Tar Pit, Lightning Rod, Bio-Lab, Overclocker, Uplink Dish, Bait Pod |
+| Tower systems | Adjacency bonuses, power grid, sockets, relocate, named veterans, tower fusion, Focus/Suppress stance |
+| Enemies | Adaptive, Thief, Leech, Phaser, Reflector, Swarm Mind, Necro-Spore, Infector, Blob, Bomber, Jammer, Artillery Grub, Pathcutter, Swarm Queenlet |
+| Bosses | Mothership, Hive Mind, Fallen Commander, Acid Leviathan, Nest Heart, Architect |
+| Commander | Dash, weapon pickups, grenades, mech suit ultimate, carry system, drone buddy, gear loadout, skins |
+| Modes | Local co-op, Boss Rush, Puzzle, Last Stand, Reverse, Ascension, Weekly Challenge, Hardcore, Sandbox, Story campaign |
+| Siege Run | Rest, Forge, Gamble and Mini-boss nodes; relic sets; boss relics; alien factions; shareable seeds; hero starting decks; run-wide events; debt merchant |
+| Maps | High ground, overheat on hot maps (Magma Forge, Desert Outpost, new Heatwave weather), destructible terrain, day/night, rising tide, switches and gates, teleporters, supply drops, meteor showers, wildlife, resource nodes, earthquakes |
+| New sectors | Jungle, Crystal Caves, Ruined City, Gas Giant Station |
+| Economy | Biomass, interest, black market, insurance, research queue |
+| Meta | Achievements, Codex, tower mastery, profile stats, local leaderboards, unlock progression |
+| QoL | Undo placement, post-wave stats, key rebinding and controller, colorblind mode, settings menu, tutorial, wave timeline, combo tooltips |
+| Juice | Adaptive music, boss-kill slow-mo, goo splats, tower destruction, radio chatter, low-Core tint |
+| Wild ideas | Tameable alien pet, alien towers, Living Core, tower sacrifice, map editor and mod folder, itch.io release |
+
 ## Still to build
 
 | Feature | Where |

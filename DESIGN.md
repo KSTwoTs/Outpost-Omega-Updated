@@ -1,12 +1,12 @@
 # Outpost Omega: Endless & Roguelike Design
 
-Oct 30, 2026 · Trenton McDonald
+Oct 30, 2026 · Trenton McDonald · Updated Nov 1, 2026
 
 Living version: https://claude.ai/artifact/RuWnHzqEDZ2rVH8YT4z4m7 (this file is a snapshot of it).
 
 ## Overview
 
-Outpost Omega grows from a 3-sector campaign into a replayable game: an Endless mode first, then a roguelike Siege Run built on top of it, then batches of new towers, enemies and maps.
+Outpost Omega grows from a 3-sector campaign into a replayable game: an Endless mode first, then a roguelike Siege Run built on top of it, then batches of new towers, enemies and maps. Phases 1–4 are done; Phase 5 (a large expansion) is in progress.
 
 The base game already has 3 sectors of 10 waves, 5 towers with 3 tiers, 6 enemies including the Hive Overseer boss, Commander Vance, a loot table and a 3-star rating. Stats live in JSON, systems talk over the EventBus, and enemies route with A*. Most additions are new JSON entries plus one new system each.
 
@@ -148,6 +148,185 @@ Five new sectors each add one mechanic the current three don't have.
 - **Core upgrades:** spend energy on Core turrets, a shield, or HP regeneration
 - **Daily seed:** the same endless run for everyone that day, with a local score log
 
+## Phase 4: More towers, branches and heroes (done)
+
+Four towers that fill the remaining gaps (ramping damage, armor stripping, repair and crowd control), a tier-4 branch for every tower, and heroes for Endless and Siege Run.
+
+| Tower | Behavior | Role |
+| --- | --- | --- |
+| Laser Lance | Continuous beam whose damage ramps the longer it holds one alien | Boss and tank killer |
+| Acid Spitter | Lobs acid that pools on the path, melting aliens and stripping armor | Anti-armor |
+| Repair Bay | No attack; repairs towers in range, broken ones included | Support |
+| Sonic Disruptor | Shockwaves hit every ground alien in range and stun them | Crowd control |
+
+**Tier-4 branches for every tower** (Siege Run): Flamer (Dragon's Breath / Napalm Sprayer), Mortar (Siege Cannon / Rapid Battery), Gravity Well (Singularity / Stasis Field), Harvester (Energy Refinery / Overflow Core), Radar Relay (Targeting Uplink / Overwatch Array), Drone Bay (Drone Swarm / Gunship Wing), Barricade (Bulwark Wall / Shock Barricade), Mine Layer (Minefield / Cluster Charges), Laser Lance (Prism Lance / Annihilator), Acid Spitter (Corrosive Bath / Toxic Flood), Repair Bay (Nanite Forge / Overclock Station), Sonic Disruptor (Earthshaker / Resonance Cannon). Every tier and branch has its own look.
+
+**Heroes** (Endless and Siege Run): Ignis (fire), Rime (frost), Bastion (defense), Kestrel (drones and mines), Ledger (economy) and Hawk (sniper), each with their own palette.
+
+**More depth:** 18 Commander perks (10 new, e.g. Second Wind, Wide Strike, Tower Tuning); three more Core upgrades, Reactor (+15/30/50 Energy a wave), Nova (shockwave every 10 s) and Plating (+20/40/70 Core max HP); and a Tech Lab of 20 upgrades, most with several ranks.
+
+## Phase 5: Expansion (in progress)
+
+Added Nov 1, 2026. The next batch of content and systems, picked from a brainstorm. Nothing here is built yet; numbers are starting points for tuning.
+
+### New towers
+
+| Tower | Behavior | Role |
+| --- | --- | --- |
+| Shield Projector | Bubble over nearby towers that soaks Spitter acid, Volatile blasts and Titan stomps | Protection |
+| Decoy Beacon | Hologram of Vance or the Core that draws Hunters and pathing aliens | Misdirection |
+| Plasma Fence | Two pylons with a damaging beam between them, aimed across the path | Placement puzzle |
+| Chrono Spire | Every few seconds rewinds one alien a few seconds back along the path | Stalling |
+| Mirror Array | Bends Railgun and Laser Lance beams around corners | Beam support |
+| Flak Cannon | Anti-air only, strong burst | Anti-air |
+| Ion Cannon | Charges about 20 s, then one huge shot down the whole path | Burst |
+| Hacker Spire | Turns one alien to your side for a few seconds | Control |
+| Magnet Coil | Strips armor; slightly slows Juggernauts (soft counter to their immunity) | Anti-armor |
+| Tar Pit | Placed on the path; slows ground aliens; Flamer hits ignite it | Combo |
+| Lightning Rod | Stores charge during weather and releases it as damage | Weather payoff |
+| Bio-Lab | Harvests alien corpses for Biomass | Economy |
+| Overclocker | Doubles adjacent towers' fire rate, but they slowly take damage | Risky support |
+| Uplink Dish | Second Orbital Strike charge, or cooldown cut per kill in range | Commander support |
+| Bait Pod | Cheap tower aliens prefer to attack | Tank |
+
+### Tower systems
+
+- **Adjacency bonuses:** specific pairs buff each other (e.g. Cryo next to Railgun), so clusters are planned
+- **Power grid:** towers draw power from generators; Saboteurs and vents can hit the grid itself
+- **Tower sockets:** augment chips placed into individual towers instead of global upgrades
+- **Relocate:** move a tower during the build phase for a fee, without selling it
+- **Named veterans:** max-rank towers get a random name and a special trait
+- **Tower fusion:** combine two max-tier towers into a hybrid (e.g. Tesla + Cryo = Frost Arc)
+- **Stance toggle:** each tower switches between Focus (single target) and Suppress (spread or slow)
+
+### New enemies
+
+| Enemy | Behavior | Counters |
+| --- | --- | --- |
+| Adaptive | Gains resistance to whichever damage type hits it most | One-damage-type builds |
+| Thief | Grabs Energy and runs back to spawn; killing it returns the Energy | Leaky defenses |
+| Leech | Latches onto a tower and drains it until Vance knocks it off | Ignoring the Commander |
+| Phaser | Teleports a few tiles ahead along the path | Towers stacked at one choke |
+| Reflector | Bounces projectiles back; beams get through | Projectile-only builds |
+| Swarm Mind | Stronger for every alien near it | Weak splash |
+| Necro-Spore | Raises recently dead aliens as weaker zombies | Slow cleanup |
+| Infector | Corrupts a tower so it shoots your towers until repaired | Skipping repairs |
+| Blob | Absorbs aliens it touches and grows | Letting groups bunch up |
+| Bomber | Flyer that bombs towers instead of heading for the Core | Thin anti-air |
+| Jammer | Disables Vance's abilities nearby | Ability-reliant play |
+| Artillery Grub | Shells towers from outside their range | Short-range builds |
+| Pathcutter | Digs a new shortcut through terrain mid-wave | Building for one route |
+| Swarm Queenlet | Mini-boss whose escort buffs the whole group | Single-target builds |
+
+### New bosses
+
+- **Mothership:** floats across the map over several phases, dropping waves
+- **Hive Mind:** three bodies share one HP bar; ones not killed close together revive
+- **Fallen Commander:** an infected copy of Vance with his abilities and a dodge roll
+- **Acid Leviathan:** surfaces from acid pools and drags towers under
+- **Nest Heart:** stationary; you push out and destroy it while waves keep coming
+- **Architect:** rebuilds the path every phase
+
+### Commander
+
+- Dodge roll / dash
+- Weapon pickups: shotgun, sniper rifle, flamethrower, rocket launcher
+- Grenade slot: frag, cryo, EMP-cleanse
+- **Mech suit ultimate:** charges from kills, 15 s as a tank
+- **Carry system:** haul an ammo crate to a tower for a temporary boost
+- **Drone buddy:** levels up alongside Vance
+- **Gear loadout:** helmet, armor and boots slots, with drops from elites
+- Unlockable Commander skins and palettes
+
+### Game modes
+
+- **Local co-op:** a second Commander on a controller or arrow keys
+- **Boss Rush:** every boss back to back
+- **Puzzle mode:** fixed Energy, fixed waves, one correct solution
+- **Last Stand:** no towers; only Vance and Core upgrades
+- **Reverse mode:** play as the aliens, spending a threat budget against an AI defense (reuses the wave generator)
+- **Ascension levels:** stacking difficulty modifiers after beating a Siege Run
+- **Weekly Challenge:** fixed odd rules ("Tesla only, double speed, no repairs")
+- **Hardcore:** Vance's death ends the run
+- **Sandbox:** unlimited Energy and an alien spawn menu
+- **Story campaign:** radio chatter, short cutscenes and a reason for every sector
+
+### Siege Run additions
+
+- **Rest node:** repair the Core or upgrade one augment
+- **Forge node:** merge two augments into a stronger one
+- **Gamble node:** spend Scrap on a blind relic
+- **Mini-boss node:** between Elite and Boss, with a choice of rewards
+- **Relic sets:** 3 relics of a set (e.g. Cryo Doctrine) grant a set bonus
+- **Boss relics:** swap a starting perk for a powerful, risky one
+- **Alien faction per run:** Hive, Machine or Void, each with its own enemy mix
+- **Shareable run seeds**
+- **Hero starting decks:** each hero begins with their own tower cards
+- **Run-wide events:** e.g. "Solar flare: towers +20% damage, Vance takes double damage this act"
+- **Debt merchant:** take a loan now, repay with interest later
+
+### Maps and environment
+
+- **High ground:** raised tiles give towers extra range
+- **Overheat (hot maps only):** on hot sectors and in heat weather, towers build heat while firing and shut down for a few seconds at max heat. Cryo towers, ice tiles and shade cool them. Applies to Magma Forge (strongest near the vents), Desert Outpost in Endless and Siege Run, and a new **Heatwave** weather that can roll on any map. Off everywhere else, so cool maps stay as they are
+- **Destructible terrain:** Missiles can open new build space
+- **Day/night cycle:** Cloakers stronger at night; towers get spotlights
+- **Rising tide:** water or lava climbs during a wave and floods low tiles
+- **Switches and gates:** Vance flips them mid-wave to reroute aliens
+- **Teleporter pads:** usable by aliens and Vance
+- **Supply drops:** crates land mid-wave for Vance to grab
+- **Meteor showers:** damage everything and leave crystal deposits
+- **Neutral wildlife:** attacks whoever gets close
+- **Resource nodes:** Harvesters only work on these tiles
+- **Earthquake event:** rearranges part of the map
+- **New sectors:** Jungle (vines overgrow towers), Crystal Caves (beams refract), Ruined City (build on rooftops), Gas Giant Station (low gravity, arcing projectiles)
+
+### Economy
+
+- **Biomass:** a second resource from kills, spent on special upgrades
+- **Interest:** +5% of unspent Energy after each wave, capped
+- **Black market:** sell relics or towers for big Scrap
+- **Insurance:** pay up front for refunds on destroyed towers
+- **Research queue:** unlocks that complete over several waves
+
+### Progression and meta
+
+- **Achievements** (e.g. "Beat Sector 7 without a light tower")
+- **Codex / Bestiary:** alien lore and stats unlocked by kills
+- **Tower mastery:** towers level across runs, unlocking skins and branch options
+- **Profile stats:** total kills, favorite tower, the alien that ended the most runs
+- **Local leaderboards** per mode and per daily seed
+- **Unlock progression** turned back on, with goals worth chasing
+
+### Quality of life
+
+- **Undo** the last placement during the build phase
+- **Post-wave stats:** damage and kills per tower, and towers that did nothing
+- **Key rebinding and controller support**
+- **Colorblind mode** for elite rings and rarity colors
+- **Settings menu:** volume, screen shake, particle intensity
+- **Interactive tutorial**
+- **Wave timeline:** the next 5 waves, mutators and bosses at a glance
+- **Hover tooltips** explaining combos (Shatter, Detonate, Conduct)
+
+### Juice and feel
+
+- **Adaptive music** that intensifies with threat (needs the base track first)
+- **Boss kills:** slow motion and a big flash
+- **Persistent goo splats** that fade over time
+- **Tower destruction:** debris and smoke
+- **Radio chatter:** Vance calls out threats ("Brute incoming!")
+- **Close-call effects:** red screen tint below 20% Core HP
+
+### Wild ideas
+
+- **Tame an alien** as a pet that fights for you
+- **Alien towers:** captured aliens become towers (e.g. a Brood Sac turret that spits Skitters)
+- **Living Core** that evolves based on what you feed it during a run
+- **Sacrifice** a tower for an instant Orbital Strike
+- **Map editor and mod folder** built on the existing JSON data
+- **Release** a free build on itch.io
+
 ## Roadmap
 
 Endless mode ships first because the roguelike runs on its wave generator, and new content then drops straight into both modes.
@@ -155,6 +334,8 @@ Endless mode ships first because the roguelike runs on its wave generator, and n
 1. **Phase 1 · done — Endless foundation:** wave generator and threat budget, mutators and boss waves, elite affixes, game speed and wave preview
 2. **Phase 2 · done — Siege Run:** augment drafts, tower cards and tier-4 branches, relics and sector map, Salvage and tech tree
 3. **Phase 3 · done — Content batches:** towers and combos, enemies and bosses, sectors and weather, Commander classes
+4. **Phase 4 · done — More towers, branches and heroes:** Laser Lance, Acid Spitter, Repair Bay, Sonic Disruptor, tier-4 branches for every tower, six heroes, more perks, Core upgrades and Tech Lab
+5. **Phase 5 · in progress — Expansion:** towers and tower systems, enemies and bosses, Commander kit, new modes, Siege Run nodes, maps, economy, meta progression, QoL and polish (see *Phase 5: Expansion*)
 
 **Phase 1 tasks**
 
@@ -193,3 +374,30 @@ Endless mode ships first because the roguelike runs on its wave generator, and n
 - [x] Core upgrades: click the Core to buy a turret, a shield or regeneration
 - [x] Daily Challenge: one generated map per day, same waves and weather for everyone, best wave saved
 - [ ] Playtest and balance everything
+
+**Phase 4 tasks**
+
+- [x] 4 new towers: Laser Lance, Acid Spitter, Repair Bay, Sonic Disruptor (keys Z, C, V, B)
+- [x] Tier-4 branches for all 12 remaining towers, each with its own art
+- [x] 6 heroes for Endless and Siege Run: Ignis, Rime, Bastion, Kestrel, Ledger, Hawk
+- [x] 10 new Commander perks (18 total)
+- [x] Core upgrades: Reactor, Nova, Plating
+- [x] Tech Lab expanded to 20 upgrades with ranks
+- [ ] Playtest and balance
+
+**Phase 5 tasks** (in progress)
+
+- [ ] 15 new towers: Shield Projector, Decoy Beacon, Plasma Fence, Chrono Spire, Mirror Array, Flak Cannon, Ion Cannon, Hacker Spire, Magnet Coil, Tar Pit, Lightning Rod, Bio-Lab, Overclocker, Uplink Dish, Bait Pod
+- [ ] Tower systems: adjacency bonuses, power grid, sockets, relocate, named veterans, fusion, stance toggle
+- [ ] 14 new enemies: Adaptive, Thief, Leech, Phaser, Reflector, Swarm Mind, Necro-Spore, Infector, Blob, Bomber, Jammer, Artillery Grub, Pathcutter, Swarm Queenlet
+- [ ] 6 new bosses: Mothership, Hive Mind, Fallen Commander, Acid Leviathan, Nest Heart, Architect
+- [ ] Commander: dash, weapon pickups, grenades, mech suit, carry system, drone buddy, gear loadout, skins
+- [ ] Modes: local co-op, Boss Rush, Puzzle, Last Stand, Reverse, Ascension, Weekly Challenge, Hardcore, Sandbox, Story campaign
+- [ ] Siege Run: Rest, Forge, Gamble and Mini-boss nodes; relic sets; boss relics; factions; seeds; hero decks; run-wide events; debt merchant
+- [ ] Maps: high ground, overheat on hot maps plus Heatwave weather, destructible terrain, day/night, rising tide, switches and gates, teleporters, supply drops, meteors, wildlife, resource nodes, earthquakes
+- [ ] 4 new sectors: Jungle, Crystal Caves, Ruined City, Gas Giant Station
+- [ ] Economy: Biomass, interest, black market, insurance, research queue
+- [ ] Meta: achievements, Codex, tower mastery, profile stats, local leaderboards, unlock progression back on
+- [ ] QoL: undo placement, post-wave stats, rebinding and controller, colorblind mode, settings menu, tutorial, wave timeline, combo tooltips
+- [ ] Juice: adaptive music, boss-kill slow-mo, goo splats, tower destruction, radio chatter, low-Core tint
+- [ ] Wild ideas: tameable alien pet, alien towers, Living Core, tower sacrifice, map editor and mod folder, itch.io release
