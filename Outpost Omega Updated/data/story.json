@@ -1,0 +1,229 @@
+{
+  "_comment": "Story campaign (scenes/story.py). Shown in campaign mode when Settings/Modes 'Story campaign' is on. briefing/debrief: [speaker, text] lines shown before/after the sector. radio: {wave number: [speaker, text]} said over the radio when that wave starts. speakers: name, color and the initials on the portrait.",
+  "speakers": {
+    "VANCE":     {"name": "Cmdr. Rhea Vance",      "color": [0, 220, 255],  "tag": "RV"},
+    "OKORO":     {"name": "Adm. Dana Okoro",       "color": [255, 214, 60], "tag": "DO"},
+    "MARROW":    {"name": "Dr. Ilse Marrow",       "color": [120, 230, 120], "tag": "IM"},
+    "PATCH":     {"name": "Sgt. Teo \"Patch\" Ruiz", "color": [255, 150, 60], "tag": "TR"},
+    "ARCHITECT": {"name": "???",                   "color": [230, 80, 230], "tag": "??"},
+    "NARRATOR":  {"name": "",                      "color": [200, 205, 220], "tag": ""}
+  },
+  "sectors": {
+    "sector1": {
+      "chapter": "Chapter 1: First Contact",
+      "briefing": [
+        ["NARRATOR", "Kepler Belt, 2189. Outpost Omega is the last relay station between the colonies and deep space."],
+        ["OKORO", "Commander Vance, long-range sensors caught something burning through the upper atmosphere. Organic. Lots of it."],
+        ["VANCE", "Meteor swarm?"],
+        ["MARROW", "Meteors don't change course, Commander. These did. Twice."],
+        ["PATCH", "Turrets are crated and ready. Point me at a spot and I'll bolt one down."],
+        ["OKORO", "Hold the outpost. Whatever they are, they do not reach that Core."]
+      ],
+      "radio": {"2": ["PATCH", "They're small but there's a lot of them. Keep those Pulse Turrets fed!"],
+                "5": ["MARROW", "Chitin, six legs, no tools. Animals... or very good at looking like animals."],
+                "10": ["VANCE", "Big signal coming up the canyon. Everybody brace."]},
+      "debrief": [
+        ["MARROW", "I ran tissue samples from the wreckage. These creatures were grown, not born. Same genome, all of them."],
+        ["VANCE", "Grown where?"],
+        ["MARROW", "Their trail leads north. Toward the ice fields."]
+      ]
+    },
+    "sector2": {
+      "chapter": "Chapter 2: Cold Signal",
+      "briefing": [
+        ["OKORO", "The northern relay is our only line to the fleet. If it goes dark, so do we."],
+        ["PATCH", "Ice is murder on the treads. Watch your footing out there, Commander."],
+        ["VANCE", "Get the Cryo Towers up first. Anything that freezes, dies slower."]
+      ],
+      "radio": {"3": ["PATCH", "Fliers! Gliders over the ridge, get something that shoots up!"],
+                "6": ["OKORO", "Relay signal strong. Fleet Command is listening, Commander. Make it count."]},
+      "debrief": [
+        ["OKORO", "Message received. The fleet is mobilising, but they're weeks out."],
+        ["VANCE", "Weeks. Right."],
+        ["MARROW", "I found something odd in the relay logs. A ship came down in the canyon a month ago. Nobody reported it."]
+      ]
+    },
+    "sector3": {
+      "chapter": "Chapter 3: The Crash Site",
+      "briefing": [
+        ["MARROW", "That's no crash. Look at the impact pattern. It landed. Gently."],
+        ["VANCE", "A seed pod?"],
+        ["MARROW", "A nursery. And it's still warm."],
+        ["PATCH", "Then let's go turn the lights off."]
+      ],
+      "radio": {"4": ["MARROW", "Brood Sacs! Kill them fast or they split into Skitters."],
+                "10": ["VANCE", "Something huge just woke up in that pod."]},
+      "debrief": [
+        ["MARROW", "The Overseer was directing the others. Not with sound... with pheromone pulses. A chain of command."],
+        ["OKORO", "Then there's someone at the top of that chain."],
+        ["PATCH", "Heat signatures moving south. Toward the old forge."]
+      ]
+    },
+    "sector4": {
+      "chapter": "Chapter 4: Forge Fire",
+      "briefing": [
+        ["PATCH", "The forge is ours. Old mining rig, still hot. The bugs want it for something."],
+        ["MARROW", "They're cold-blooded. The magma vents would let them breed year-round."],
+        ["VANCE", "Then they don't get it. Patch, can you overclock anything in there?"],
+        ["PATCH", "Give me a wave or two and some scrap. I'll make it sing."]
+      ],
+      "radio": {"3": ["PATCH", "Vents are spiking! Mind the towers, they're running hot."],
+                "7": ["VANCE", "Brutes, armored. Railguns, now!"]},
+      "debrief": [
+        ["PATCH", "Forge is cooling. Good news: I salvaged enough parts for better turrets."],
+        ["OKORO", "Bad news: the swarm is massing on the plains. Biggest group we've seen."]
+      ]
+    },
+    "sector5": {
+      "chapter": "Chapter 5: Open Ground",
+      "briefing": [
+        ["VANCE", "No canyons, no choke points. Just grass and a lot of teeth."],
+        ["OKORO", "Fleet's been delayed. There's a storm in the jump lanes. You'll have to hold on your own a while longer."],
+        ["PATCH", "Open ground means we build the walls. Barricades are loaded."]
+      ],
+      "radio": {"2": ["VANCE", "Make them walk the long way. Every step is another shot."],
+                "6": ["MARROW", "They're changing formation. They watched what we did last time."],
+                "10": ["PATCH", "Here comes the big one! Everything you've got!"]},
+      "debrief": [
+        ["MARROW", "They adapt between fights. Something remembers, and teaches."],
+        ["VANCE", "Then we find the teacher."],
+        ["OKORO", "Orbital Platform Six just went quiet. Find out why."]
+      ]
+    },
+    "sector6": {
+      "chapter": "Chapter 6: Up the Well",
+      "briefing": [
+        ["PATCH", "Conveyor belts everywhere. Keep your boots planted, Commander."],
+        ["OKORO", "Platform Six controls the orbital strike array. If the swarm has it, nobody is safe."],
+        ["VANCE", "Then we take it back. Quietly, if we can."]
+      ],
+      "radio": {"4": ["MARROW", "Shield Drones are covering the bigger ones. Pick off the drones first."],
+                "8": ["OKORO", "Orbital array is back online. Use it well, Commander."]},
+      "debrief": [
+        ["MARROW", "The platform's sensors caught a signal under all the noise. Structured. Repeating."],
+        ["VANCE", "A broadcast?"],
+        ["MARROW", "An answer. Coming from an old ship parked in high orbit. Our ship."]
+      ]
+    },
+    "sector7": {
+      "chapter": "Chapter 7: The Derelict",
+      "briefing": [
+        ["NARRATOR", "The UES Meridian vanished on a survey run twelve years ago. It is not supposed to be here."],
+        ["PATCH", "No power, no lights. Radar Relays will help you see them coming."],
+        ["VANCE", "Stay close, everyone. Keep talking."]
+      ],
+      "radio": {"3": ["MARROW", "I'm in the captain's log. 'First contact. Specimens are... intelligent. They are learning from us.'"],
+                "6": ["MARROW", "Last entry: 'Captain Hale has gone below. He says they want to talk.'"],
+                "10": ["VANCE", "Movement in the dark. A lot of it."]},
+      "debrief": [
+        ["MARROW", "The hive didn't find us by accident. The Meridian brought it here. It studied the crew."],
+        ["OKORO", "Twelve years of studying us. God help us."],
+        ["PATCH", "Two reactors on the lower deck are lighting up. They're going after both at once."]
+      ]
+    },
+    "sector8": {
+      "chapter": "Chapter 8: Two Hearts",
+      "briefing": [
+        ["PATCH", "Two Cores, two problems. Lose either one and the whole station's gone."],
+        ["VANCE", "Split the defenses. Don't leave either side naked."],
+        ["MARROW", "They've never attacked two targets before. They're testing us."]
+      ],
+      "radio": {"4": ["VANCE", "Pressure on the east core! Shift some fire!"],
+                "8": ["PATCH", "Both cores holding. Barely!"]},
+      "debrief": [
+        ["OKORO", "Good work. The pattern is clear now: the hive is spreading signal nodes across the system."],
+        ["MARROW", "The jungle moon. It wasn't a jungle a year ago."]
+      ]
+    },
+    "sector9": {
+      "chapter": "Chapter 9: Green Hell",
+      "briefing": [
+        ["MARROW", "They terraformed it. A whole moon, overgrown in a year. Those vines will choke our turrets."],
+        ["PATCH", "Walk up to an overgrown tower and I'll cut it loose."],
+        ["VANCE", "Find the node. Kill it."]
+      ],
+      "radio": {"3": ["PATCH", "Vines on the east turrets! Commander, get over there!"],
+                "7": ["MARROW", "The Swarm Mind is linking them. Break the link and they scatter."],
+                "10": ["VANCE", "That's no node. It's thinking."]},
+      "debrief": [
+        ["MARROW", "The Hive Mind was a relay, not the source. It was passing orders along."],
+        ["VANCE", "From where?"],
+        ["MARROW", "The crystal caves. They're amplifying the signal like an antenna."]
+      ]
+    },
+    "sector10": {
+      "chapter": "Chapter 10: The Singing Caves",
+      "briefing": [
+        ["MARROW", "Listen. The crystals hum when the signal passes through them."],
+        ["PATCH", "Beam towers next to crystals hit harder. Lasers, Lances, Ion. Use 'em."],
+        ["VANCE", "And the teleporters?"],
+        ["PATCH", "The bugs use them too. Watch where they pop out."]
+      ],
+      "radio": {"4": ["VANCE", "Reflectors! Don't waste lasers on those."],
+                "8": ["MARROW", "Something big in the acid pools. Very big."]},
+      "debrief": [
+        ["ARCHITECT", "...WE HEAR YOU, LITTLE COMMANDER. WE HAVE ALWAYS HEARD YOU."],
+        ["VANCE", "Who is this?"],
+        ["ARCHITECT", "WE ARE WHAT YOUR CAPTAIN HALE BECAME. COME TO THE CITY. SEE."]
+      ]
+    },
+    "sector11": {
+      "chapter": "Chapter 11: Ghosts of the City",
+      "briefing": [
+        ["OKORO", "It's a trap. You know it's a trap."],
+        ["VANCE", "Yes. But if Hale is still in there, I need to know."],
+        ["PATCH", "There's a gate on the shortcut through the city. Stand on the switch to close it and make them go around."]
+      ],
+      "radio": {"3": ["MARROW", "Jammers: they cut your abilities when they get close. Keep them away from you."],
+                "6": ["ARCHITECT", "YOUR CAPTAIN FOUGHT TOO. WE KEPT WHAT WAS USEFUL."],
+                "10": ["VANCE", "That's a Fleet uniform... Hale?"]},
+      "debrief": [
+        ["VANCE", "It wasn't him anymore. Just his tactics, wearing his face."],
+        ["MARROW", "I'm sorry, Commander."],
+        ["OKORO", "The fleet has dropped out of the jump lanes. We're coming in over the gas giant. Hold the station until we arrive."]
+      ]
+    },
+    "sector12": {
+      "chapter": "Chapter 12: Storm Over the Giant",
+      "briefing": [
+        ["PATCH", "Low gravity. Shells fly further, and so do you. Don't float off."],
+        ["OKORO", "The hive is sending everything at the gas station to stop our fleet from refueling."],
+        ["VANCE", "Then everything gets shot down."]
+      ],
+      "radio": {"3": ["PATCH", "Bombers! They're going for the towers, not the core!"],
+                "7": ["OKORO", "Fleet is in orbit. We just need the station a little longer."],
+                "10": ["VANCE", "Mothership. Of course."]},
+      "debrief": [
+        ["OKORO", "Fleet is refueled. And with the station's sensors we finally triangulated the signal."],
+        ["MARROW", "It's the Hive Heart. Buried under the moon's crust. Everything comes from there."],
+        ["VANCE", "Then that's where we end it."]
+      ]
+    },
+    "sector13": {
+      "chapter": "Chapter 13: The Hive Heart",
+      "briefing": [
+        ["NARRATOR", "Beneath the moon's crust, the hive has built a cathedral of living stone."],
+        ["OKORO", "The fleet will bombard the Heart once its defenses are down. Your outpost is the anchor, Commander. If it falls, we lose the beacon."],
+        ["PATCH", "Two tunnels, both full of everything they've ever thrown at us. And then some."],
+        ["ARCHITECT", "YOU CANNOT WIN, COMMANDER. WE REWRITE THE GROUND YOU STAND ON."],
+        ["VANCE", "Then I'll keep building. Every time."]
+      ],
+      "radio": {"3": ["MARROW", "Both tunnels are active. Split your firepower."],
+                "6": ["VANCE", "The Queen's guarding the tunnel. Bring her down!"],
+                "9": ["PATCH", "Ammo's low, morale's high. Keep going!"],
+                "12": ["ARCHITECT", "WE ARE THE PATH. WE ARE THE WALL. WE ARE..."]},
+      "debrief": [
+        ["OKORO", "Beacon locked. All ships, fire."],
+        ["NARRATOR", "The Hive Heart burns."]
+      ]
+    }
+  },
+  "ending": [
+    ["NARRATOR", "The bombardment lasted eleven hours. When the dust settled, the signal was gone."],
+    ["MARROW", "Without the Heart, the remaining swarms are just animals again. Scattered. Lost."],
+    ["PATCH", "Guess I'll need a new hobby. Maybe gardening. Not jungle gardening."],
+    ["OKORO", "Commander Vance, the colonies owe you everything. Outpost Omega stands."],
+    ["VANCE", "It stands because people stood with it. Somebody put the kettle on."],
+    ["NARRATOR", "THE END.  Thank you for playing Outpost Omega: Alien Siege."]
+  ]
+}

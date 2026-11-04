@@ -1,0 +1,27 @@
+{
+  "_comment": "Puzzle mode (systems/modes.py): fixed Energy, a fixed tower set, scripted waves, a 1 HP Core and no Energy from kills.",
+  "choke_point": {"name": "Choke Point", "level": "sector1", "energy": 420, "core_hp": 1,
+                  "towers": ["pulse", "cryo", "railgun"],
+                  "desc": "Three towers, one bend. Let nothing through.",
+                  "waves": [
+                    {"groups": [{"enemy": "skitter", "count": 16, "interval": 0.5, "delay": 0, "lane": 0}], "boss": null},
+                    {"groups": [{"enemy": "brute", "count": 6, "interval": 1.6, "delay": 0, "lane": 0}], "boss": null},
+                    {"groups": [{"enemy": "skitter", "count": 20, "interval": 0.35, "delay": 0, "lane": 0},
+                                {"enemy": "brute", "count": 5, "interval": 1.4, "delay": 4, "lane": 0}], "boss": null}]},
+  "air_defense": {"name": "Air Defense", "level": "sector2", "energy": 450, "core_hp": 1,
+                  "towers": ["flak", "pulse", "radar"],
+                  "desc": "Flyers only. Range is everything.",
+                  "waves": [
+                    {"groups": [{"enemy": "glider", "count": 10, "interval": 0.8, "delay": 0, "lane": 0}], "boss": null},
+                    {"groups": [{"enemy": "glider", "count": 14, "interval": 0.6, "delay": 0, "lane": 1}], "boss": null},
+                    {"groups": [{"enemy": "carrier", "count": 2, "interval": 4.0, "delay": 0, "lane": 0},
+                                {"enemy": "glider", "count": 12, "interval": 0.6, "delay": 2, "lane": 1}], "boss": null}]},
+  "armored_column": {"name": "Armored Column", "level": "sector6", "energy": 520, "core_hp": 1,
+                     "towers": ["railgun", "acid", "magnet", "cryo"],
+                     "desc": "Juggernauts don't slow. Strip their armor first.",
+                     "waves": [
+                       {"groups": [{"enemy": "brute", "count": 8, "interval": 1.2, "delay": 0, "lane": 0}], "boss": null},
+                       {"groups": [{"enemy": "juggernaut", "count": 2, "interval": 4.0, "delay": 0, "lane": 0}], "boss": null},
+                       {"groups": [{"enemy": "juggernaut", "count": 3, "interval": 3.0, "delay": 0, "lane": 0},
+                                   {"enemy": "brute", "count": 8, "interval": 1.0, "delay": 2, "lane": 0}], "boss": null}]}
+}

@@ -66,7 +66,7 @@ class Attack(State):
         if not e.can_attack_commander():
             return "walk"
         e.vel.update(0, 0)
-        e.system.commander.take_damage(e.attack_dps * dt)
+        (getattr(e, "attack_target", None) or e.system.commander).take_damage(e.attack_dps * dt)
         if e.lifesteal:   # Vampiric elites heal off the Commander
             e.health.heal(e.attack_dps * dt * e.lifesteal)
         return None
@@ -139,6 +139,9 @@ class Enemy(pygame.sprite.Sprite):
         self.shield = 0.0
         self.max_shield = 0.0
         self.aura_shield = 0.0          # >0 while a Shield Drone's bubble covers us
+        self.aura_speed = 0.0           # Swarm Mind / Queenlet buffs, refreshed every frame
+        self.aura_dr = 0.0
+        self.zombie = False             # raised by a Necro-Spore
         self.in_dark = False            # Derelict Ship: outside every light source
         self.fsm = StateMachine(self, self.build_states(), "walk")
 
@@ -150,7 +153,14 @@ class Enemy(pygame.sprite.Sprite):
     def blocking_barricade(self):
         """An active Barricade right in front of us on the path, or None."""
         towers = self.system.towers
-        if self.flying or self.hidden or towers is None or not towers.barricades:
+        if self.flying or self.hidden or towers is None:
+            return None
+        lure = getattr(self, "lured_by", None)   # Decoy Beacon: stop and attack the hologram
+        if lure is not None:
+            if self.lure_timer > 0 and lure.fsm.name == "active" and lure in towers.towers:
+                return lure
+            self.lured_by = None
+        if not towers.barricades:
             return None
         dx, dy = self.follower.direction
         reach = self.radius + 18
@@ -176,7 +186,7 @@ class Enemy(pygame.sprite.Sprite):
 
     @property
     def speed(self):
-        return self.base_speed * (1.0 - self.slow)
+        return self.base_speed * (1.0 - self.slow) * (1.0 + self.aura_speed)
 
     @property
     def progress(self):
@@ -195,11 +205,16 @@ class Enemy(pygame.sprite.Sprite):
         return self.follower.finished
 
     def can_attack_commander(self):
-        cmd = self.system.commander
-        if self.flying or self.attack_dps <= 0 or cmd is None or not cmd.alive:
+        if self.flying or self.attack_dps <= 0:
             return False
-        reach = self.radius + cmd.radius + 4
-        return self.pos.distance_squared_to(cmd.pos) < reach * reach
+        for cmd in self.system.all_commanders():   # co-op: either Commander can block
+            if cmd is None or not cmd.alive:
+                continue
+            reach = self.radius + cmd.radius + 4
+            if self.pos.distance_squared_to(cmd.pos) < reach * reach:
+                self.attack_target = cmd
+                return True
+        return False
 
     # ---- hit tests (narrow phase) ------------------------------------------------
     def hit_test_circle(self, x, y, r):
@@ -249,6 +264,8 @@ class Enemy(pygame.sprite.Sprite):
         self.flash_timer = max(0.0, self.flash_timer - dt)
         self.aura_shield = max(0.0, self.aura_shield - dt)
         self.stun_timer = max(0.0, self.stun_timer - dt)
+        if getattr(self, "lure_timer", 0) > 0:
+            self.lure_timer -= dt
         if self.slow_timer > 0:
             self.slow_timer -= dt
             if self.slow_timer <= 0:
@@ -305,6 +322,8 @@ class Enemy(pygame.sprite.Sprite):
             w, h = img.get_size()
             img = pygame.transform.scale(img, (max(1, int(w * t)), max(1, int(h * t))))
         x, y = self.pos.x + offset[0], self.pos.y + offset[1]
+        if self.zombie and self.targetable:
+            pygame.draw.circle(screen, (170, 90, 220), (int(x), int(y)), int(self.radius + 3), 1)
         if self.flying:  # shadow so flyers read as "in the air"
             pygame.draw.ellipse(screen, (60, 50, 40), (x - 8, y + 10, 16, 6))
             y -= 4 + math.sin(self.anim_t) * 2
@@ -749,6 +768,8 @@ class Spitter(Enemy):
         r2 = self.stats.get("spit_range", 130) ** 2
         near = [t for t in towers.towers if self.pos.distance_squared_to((t.x, t.y)) <= r2
                 and not t.health.is_dead]
+        bait = [t for t in near if t.behavior == "bait"]   # Bait Pods draw fire first
+        near = bait or near
         return min(near, key=lambda t: self.pos.distance_squared_to((t.x, t.y))) if near else None
 
     def special_action(self, dt):
@@ -891,7 +912,23 @@ class Hunter(Enemy):
     sprite = "hunter"
     frame_count = 1
 
+    def decoy(self):
+        """An active Decoy Beacon close enough to fool us, or None."""
+        towers = self.system.towers
+        if towers is None:
+            return None
+        best, best_d = None, None
+        for t in towers.towers:
+            if t.behavior == "decoy" and t.fsm.name == "active":
+                d = self.pos.distance_squared_to((t.x, t.y))
+                if d <= t.stats.get("hunter_range", 220) ** 2 and (best_d is None or d < best_d):
+                    best, best_d = t, d
+        return best
+
     def goal(self):
+        decoy = self.decoy()
+        if decoy is not None:
+            return pygame.math.Vector2(decoy.x, decoy.y)
         cmd = self.system.commander
         if cmd is not None and cmd.alive:
             return pygame.math.Vector2(cmd.pos)
@@ -916,6 +953,14 @@ class Hunter(Enemy):
         return self.pos.distance_squared_to(core) < 20 * 20
 
     def move(self, dt):
+        decoy = self.decoy()
+        if decoy is not None and self.pos.distance_squared_to((decoy.x, decoy.y)) < (self.radius + 14) ** 2:
+            self.vel.update(0, 0)   # mauling the hologram
+            decoy.health.damage(max(10.0, self.attack_dps) * dt, ignore_armor=True)
+            thorns = decoy.stats.get("thorns", 0)
+            if thorns:
+                self.system.damage(self, thorns * dt, ignore_armor=True, quiet=True, source=decoy)
+            return
         to = self.goal() - self.pos
         if to.length_squared() > 1:
             to.scale_to_length(self.speed)
@@ -1102,3 +1147,8 @@ ENEMY_CLASSES = {
     "saboteur": Saboteur,
     "hive_overseer": HiveOverseer,
 }
+
+
+# Phase 5 aliens live in their own module; register them here so EnemySystem finds them.
+from .enemy_p5 import P5_CLASSES  # noqa: E402  (needs the classes above)
+ENEMY_CLASSES.update(P5_CLASSES)

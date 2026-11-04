@@ -1,345 +1,2717 @@
 {
   "_comment": "Siege Run tuning. Augments, relics, events and tech all use the same effect list format; see game/systems/run.py (Modifiers) for every effect type.",
-
   "acts": 3,
   "floors_per_act": 7,
-  "floor_width": [2, 4],
-  "node_weights": {"combat": 45, "elite": 15, "cache": 15, "event": 25},
+  "floor_width": [
+    2,
+    4
+  ],
+  "node_weights": {
+    "combat": 45,
+    "elite": 15,
+    "cache": 15,
+    "event": 25,
+    "rest": 8,
+    "forge": 6,
+    "gamble": 6,
+    "miniboss": 7
+  },
   "elite_min_floor": 2,
-  "sectors": ["sector1", "sector2", "sector3", "sector4", "sector5", "sector6", "sector7", "sector8",
-              "procedural", "procedural"],
-
+  "sectors": [
+    "sector1",
+    "sector2",
+    "sector3",
+    "sector4",
+    "sector5",
+    "sector6",
+    "sector7",
+    "sector8",
+    "sector9",
+    "sector10",
+    "sector11",
+    "sector12",
+    "procedural",
+    "procedural"
+  ],
   "_waves_comment": "Waves per fight = base + per_act x (act - 1): 10 / 15 / 20. Threat level climbs per_wave per wave inside a fight (0.35 = +1 about every 3 waves); a mutator only rolls on the first wave of a new threat level.",
-  "waves_per_node": {"base": 10, "per_act": 5, "max": 30},
+  "waves_per_node": {
+    "base": 10,
+    "per_act": 5,
+    "max": 30
+  },
   "_enemy_count_comment": "Multiplies every group's enemy count in Siege Run fights. Spawns get tighter (by the square root) so waves are denser, not just longer.",
   "enemy_count_mult": 1.6,
-  "wave_depth": {"per_floor": 1, "per_act": 7, "per_wave": 0.35},
+  "wave_depth": {
+    "per_floor": 1,
+    "per_act": 7,
+    "per_wave": 0.35
+  },
   "elite_node_chance": 0.6,
   "boss": "hive_overseer",
-  "bosses_by_act": ["hive_overseer", "siege_titan", "hive_queen"],
+  "bosses_by_act": [
+    "hive_overseer",
+    "siege_titan",
+    "hive_queen"
+  ],
   "boss_hp_per_act": 0.5,
   "_endless_comment": "After the last act's boss the player can PUSH ON into endless acts. Those acts rotate through endless_bosses.",
-  "endless_bosses": ["hive_overseer", "siege_titan", "hive_queen", "burrow_wyrm"],
-
+  "endless_bosses": [
+    "hive_overseer",
+    "siege_titan",
+    "hive_queen",
+    "burrow_wyrm",
+    "mothership",
+    "hive_mind",
+    "fallen_commander",
+    "acid_leviathan",
+    "nest_heart",
+    "architect"
+  ],
   "_rarity_comment": "Each draft/relic/shop/event card rolls a tier from odds[source] (weights, not %), then picks a card of that tier. act_bonus multiplies a tier's weight by (1 + bonus x (act - 1)). rarity_luck effects multiply every non-common weight by (1 + luck). price multiplies Supply Cache prices.",
   "rarity": {
-    "order": ["common", "rare", "epic", "legendary"],
+    "order": [
+      "common",
+      "rare",
+      "epic",
+      "legendary"
+    ],
     "tiers": {
-      "common":    {"name": "COMMON",    "color": [190, 198, 210], "price": 1.0},
-      "rare":      {"name": "RARE",      "color": [70, 160, 255],  "price": 1.35},
-      "epic":      {"name": "EPIC",      "color": [190, 100, 255], "price": 1.8},
-      "legendary": {"name": "LEGENDARY", "color": [255, 175, 40],  "price": 2.5}
+      "common": {
+        "name": "COMMON",
+        "color": [
+          190,
+          198,
+          210
+        ],
+        "price": 1.0
+      },
+      "rare": {
+        "name": "RARE",
+        "color": [
+          70,
+          160,
+          255
+        ],
+        "price": 1.35
+      },
+      "epic": {
+        "name": "EPIC",
+        "color": [
+          190,
+          100,
+          255
+        ],
+        "price": 1.8
+      },
+      "legendary": {
+        "name": "LEGENDARY",
+        "color": [
+          255,
+          175,
+          40
+        ],
+        "price": 2.5
+      }
     },
     "odds": {
-      "combat": {"common": 60, "rare": 30, "epic": 9,  "legendary": 1},
-      "elite":  {"common": 35, "rare": 40, "epic": 20, "legendary": 5},
-      "boss":   {"common": 0,  "rare": 35, "epic": 45, "legendary": 20},
-      "shop":   {"common": 50, "rare": 32, "epic": 14, "legendary": 4},
-      "event":  {"common": 45, "rare": 35, "epic": 16, "legendary": 4}
+      "combat": {
+        "common": 60,
+        "rare": 30,
+        "epic": 9,
+        "legendary": 1
+      },
+      "elite": {
+        "common": 35,
+        "rare": 40,
+        "epic": 20,
+        "legendary": 5
+      },
+      "boss": {
+        "common": 0,
+        "rare": 35,
+        "epic": 45,
+        "legendary": 20
+      },
+      "shop": {
+        "common": 50,
+        "rare": 32,
+        "epic": 14,
+        "legendary": 4
+      },
+      "event": {
+        "common": 45,
+        "rare": 35,
+        "epic": 16,
+        "legendary": 4
+      }
     },
-    "act_bonus": {"rare": 0.10, "epic": 0.20, "legendary": 0.30}
+    "act_bonus": {
+      "rare": 0.1,
+      "epic": 0.2,
+      "legendary": 0.3
+    }
   },
-
-  "start_towers": ["pulse"],
+  "start_towers": [
+    "pulse"
+  ],
   "random_start_towers": 1,
-  "start_pool": ["tesla", "cryo", "railgun", "missile", "flamer", "mortar", "drone", "mines", "laser", "acid", "sonic"],
+  "start_pool": [
+    "tesla",
+    "cryo",
+    "railgun",
+    "missile",
+    "flamer",
+    "mortar",
+    "drone",
+    "mines",
+    "laser",
+    "acid",
+    "sonic"
+  ],
   "start_scrap": 0,
   "draft_choices": 3,
   "tower_card_chance": 0.4,
   "skip_scrap": 10,
-
   "rewards": {
-    "combat": {"scrap": [22, 32], "steps": ["draft"]},
-    "elite":  {"scrap": [45, 60], "steps": ["draft", "relic"]},
-    "boss":   {"scrap": [70, 90], "steps": ["relic", "draft"], "heal": 0.3}
+    "combat": {
+      "scrap": [
+        22,
+        32
+      ],
+      "steps": [
+        "draft"
+      ]
+    },
+    "elite": {
+      "scrap": [
+        45,
+        60
+      ],
+      "steps": [
+        "draft",
+        "relic"
+      ]
+    },
+    "boss": {
+      "scrap": [
+        70,
+        90
+      ],
+      "steps": [
+        "boss_relic",
+        "draft"
+      ],
+      "heal": 0.3
+    },
+    "miniboss": {
+      "scrap": [
+        55,
+        70
+      ],
+      "steps": [
+        "relic",
+        "draft"
+      ]
+    }
   },
   "relic_choices": 2,
   "boss_relic_choices": 3,
-
-  "shop": {"tower": 60, "augment": 45, "relic": 90, "repair": 35, "repair_hp": 25,
-           "towers": 2, "augments": 3, "relics": 1},
-
-  "salvage": {"node": 4, "elite": 6, "boss": 25, "victory": 50},
-
+  "shop": {
+    "tower": 60,
+    "augment": 45,
+    "relic": 90,
+    "repair": 35,
+    "repair_hp": 25,
+    "towers": 2,
+    "augments": 3,
+    "relics": 1
+  },
+  "salvage": {
+    "node": 4,
+    "elite": 6,
+    "boss": 25,
+    "victory": 50
+  },
   "augments": {
-    "pulse_rapid":    {"name": "Rapid Cycler", "rarity": "common",      "requires": "pulse",   "desc": "Pulse Turret fire rate +25%",
-                       "effects": [{"type": "tower_stat", "tower": "pulse", "stat": "fire_rate", "mult": 1.25}]},
-    "pulse_caliber":  {"name": "Heavy Caliber", "rarity": "common",     "requires": "pulse",   "desc": "Pulse Turret damage +30%",
-                       "effects": [{"type": "tower_stat", "tower": "pulse", "stat": "damage", "mult": 1.3}]},
-    "tesla_arc":      {"name": "Arc Splitter", "rarity": "rare",      "requires": "tesla",   "desc": "Tesla chains +2 enemies",
-                       "effects": [{"type": "tower_stat", "tower": "tesla", "stat": "chain", "add": 2}]},
-    "tesla_volt":     {"name": "High Voltage", "rarity": "common",      "requires": "tesla",   "desc": "Tesla Coil damage +25%",
-                       "effects": [{"type": "tower_stat", "tower": "tesla", "stat": "damage", "mult": 1.25}]},
-    "cryo_deep":      {"name": "Deep Freeze", "rarity": "common",       "requires": "cryo",    "desc": "Cryo slow +10%",
-                       "effects": [{"type": "tower_stat", "tower": "cryo", "stat": "slow", "add": 0.1}]},
-    "cryo_shatter":   {"name": "Brittle Shells", "rarity": "rare",    "requires": "cryo",    "desc": "Slowed enemies take +25% damage",
-                       "effects": [{"type": "slowed_damage", "mult": 1.25}]},
-    "cryo_frost":     {"name": "Frostbite", "rarity": "rare",         "requires": "cryo",    "desc": "Cryo Emitters deal +6 damage per second",
-                       "effects": [{"type": "tower_stat", "tower": "cryo", "stat": "dps", "add": 6}]},
-    "rail_capacitor": {"name": "Capacitor Bank", "rarity": "rare",    "requires": "railgun", "desc": "Railgun damage +30%",
-                       "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "damage", "mult": 1.3}]},
-    "rail_scope":     {"name": "Long Scope", "rarity": "common",        "requires": "railgun", "desc": "Railgun range +15%",
-                       "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "range", "mult": 1.15}]},
-    "missile_payload":{"name": "Bigger Payload", "rarity": "common",    "requires": "missile", "desc": "Missile splash radius +25%",
-                       "effects": [{"type": "tower_stat", "tower": "missile", "stat": "splash", "mult": 1.25}]},
-    "missile_salvo":  {"name": "Salvo Loader", "rarity": "rare",      "requires": "missile", "desc": "Missile Battery fire rate +25%",
-                       "effects": [{"type": "tower_stat", "tower": "missile", "stat": "fire_rate", "mult": 1.25}]},
-    "all_range":      {"name": "Sensor Array", "rarity": "common",      "desc": "All towers +10% range",
-                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.1}]},
-    "all_damage":     {"name": "Hardened Rounds", "rarity": "rare",   "desc": "All towers +10% damage",
-                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.1}]},
-    "cheap_build":    {"name": "Prefab Kits", "rarity": "rare",       "desc": "Towers and upgrades cost 15% less",
-                       "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.85}]},
-    "energy_reward":  {"name": "Bounty Contract", "rarity": "rare",   "desc": "Kills give +20% Energy",
-                       "effects": [{"type": "kill_reward", "mult": 1.2}]},
-    "start_energy":   {"name": "Forward Depot", "rarity": "common",     "desc": "+75 starting Energy in every sector",
-                       "effects": [{"type": "start_energy", "add": 75}]},
-    "interest":       {"name": "Energy Bonds", "rarity": "rare",      "desc": "After each wave, gain 5% of unspent Energy (max 40)",
-                       "effects": [{"type": "interest", "rate": 0.05, "cap": 40}]},
-    "crystal":        {"name": "Crystal Harvest", "rarity": "common",   "desc": "Every 12th kill drops an Energy Crystal",
-                       "effects": [{"type": "crystal_every", "kills": 12}]},
-    "orbital_cd":     {"name": "Uplink Priority", "rarity": "rare",   "desc": "Orbital Strike cooldown -40%",
-                       "effects": [{"type": "orbital_cooldown", "mult": 0.6}]},
-    "orbital_power":  {"name": "Kinetic Rods", "rarity": "rare",      "desc": "Orbital Strike damage +60%",
-                       "effects": [{"type": "orbital_damage", "mult": 1.6}]},
-    "blaster":        {"name": "Vance's Sidearm", "rarity": "rare",   "desc": "Commander blaster damage +80%",
-                       "effects": [{"type": "blaster_damage", "mult": 1.8}]},
-    "core_plating":   {"name": "Core Plating", "rarity": "common",      "desc": "Core max HP +25 (healed now)",
-                       "effects": [{"type": "core_max", "add": 25}]},
-    "field_repair":   {"name": "Field Repair Crew", "rarity": "common", "desc": "Core heals 8 HP after every sector",
-                       "effects": [{"type": "node_heal", "add": 8}]},
-    "lucky":          {"name": "Scavenger Instinct", "rarity": "common","desc": "+6% item drop chance",
-                       "effects": [{"type": "drop_chance", "add": 0.06}]},
-
-    "flamer_napalm":  {"name": "Napalm Mix",        "rarity": "common", "requires": "flamer",  "desc": "Flamethrower burn damage +30%",
-                       "effects": [{"type": "tower_stat", "tower": "flamer", "stat": "burn_dps", "mult": 1.3}]},
-    "mortar_he":      {"name": "HE Shells",         "rarity": "common", "requires": "mortar",  "desc": "Mortar splash radius +25%",
-                       "effects": [{"type": "tower_stat", "tower": "mortar", "stat": "splash", "mult": 1.25}]},
-    "drone_spare":    {"name": "Spare Drones",      "rarity": "common", "requires": "drone",   "desc": "Drone Bays launch +1 drone",
-                       "effects": [{"type": "tower_stat", "tower": "drone", "stat": "drones", "add": 1}]},
-    "mines_field":    {"name": "Deep Minefield",    "rarity": "common", "requires": "mines",   "desc": "Mine Layers hold +2 mines",
-                       "effects": [{"type": "tower_stat", "tower": "mines", "stat": "max_mines", "add": 2}]},
-    "barricade_plate":{"name": "Reinforced Barricades", "rarity": "common", "requires": "barricade", "desc": "Barricade HP +40%",
-                       "effects": [{"type": "tower_stat", "tower": "barricade", "stat": "max_hp", "mult": 1.4}]},
-    "radar_booster":  {"name": "Signal Booster",    "rarity": "common", "requires": "radar",   "desc": "Radar range +25%",
-                       "effects": [{"type": "tower_stat", "tower": "radar", "stat": "range", "mult": 1.25}]},
-    "harvest_yield":  {"name": "Efficient Harvest", "rarity": "common", "requires": "harvester", "desc": "Harvester income +25%",
-                       "effects": [{"type": "tower_stat", "tower": "harvester", "stat": "income", "mult": 1.25}]},
-    "servo_boots":    {"name": "Servo Boots",       "rarity": "common", "desc": "Commander moves 20% faster",
-                       "effects": [{"type": "cmd_speed", "mult": 1.2}]},
-    "cmd_armor":      {"name": "Combat Armor",      "rarity": "common", "desc": "Commander HP +30%",
-                       "effects": [{"type": "cmd_hp", "mult": 1.3}]},
-    "repair_kit":     {"name": "Repair Toolkit",    "rarity": "common", "desc": "Commander repairs towers 40% faster",
-                       "effects": [{"type": "repair_speed", "mult": 1.4}]},
-    "briefing":       {"name": "Extended Briefing", "rarity": "common", "desc": "+5 seconds of build time between waves",
-                       "effects": [{"type": "build_time", "add": 5}]},
-
-    "gravity_horizon":{"name": "Event Horizon",     "rarity": "rare", "requires": "gravity", "desc": "Gravity Well pull +35%",
-                       "effects": [{"type": "tower_stat", "tower": "gravity", "stat": "pull", "mult": 1.35}]},
-    "mortar_auto":    {"name": "Autoloader",        "rarity": "rare", "requires": "mortar",  "desc": "Mortar fire rate +25%",
-                       "effects": [{"type": "tower_stat", "tower": "mortar", "stat": "fire_rate", "mult": 1.25}]},
-    "drone_cannons":  {"name": "Drone Cannons",     "rarity": "rare", "requires": "drone",   "desc": "Drone damage +35%",
-                       "effects": [{"type": "tower_stat", "tower": "drone", "stat": "damage", "mult": 1.35}]},
-    "tesla_conduit":  {"name": "Ion Conduit",       "rarity": "rare", "requires": "tesla",   "desc": "Tesla chain reach +30% and range +10%",
-                       "effects": [{"type": "tower_stat", "tower": "tesla", "stat": "chain_range", "mult": 1.3},
-                                   {"type": "tower_stat", "tower": "tesla", "stat": "range", "mult": 1.1}]},
-    "rail_cooling":   {"name": "Cooling Rails",     "rarity": "rare", "requires": "railgun", "desc": "Railgun fire rate +20%",
-                       "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "fire_rate", "mult": 1.2}]},
-    "overdrive":      {"name": "Overdrive Protocol","rarity": "rare", "desc": "All towers fire 10% faster",
-                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.1}]},
-    "supply_shuttle": {"name": "Supply Shuttle",    "rarity": "rare", "desc": "+20 Energy after every wave",
-                       "effects": [{"type": "wave_energy", "add": 20}]},
-    "salvage_rights": {"name": "Salvage Rights",    "rarity": "rare", "desc": "+20% Scrap from every reward",
-                       "effects": [{"type": "scrap", "mult": 1.2}]},
-    "lucky_find":     {"name": "Lucky Find",        "rarity": "rare", "desc": "Better odds of Rare, Epic and Legendary cards",
-                       "effects": [{"type": "rarity_luck", "add": 0.25}]},
-
-    "inferno_core":   {"name": "Inferno Core",      "rarity": "epic", "requires": "flamer",  "desc": "Flamethrower damage +40%, burns last 50% longer",
-                       "effects": [{"type": "tower_stat", "tower": "flamer", "stat": "damage", "mult": 1.4},
-                                   {"type": "tower_stat", "tower": "flamer", "stat": "burn_time", "mult": 1.5}]},
-    "smart_warheads": {"name": "Smart Warheads",    "rarity": "epic", "requires": "missile", "desc": "Missile damage +35%, missiles turn 50% sharper",
-                       "effects": [{"type": "tower_stat", "tower": "missile", "stat": "damage", "mult": 1.35},
-                                   {"type": "tower_stat", "tower": "missile", "stat": "turn_rate", "mult": 1.5}]},
-    "sensor_net":     {"name": "Sensor Net",        "rarity": "epic", "requires": "radar",   "desc": "Radar buff +30%",
-                       "effects": [{"type": "tower_stat", "tower": "radar", "stat": "buff", "mult": 1.3}]},
-    "auto_repair":    {"name": "Auto-Repair Matrix","rarity": "epic", "desc": "Core heals 3 HP after every wave",
-                       "effects": [{"type": "wave_heal", "add": 3}]},
-    "depleted_uranium":{"name": "Depleted Uranium", "rarity": "epic", "desc": "All towers +20% damage",
-                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.2}]},
-
-    "omega_protocol": {"name": "Omega Protocol",    "rarity": "legendary", "desc": "All towers +25% damage, +10% fire rate, +10% range",
-                       "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.25},
-                                   {"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.1},
-                                   {"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.1}]},
-    "endless_supply": {"name": "Endless Supply",    "rarity": "legendary", "desc": "+200 starting Energy and +30 Energy after every wave",
-                       "effects": [{"type": "start_energy", "add": 200}, {"type": "wave_energy", "add": 30}]},
-    "dead_eye":       {"name": "Dead Eye",          "rarity": "legendary", "requires": "railgun", "desc": "Railgun damage +60% and range +30%",
-                       "effects": [{"type": "tower_stat", "tower": "railgun", "stat": "damage", "mult": 1.6},
-                                   {"type": "tower_stat", "tower": "railgun", "stat": "range", "mult": 1.3}]},
-    "tesla_storm":    {"name": "Tesla Storm",       "rarity": "legendary", "requires": "tesla", "desc": "Tesla chains +3 enemies and deals +40% damage",
-                       "effects": [{"type": "tower_stat", "tower": "tesla", "stat": "chain", "add": 3},
-                                   {"type": "tower_stat", "tower": "tesla", "stat": "damage", "mult": 1.4}]},
-    "laser_focus": {"name": "Focusing Lens", "rarity": "common", "requires": "laser", "desc": "Laser Lance damage +25%", "effects": [{"type": "tower_stat", "tower": "laser", "stat": "dps", "mult": 1.25}]},
-    "acid_potency": {"name": "Concentrated Acid", "rarity": "common", "requires": "acid", "desc": "Acid pools deal +30% damage", "effects": [{"type": "tower_stat", "tower": "acid", "stat": "dps", "mult": 1.3}]},
-    "repair_flow": {"name": "Coolant Lines", "rarity": "common", "requires": "repair", "desc": "Repair Bays heal 30% faster", "effects": [{"type": "tower_stat", "tower": "repair", "stat": "heal", "mult": 1.3}]},
-    "sonic_amp": {"name": "Amplifier", "rarity": "common", "requires": "sonic", "desc": "Sonic Disruptor damage +25%", "effects": [{"type": "tower_stat", "tower": "sonic", "stat": "damage", "mult": 1.25}]},
-    "gravity_reach": {"name": "Wide Well", "rarity": "common", "requires": "gravity", "desc": "Gravity Well range +20%", "effects": [{"type": "tower_stat", "tower": "gravity", "stat": "range", "mult": 1.2}]},
-    "tower_plating": {"name": "Tower Plating", "rarity": "common", "desc": "All towers +30% HP", "effects": [{"type": "tower_hp", "mult": 1.3}]},
-    "boss_rounds": {"name": "Boss Rounds", "rarity": "common", "desc": "+15% damage to bosses", "effects": [{"type": "boss_damage", "mult": 1.15}]},
-    "respawn_beacon": {"name": "Respawn Beacon", "rarity": "common", "desc": "Commander respawns 40% faster", "effects": [{"type": "respawn_time", "mult": 0.6}]},
-    "thermal_feedback": {"name": "Thermal Feedback", "rarity": "rare", "requires": "laser", "desc": "Laser ramp-up goes 1x higher", "effects": [{"type": "tower_stat", "tower": "laser", "stat": "ramp", "add": 1.0}]},
-    "etching_agent": {"name": "Etching Agent", "rarity": "rare", "requires": "acid", "desc": "Acid strips 2 more armor", "effects": [{"type": "tower_stat", "tower": "acid", "stat": "shred", "add": 2}]},
-    "wide_splash": {"name": "Wide Splash", "rarity": "rare", "requires": "acid", "desc": "Acid pools 25% bigger and last 25% longer", "effects": [{"type": "tower_stat", "tower": "acid", "stat": "radius", "mult": 1.25}, {"type": "tower_stat", "tower": "acid", "stat": "duration", "mult": 1.25}]},
-    "concussive": {"name": "Concussive Waves", "rarity": "rare", "requires": "sonic", "desc": "Sonic stuns last 0.3s longer", "effects": [{"type": "tower_stat", "tower": "sonic", "stat": "stun", "add": 0.3}]},
-    "repair_drones": {"name": "Repair Drones", "rarity": "rare", "requires": "repair", "desc": "Repair Bay range +30%", "effects": [{"type": "tower_stat", "tower": "repair", "stat": "range", "mult": 1.3}]},
-    "elite_hunter": {"name": "Elite Hunter", "rarity": "rare", "desc": "+30% damage to elites", "effects": [{"type": "elite_damage", "mult": 1.3}]},
-    "sharpened": {"name": "Sharpened Rounds", "rarity": "rare", "desc": "Tower hits have an 8% chance to crit for double damage", "effects": [{"type": "crit_chance", "add": 0.08}]},
-    "veteran_drills": {"name": "Veteran Drills", "rarity": "rare", "desc": "Veterancy bonuses are doubled", "effects": [{"type": "vet_bonus", "mult": 2.0}]},
-    "barrier_emitter": {"name": "Barrier Emitter", "rarity": "rare", "desc": "The Core gets a free 10 HP shield every wave", "effects": [{"type": "core_shield", "add": 10}]},
-    "upgrade_kits": {"name": "Upgrade Kits", "rarity": "rare", "desc": "Tier 2 and 3 upgrades cost 15% less", "effects": [{"type": "upgrade_discount", "mult": 0.85}]},
-    "wide_orbit": {"name": "Wide Orbit", "rarity": "rare", "desc": "Orbital Strike radius +30%", "effects": [{"type": "orbital_radius", "mult": 1.3}]},
-    "fast_shells": {"name": "Faster Shells", "rarity": "rare", "requires": "mortar", "desc": "Mortar shells land 25% faster, fire rate +10%", "effects": [{"type": "tower_stat", "tower": "mortar", "stat": "flight_time", "mult": 0.75}, {"type": "tower_stat", "tower": "mortar", "stat": "fire_rate", "mult": 1.1}]},
-    "blueprints": {"name": "Tier-4 Blueprints", "rarity": "epic", "desc": "Tier-4 branches cost 25% less", "effects": [{"type": "branch_discount", "mult": 0.75}]},
-    "refractor": {"name": "Refractor", "rarity": "epic", "requires": "laser", "desc": "Laser Lances fire 1 extra beam", "effects": [{"type": "tower_stat", "tower": "laser", "stat": "beams", "add": 1}]},
-    "meltdown": {"name": "Meltdown", "rarity": "epic", "requires": "acid", "desc": "Acid damage +50% and strips 3 more armor", "effects": [{"type": "tower_stat", "tower": "acid", "stat": "dps", "mult": 1.5}, {"type": "tower_stat", "tower": "acid", "stat": "shred", "add": 3}]},
-    "aftershock": {"name": "Aftershock", "rarity": "epic", "requires": "sonic", "desc": "Sonic damage +40% and range +15%", "effects": [{"type": "tower_stat", "tower": "sonic", "stat": "damage", "mult": 1.4}, {"type": "tower_stat", "tower": "sonic", "stat": "range", "mult": 1.15}]},
-    "nanite_swarm": {"name": "Nanite Swarm", "rarity": "epic", "requires": "repair", "desc": "Repair Bays heal 80% faster", "effects": [{"type": "tower_stat", "tower": "repair", "stat": "heal", "mult": 1.8}]},
-    "crushing_gravity": {"name": "Crushing Gravity", "rarity": "epic", "requires": "gravity", "desc": "Gravity Well pull +50% and pulses 20% more often", "effects": [{"type": "tower_stat", "tower": "gravity", "stat": "pull", "mult": 1.5}, {"type": "tower_stat", "tower": "gravity", "stat": "fire_rate", "mult": 1.2}]},
-    "wide_nozzle": {"name": "Wide Nozzle", "rarity": "epic", "requires": "flamer", "desc": "Flamer cone +30% and range +15%", "effects": [{"type": "tower_stat", "tower": "flamer", "stat": "cone", "mult": 1.3}, {"type": "tower_stat", "tower": "flamer", "stat": "range", "mult": 1.15}]},
-    "reactive_armor": {"name": "Reactive Armor", "rarity": "epic", "requires": "barricade", "desc": "Barricades +80% HP", "effects": [{"type": "tower_stat", "tower": "barricade", "stat": "max_hp", "mult": 1.8}]},
-    "execution_protocol": {"name": "Execution Protocol", "rarity": "epic", "desc": "Tower hits kill non-boss aliens below 8% HP", "effects": [{"type": "execute", "set": 0.08}]},
-    "overpressure": {"name": "Overpressure Rounds", "rarity": "epic", "desc": "+5% crit chance, crits deal triple damage", "effects": [{"type": "crit_chance", "add": 0.05}, {"type": "crit_damage", "add": 1.0}]},
-    "hardened_chassis": {"name": "Hardened Chassis", "rarity": "epic", "desc": "All towers +60% HP and +5% range", "effects": [{"type": "tower_hp", "mult": 1.6}, {"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.05}]},
-    "shrapnel_mines": {"name": "Shrapnel Mines", "rarity": "epic", "requires": "mines", "desc": "Mine damage +25% and blast radius +30%", "effects": [{"type": "tower_stat", "tower": "mines", "stat": "damage", "mult": 1.25}, {"type": "tower_stat", "tower": "mines", "stat": "splash", "mult": 1.3}]},
-    "prismatic_array": {"name": "Prismatic Array", "rarity": "legendary", "requires": "laser", "desc": "Laser Lances fire 2 extra beams and deal +30% damage", "effects": [{"type": "tower_stat", "tower": "laser", "stat": "beams", "add": 2}, {"type": "tower_stat", "tower": "laser", "stat": "dps", "mult": 1.3}]},
-    "cataclysm": {"name": "Cataclysm Engine", "rarity": "legendary", "requires": "sonic", "desc": "Sonic damage +80% and stuns 0.5s longer", "effects": [{"type": "tower_stat", "tower": "sonic", "stat": "damage", "mult": 1.8}, {"type": "tower_stat", "tower": "sonic", "stat": "stun", "add": 0.5}]},
-    "universal_solvent": {"name": "Universal Solvent", "rarity": "legendary", "requires": "acid", "desc": "Acid strips 6 more armor and deals +60% damage", "effects": [{"type": "tower_stat", "tower": "acid", "stat": "shred", "add": 6}, {"type": "tower_stat", "tower": "acid", "stat": "dps", "mult": 1.6}]},
-    "titan_killer": {"name": "Titan Killer", "rarity": "legendary", "desc": "+60% damage to bosses", "effects": [{"type": "boss_damage", "mult": 1.6}]},
-    "death_mark": {"name": "Death Mark", "rarity": "legendary", "desc": "Tower hits execute non-boss aliens below 15% HP, +10% crit chance", "effects": [{"type": "execute", "set": 0.15}, {"type": "crit_chance", "add": 0.1}]},
-    "eternal_bastion": {"name": "Eternal Bastion", "rarity": "legendary", "desc": "Towers +100% HP and the Core gets a 25 HP shield every wave", "effects": [{"type": "tower_hp", "mult": 2.0}, {"type": "core_shield", "add": 25}]},
-    "overcharged_grid": {"name": "Overcharged Grid", "rarity": "legendary", "desc": "All towers +15% damage and +15% fire rate", "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.15}, {"type": "tower_stat", "tower": "*", "stat": "dps", "mult": 1.15}, {"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.15}]},
-    "drone_fleet": {"name": "Drone Fleet", "rarity": "legendary", "requires": "drone", "desc": "Drone Bays launch 3 more drones that deal +30% damage", "effects": [{"type": "tower_stat", "tower": "drone", "stat": "drones", "add": 3}, {"type": "tower_stat", "tower": "drone", "stat": "damage", "mult": 1.3}]}
+    "pulse_rapid": {
+      "name": "Rapid Cycler",
+      "rarity": "common",
+      "requires": "pulse",
+      "desc": "Pulse Turret fire rate +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "pulse",
+          "stat": "fire_rate",
+          "mult": 1.25
+        }
+      ]
+    },
+    "pulse_caliber": {
+      "name": "Heavy Caliber",
+      "rarity": "common",
+      "requires": "pulse",
+      "desc": "Pulse Turret damage +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "pulse",
+          "stat": "damage",
+          "mult": 1.3
+        }
+      ]
+    },
+    "tesla_arc": {
+      "name": "Arc Splitter",
+      "rarity": "rare",
+      "requires": "tesla",
+      "desc": "Tesla chains +2 enemies",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "chain",
+          "add": 2
+        }
+      ]
+    },
+    "tesla_volt": {
+      "name": "High Voltage",
+      "rarity": "common",
+      "requires": "tesla",
+      "desc": "Tesla Coil damage +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "damage",
+          "mult": 1.25
+        }
+      ]
+    },
+    "cryo_deep": {
+      "name": "Deep Freeze",
+      "rarity": "common",
+      "requires": "cryo",
+      "desc": "Cryo slow +10%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "cryo",
+          "stat": "slow",
+          "add": 0.1
+        }
+      ]
+    },
+    "cryo_shatter": {
+      "name": "Brittle Shells",
+      "rarity": "rare",
+      "requires": "cryo",
+      "desc": "Slowed enemies take +25% damage",
+      "effects": [
+        {
+          "type": "slowed_damage",
+          "mult": 1.25
+        }
+      ]
+    },
+    "cryo_frost": {
+      "name": "Frostbite",
+      "rarity": "rare",
+      "requires": "cryo",
+      "desc": "Cryo Emitters deal +6 damage per second",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "cryo",
+          "stat": "dps",
+          "add": 6
+        }
+      ]
+    },
+    "rail_capacitor": {
+      "name": "Capacitor Bank",
+      "rarity": "rare",
+      "requires": "railgun",
+      "desc": "Railgun damage +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "railgun",
+          "stat": "damage",
+          "mult": 1.3
+        }
+      ]
+    },
+    "rail_scope": {
+      "name": "Long Scope",
+      "rarity": "common",
+      "requires": "railgun",
+      "desc": "Railgun range +15%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "railgun",
+          "stat": "range",
+          "mult": 1.15
+        }
+      ]
+    },
+    "missile_payload": {
+      "name": "Bigger Payload",
+      "rarity": "common",
+      "requires": "missile",
+      "desc": "Missile splash radius +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "missile",
+          "stat": "splash",
+          "mult": 1.25
+        }
+      ]
+    },
+    "missile_salvo": {
+      "name": "Salvo Loader",
+      "rarity": "rare",
+      "requires": "missile",
+      "desc": "Missile Battery fire rate +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "missile",
+          "stat": "fire_rate",
+          "mult": 1.25
+        }
+      ]
+    },
+    "all_range": {
+      "name": "Sensor Array",
+      "rarity": "common",
+      "desc": "All towers +10% range",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 1.1
+        }
+      ]
+    },
+    "all_damage": {
+      "name": "Hardened Rounds",
+      "rarity": "rare",
+      "desc": "All towers +10% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.1
+        }
+      ]
+    },
+    "cheap_build": {
+      "name": "Prefab Kits",
+      "rarity": "rare",
+      "desc": "Towers and upgrades cost 15% less",
+      "effects": [
+        {
+          "type": "tower_cost",
+          "tower": "*",
+          "mult": 0.85
+        }
+      ]
+    },
+    "energy_reward": {
+      "name": "Bounty Contract",
+      "rarity": "rare",
+      "desc": "Kills give +20% Energy",
+      "effects": [
+        {
+          "type": "kill_reward",
+          "mult": 1.2
+        }
+      ]
+    },
+    "start_energy": {
+      "name": "Forward Depot",
+      "rarity": "common",
+      "desc": "+75 starting Energy in every sector",
+      "effects": [
+        {
+          "type": "start_energy",
+          "add": 75
+        }
+      ]
+    },
+    "interest": {
+      "name": "Energy Bonds",
+      "rarity": "rare",
+      "desc": "After each wave, gain 5% of unspent Energy (max 40)",
+      "effects": [
+        {
+          "type": "interest",
+          "rate": 0.05,
+          "cap": 40
+        }
+      ]
+    },
+    "crystal": {
+      "name": "Crystal Harvest",
+      "rarity": "common",
+      "desc": "Every 12th kill drops an Energy Crystal",
+      "effects": [
+        {
+          "type": "crystal_every",
+          "kills": 12
+        }
+      ]
+    },
+    "orbital_cd": {
+      "name": "Uplink Priority",
+      "rarity": "rare",
+      "desc": "Orbital Strike cooldown -40%",
+      "effects": [
+        {
+          "type": "orbital_cooldown",
+          "mult": 0.6
+        }
+      ]
+    },
+    "orbital_power": {
+      "name": "Kinetic Rods",
+      "rarity": "rare",
+      "desc": "Orbital Strike damage +60%",
+      "effects": [
+        {
+          "type": "orbital_damage",
+          "mult": 1.6
+        }
+      ]
+    },
+    "blaster": {
+      "name": "Vance's Sidearm",
+      "rarity": "rare",
+      "desc": "Commander blaster damage +80%",
+      "effects": [
+        {
+          "type": "blaster_damage",
+          "mult": 1.8
+        }
+      ]
+    },
+    "core_plating": {
+      "name": "Core Plating",
+      "rarity": "common",
+      "desc": "Core max HP +25 (healed now)",
+      "effects": [
+        {
+          "type": "core_max",
+          "add": 25
+        }
+      ]
+    },
+    "field_repair": {
+      "name": "Field Repair Crew",
+      "rarity": "common",
+      "desc": "Core heals 8 HP after every sector",
+      "effects": [
+        {
+          "type": "node_heal",
+          "add": 8
+        }
+      ]
+    },
+    "lucky": {
+      "name": "Scavenger Instinct",
+      "rarity": "common",
+      "desc": "+6% item drop chance",
+      "effects": [
+        {
+          "type": "drop_chance",
+          "add": 0.06
+        }
+      ]
+    },
+    "flamer_napalm": {
+      "name": "Napalm Mix",
+      "rarity": "common",
+      "requires": "flamer",
+      "desc": "Flamethrower burn damage +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "flamer",
+          "stat": "burn_dps",
+          "mult": 1.3
+        }
+      ]
+    },
+    "mortar_he": {
+      "name": "HE Shells",
+      "rarity": "common",
+      "requires": "mortar",
+      "desc": "Mortar splash radius +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "mortar",
+          "stat": "splash",
+          "mult": 1.25
+        }
+      ]
+    },
+    "drone_spare": {
+      "name": "Spare Drones",
+      "rarity": "common",
+      "requires": "drone",
+      "desc": "Drone Bays launch +1 drone",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "drone",
+          "stat": "drones",
+          "add": 1
+        }
+      ]
+    },
+    "mines_field": {
+      "name": "Deep Minefield",
+      "rarity": "common",
+      "requires": "mines",
+      "desc": "Mine Layers hold +2 mines",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "mines",
+          "stat": "max_mines",
+          "add": 2
+        }
+      ]
+    },
+    "barricade_plate": {
+      "name": "Reinforced Barricades",
+      "rarity": "common",
+      "requires": "barricade",
+      "desc": "Barricade HP +40%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "barricade",
+          "stat": "max_hp",
+          "mult": 1.4
+        }
+      ]
+    },
+    "radar_booster": {
+      "name": "Signal Booster",
+      "rarity": "common",
+      "requires": "radar",
+      "desc": "Radar range +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "radar",
+          "stat": "range",
+          "mult": 1.25
+        }
+      ]
+    },
+    "harvest_yield": {
+      "name": "Efficient Harvest",
+      "rarity": "common",
+      "requires": "harvester",
+      "desc": "Harvester income +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "harvester",
+          "stat": "income",
+          "mult": 1.25
+        }
+      ]
+    },
+    "servo_boots": {
+      "name": "Servo Boots",
+      "rarity": "common",
+      "desc": "Commander moves 20% faster",
+      "effects": [
+        {
+          "type": "cmd_speed",
+          "mult": 1.2
+        }
+      ]
+    },
+    "cmd_armor": {
+      "name": "Combat Armor",
+      "rarity": "common",
+      "desc": "Commander HP +30%",
+      "effects": [
+        {
+          "type": "cmd_hp",
+          "mult": 1.3
+        }
+      ]
+    },
+    "repair_kit": {
+      "name": "Repair Toolkit",
+      "rarity": "common",
+      "desc": "Commander repairs towers 40% faster",
+      "effects": [
+        {
+          "type": "repair_speed",
+          "mult": 1.4
+        }
+      ]
+    },
+    "briefing": {
+      "name": "Extended Briefing",
+      "rarity": "common",
+      "desc": "+5 seconds of build time between waves",
+      "effects": [
+        {
+          "type": "build_time",
+          "add": 5
+        }
+      ]
+    },
+    "gravity_horizon": {
+      "name": "Event Horizon",
+      "rarity": "rare",
+      "requires": "gravity",
+      "desc": "Gravity Well pull +35%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "gravity",
+          "stat": "pull",
+          "mult": 1.35
+        }
+      ]
+    },
+    "mortar_auto": {
+      "name": "Autoloader",
+      "rarity": "rare",
+      "requires": "mortar",
+      "desc": "Mortar fire rate +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "mortar",
+          "stat": "fire_rate",
+          "mult": 1.25
+        }
+      ]
+    },
+    "drone_cannons": {
+      "name": "Drone Cannons",
+      "rarity": "rare",
+      "requires": "drone",
+      "desc": "Drone damage +35%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "drone",
+          "stat": "damage",
+          "mult": 1.35
+        }
+      ]
+    },
+    "tesla_conduit": {
+      "name": "Ion Conduit",
+      "rarity": "rare",
+      "requires": "tesla",
+      "desc": "Tesla chain reach +30% and range +10%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "chain_range",
+          "mult": 1.3
+        },
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "range",
+          "mult": 1.1
+        }
+      ]
+    },
+    "rail_cooling": {
+      "name": "Cooling Rails",
+      "rarity": "rare",
+      "requires": "railgun",
+      "desc": "Railgun fire rate +20%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "railgun",
+          "stat": "fire_rate",
+          "mult": 1.2
+        }
+      ]
+    },
+    "overdrive": {
+      "name": "Overdrive Protocol",
+      "rarity": "rare",
+      "desc": "All towers fire 10% faster",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.1
+        }
+      ]
+    },
+    "supply_shuttle": {
+      "name": "Supply Shuttle",
+      "rarity": "rare",
+      "desc": "+20 Energy after every wave",
+      "effects": [
+        {
+          "type": "wave_energy",
+          "add": 20
+        }
+      ]
+    },
+    "salvage_rights": {
+      "name": "Salvage Rights",
+      "rarity": "rare",
+      "desc": "+20% Scrap from every reward",
+      "effects": [
+        {
+          "type": "scrap",
+          "mult": 1.2
+        }
+      ]
+    },
+    "lucky_find": {
+      "name": "Lucky Find",
+      "rarity": "rare",
+      "desc": "Better odds of Rare, Epic and Legendary cards",
+      "effects": [
+        {
+          "type": "rarity_luck",
+          "add": 0.25
+        }
+      ]
+    },
+    "inferno_core": {
+      "name": "Inferno Core",
+      "rarity": "epic",
+      "requires": "flamer",
+      "desc": "Flamethrower damage +40%, burns last 50% longer",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "flamer",
+          "stat": "damage",
+          "mult": 1.4
+        },
+        {
+          "type": "tower_stat",
+          "tower": "flamer",
+          "stat": "burn_time",
+          "mult": 1.5
+        }
+      ]
+    },
+    "smart_warheads": {
+      "name": "Smart Warheads",
+      "rarity": "epic",
+      "requires": "missile",
+      "desc": "Missile damage +35%, missiles turn 50% sharper",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "missile",
+          "stat": "damage",
+          "mult": 1.35
+        },
+        {
+          "type": "tower_stat",
+          "tower": "missile",
+          "stat": "turn_rate",
+          "mult": 1.5
+        }
+      ]
+    },
+    "sensor_net": {
+      "name": "Sensor Net",
+      "rarity": "epic",
+      "requires": "radar",
+      "desc": "Radar buff +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "radar",
+          "stat": "buff",
+          "mult": 1.3
+        }
+      ]
+    },
+    "auto_repair": {
+      "name": "Auto-Repair Matrix",
+      "rarity": "epic",
+      "desc": "Core heals 3 HP after every wave",
+      "effects": [
+        {
+          "type": "wave_heal",
+          "add": 3
+        }
+      ]
+    },
+    "depleted_uranium": {
+      "name": "Depleted Uranium",
+      "rarity": "epic",
+      "desc": "All towers +20% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.2
+        }
+      ]
+    },
+    "omega_protocol": {
+      "name": "Omega Protocol",
+      "rarity": "legendary",
+      "desc": "All towers +25% damage, +10% fire rate, +10% range",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.25
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.1
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 1.1
+        }
+      ]
+    },
+    "endless_supply": {
+      "name": "Endless Supply",
+      "rarity": "legendary",
+      "desc": "+200 starting Energy and +30 Energy after every wave",
+      "effects": [
+        {
+          "type": "start_energy",
+          "add": 200
+        },
+        {
+          "type": "wave_energy",
+          "add": 30
+        }
+      ]
+    },
+    "dead_eye": {
+      "name": "Dead Eye",
+      "rarity": "legendary",
+      "requires": "railgun",
+      "desc": "Railgun damage +60% and range +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "railgun",
+          "stat": "damage",
+          "mult": 1.6
+        },
+        {
+          "type": "tower_stat",
+          "tower": "railgun",
+          "stat": "range",
+          "mult": 1.3
+        }
+      ]
+    },
+    "tesla_storm": {
+      "name": "Tesla Storm",
+      "rarity": "legendary",
+      "requires": "tesla",
+      "desc": "Tesla chains +3 enemies and deals +40% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "chain",
+          "add": 3
+        },
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "damage",
+          "mult": 1.4
+        }
+      ]
+    },
+    "laser_focus": {
+      "name": "Focusing Lens",
+      "rarity": "common",
+      "requires": "laser",
+      "desc": "Laser Lance damage +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "laser",
+          "stat": "dps",
+          "mult": 1.25
+        }
+      ]
+    },
+    "acid_potency": {
+      "name": "Concentrated Acid",
+      "rarity": "common",
+      "requires": "acid",
+      "desc": "Acid pools deal +30% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "dps",
+          "mult": 1.3
+        }
+      ]
+    },
+    "repair_flow": {
+      "name": "Coolant Lines",
+      "rarity": "common",
+      "requires": "repair",
+      "desc": "Repair Bays heal 30% faster",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "repair",
+          "stat": "heal",
+          "mult": 1.3
+        }
+      ]
+    },
+    "sonic_amp": {
+      "name": "Amplifier",
+      "rarity": "common",
+      "requires": "sonic",
+      "desc": "Sonic Disruptor damage +25%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "sonic",
+          "stat": "damage",
+          "mult": 1.25
+        }
+      ]
+    },
+    "gravity_reach": {
+      "name": "Wide Well",
+      "rarity": "common",
+      "requires": "gravity",
+      "desc": "Gravity Well range +20%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "gravity",
+          "stat": "range",
+          "mult": 1.2
+        }
+      ]
+    },
+    "tower_plating": {
+      "name": "Tower Plating",
+      "rarity": "common",
+      "desc": "All towers +30% HP",
+      "effects": [
+        {
+          "type": "tower_hp",
+          "mult": 1.3
+        }
+      ]
+    },
+    "boss_rounds": {
+      "name": "Boss Rounds",
+      "rarity": "common",
+      "desc": "+15% damage to bosses",
+      "effects": [
+        {
+          "type": "boss_damage",
+          "mult": 1.15
+        }
+      ]
+    },
+    "respawn_beacon": {
+      "name": "Respawn Beacon",
+      "rarity": "common",
+      "desc": "Commander respawns 40% faster",
+      "effects": [
+        {
+          "type": "respawn_time",
+          "mult": 0.6
+        }
+      ]
+    },
+    "thermal_feedback": {
+      "name": "Thermal Feedback",
+      "rarity": "rare",
+      "requires": "laser",
+      "desc": "Laser ramp-up goes 1x higher",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "laser",
+          "stat": "ramp",
+          "add": 1.0
+        }
+      ]
+    },
+    "etching_agent": {
+      "name": "Etching Agent",
+      "rarity": "rare",
+      "requires": "acid",
+      "desc": "Acid strips 2 more armor",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "shred",
+          "add": 2
+        }
+      ]
+    },
+    "wide_splash": {
+      "name": "Wide Splash",
+      "rarity": "rare",
+      "requires": "acid",
+      "desc": "Acid pools 25% bigger and last 25% longer",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "radius",
+          "mult": 1.25
+        },
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "duration",
+          "mult": 1.25
+        }
+      ]
+    },
+    "concussive": {
+      "name": "Concussive Waves",
+      "rarity": "rare",
+      "requires": "sonic",
+      "desc": "Sonic stuns last 0.3s longer",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "sonic",
+          "stat": "stun",
+          "add": 0.3
+        }
+      ]
+    },
+    "repair_drones": {
+      "name": "Repair Drones",
+      "rarity": "rare",
+      "requires": "repair",
+      "desc": "Repair Bay range +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "repair",
+          "stat": "range",
+          "mult": 1.3
+        }
+      ]
+    },
+    "elite_hunter": {
+      "name": "Elite Hunter",
+      "rarity": "rare",
+      "desc": "+30% damage to elites",
+      "effects": [
+        {
+          "type": "elite_damage",
+          "mult": 1.3
+        }
+      ]
+    },
+    "sharpened": {
+      "name": "Sharpened Rounds",
+      "rarity": "rare",
+      "desc": "Tower hits have an 8% chance to crit for double damage",
+      "effects": [
+        {
+          "type": "crit_chance",
+          "add": 0.08
+        }
+      ]
+    },
+    "veteran_drills": {
+      "name": "Veteran Drills",
+      "rarity": "rare",
+      "desc": "Veterancy bonuses are doubled",
+      "effects": [
+        {
+          "type": "vet_bonus",
+          "mult": 2.0
+        }
+      ]
+    },
+    "barrier_emitter": {
+      "name": "Barrier Emitter",
+      "rarity": "rare",
+      "desc": "The Core gets a free 10 HP shield every wave",
+      "effects": [
+        {
+          "type": "core_shield",
+          "add": 10
+        }
+      ]
+    },
+    "upgrade_kits": {
+      "name": "Upgrade Kits",
+      "rarity": "rare",
+      "desc": "Tier 2 and 3 upgrades cost 15% less",
+      "effects": [
+        {
+          "type": "upgrade_discount",
+          "mult": 0.85
+        }
+      ]
+    },
+    "wide_orbit": {
+      "name": "Wide Orbit",
+      "rarity": "rare",
+      "desc": "Orbital Strike radius +30%",
+      "effects": [
+        {
+          "type": "orbital_radius",
+          "mult": 1.3
+        }
+      ]
+    },
+    "fast_shells": {
+      "name": "Faster Shells",
+      "rarity": "rare",
+      "requires": "mortar",
+      "desc": "Mortar shells land 25% faster, fire rate +10%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "mortar",
+          "stat": "flight_time",
+          "mult": 0.75
+        },
+        {
+          "type": "tower_stat",
+          "tower": "mortar",
+          "stat": "fire_rate",
+          "mult": 1.1
+        }
+      ]
+    },
+    "blueprints": {
+      "name": "Tier-4 Blueprints",
+      "rarity": "epic",
+      "desc": "Tier-4 branches cost 25% less",
+      "effects": [
+        {
+          "type": "branch_discount",
+          "mult": 0.75
+        }
+      ]
+    },
+    "refractor": {
+      "name": "Refractor",
+      "rarity": "epic",
+      "requires": "laser",
+      "desc": "Laser Lances fire 1 extra beam",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "laser",
+          "stat": "beams",
+          "add": 1
+        }
+      ]
+    },
+    "meltdown": {
+      "name": "Meltdown",
+      "rarity": "epic",
+      "requires": "acid",
+      "desc": "Acid damage +50% and strips 3 more armor",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "dps",
+          "mult": 1.5
+        },
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "shred",
+          "add": 3
+        }
+      ]
+    },
+    "aftershock": {
+      "name": "Aftershock",
+      "rarity": "epic",
+      "requires": "sonic",
+      "desc": "Sonic damage +40% and range +15%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "sonic",
+          "stat": "damage",
+          "mult": 1.4
+        },
+        {
+          "type": "tower_stat",
+          "tower": "sonic",
+          "stat": "range",
+          "mult": 1.15
+        }
+      ]
+    },
+    "nanite_swarm": {
+      "name": "Nanite Swarm",
+      "rarity": "epic",
+      "requires": "repair",
+      "desc": "Repair Bays heal 80% faster",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "repair",
+          "stat": "heal",
+          "mult": 1.8
+        }
+      ]
+    },
+    "crushing_gravity": {
+      "name": "Crushing Gravity",
+      "rarity": "epic",
+      "requires": "gravity",
+      "desc": "Gravity Well pull +50% and pulses 20% more often",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "gravity",
+          "stat": "pull",
+          "mult": 1.5
+        },
+        {
+          "type": "tower_stat",
+          "tower": "gravity",
+          "stat": "fire_rate",
+          "mult": 1.2
+        }
+      ]
+    },
+    "wide_nozzle": {
+      "name": "Wide Nozzle",
+      "rarity": "epic",
+      "requires": "flamer",
+      "desc": "Flamer cone +30% and range +15%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "flamer",
+          "stat": "cone",
+          "mult": 1.3
+        },
+        {
+          "type": "tower_stat",
+          "tower": "flamer",
+          "stat": "range",
+          "mult": 1.15
+        }
+      ]
+    },
+    "reactive_armor": {
+      "name": "Reactive Armor",
+      "rarity": "epic",
+      "requires": "barricade",
+      "desc": "Barricades +80% HP",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "barricade",
+          "stat": "max_hp",
+          "mult": 1.8
+        }
+      ]
+    },
+    "execution_protocol": {
+      "name": "Execution Protocol",
+      "rarity": "epic",
+      "desc": "Tower hits kill non-boss aliens below 8% HP",
+      "effects": [
+        {
+          "type": "execute",
+          "set": 0.08
+        }
+      ]
+    },
+    "overpressure": {
+      "name": "Overpressure Rounds",
+      "rarity": "epic",
+      "desc": "+5% crit chance, crits deal triple damage",
+      "effects": [
+        {
+          "type": "crit_chance",
+          "add": 0.05
+        },
+        {
+          "type": "crit_damage",
+          "add": 1.0
+        }
+      ]
+    },
+    "hardened_chassis": {
+      "name": "Hardened Chassis",
+      "rarity": "epic",
+      "desc": "All towers +60% HP and +5% range",
+      "effects": [
+        {
+          "type": "tower_hp",
+          "mult": 1.6
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 1.05
+        }
+      ]
+    },
+    "shrapnel_mines": {
+      "name": "Shrapnel Mines",
+      "rarity": "epic",
+      "requires": "mines",
+      "desc": "Mine damage +25% and blast radius +30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "mines",
+          "stat": "damage",
+          "mult": 1.25
+        },
+        {
+          "type": "tower_stat",
+          "tower": "mines",
+          "stat": "splash",
+          "mult": 1.3
+        }
+      ]
+    },
+    "prismatic_array": {
+      "name": "Prismatic Array",
+      "rarity": "legendary",
+      "requires": "laser",
+      "desc": "Laser Lances fire 2 extra beams and deal +30% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "laser",
+          "stat": "beams",
+          "add": 2
+        },
+        {
+          "type": "tower_stat",
+          "tower": "laser",
+          "stat": "dps",
+          "mult": 1.3
+        }
+      ]
+    },
+    "cataclysm": {
+      "name": "Cataclysm Engine",
+      "rarity": "legendary",
+      "requires": "sonic",
+      "desc": "Sonic damage +80% and stuns 0.5s longer",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "sonic",
+          "stat": "damage",
+          "mult": 1.8
+        },
+        {
+          "type": "tower_stat",
+          "tower": "sonic",
+          "stat": "stun",
+          "add": 0.5
+        }
+      ]
+    },
+    "universal_solvent": {
+      "name": "Universal Solvent",
+      "rarity": "legendary",
+      "requires": "acid",
+      "desc": "Acid strips 6 more armor and deals +60% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "shred",
+          "add": 6
+        },
+        {
+          "type": "tower_stat",
+          "tower": "acid",
+          "stat": "dps",
+          "mult": 1.6
+        }
+      ]
+    },
+    "titan_killer": {
+      "name": "Titan Killer",
+      "rarity": "legendary",
+      "desc": "+60% damage to bosses",
+      "effects": [
+        {
+          "type": "boss_damage",
+          "mult": 1.6
+        }
+      ]
+    },
+    "death_mark": {
+      "name": "Death Mark",
+      "rarity": "legendary",
+      "desc": "Tower hits execute non-boss aliens below 15% HP, +10% crit chance",
+      "effects": [
+        {
+          "type": "execute",
+          "set": 0.15
+        },
+        {
+          "type": "crit_chance",
+          "add": 0.1
+        }
+      ]
+    },
+    "eternal_bastion": {
+      "name": "Eternal Bastion",
+      "rarity": "legendary",
+      "desc": "Towers +100% HP and the Core gets a 25 HP shield every wave",
+      "effects": [
+        {
+          "type": "tower_hp",
+          "mult": 2.0
+        },
+        {
+          "type": "core_shield",
+          "add": 25
+        }
+      ]
+    },
+    "overcharged_grid": {
+      "name": "Overcharged Grid",
+      "rarity": "legendary",
+      "desc": "All towers +15% damage and +15% fire rate",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.15
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "dps",
+          "mult": 1.15
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.15
+        }
+      ]
+    },
+    "drone_fleet": {
+      "name": "Drone Fleet",
+      "rarity": "legendary",
+      "requires": "drone",
+      "desc": "Drone Bays launch 3 more drones that deal +30% damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "drone",
+          "stat": "drones",
+          "add": 3
+        },
+        {
+          "type": "tower_stat",
+          "tower": "drone",
+          "stat": "damage",
+          "mult": 1.3
+        }
+      ]
+    }
   },
-
   "relics": {
-    "quantum_battery": {"name": "Quantum Battery", "rarity": "rare",  "desc": "+100 starting Energy in every sector",
-                        "effects": [{"type": "start_energy", "add": 100}]},
-    "targeting_ai":    {"name": "Targeting AI", "rarity": "epic",     "desc": "All towers +15% range and +10% fire rate",
-                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.15},
-                                    {"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.1}]},
-    "salvage_drones":  {"name": "Salvage Drones", "rarity": "rare",   "desc": "+40% Scrap from every reward",
-                        "effects": [{"type": "scrap", "mult": 1.4}]},
-    "repair_nanites":  {"name": "Repair Nanites", "rarity": "rare",   "desc": "Core heals 15 HP after every sector",
-                        "effects": [{"type": "node_heal", "add": 15}]},
-    "orbital_relay":   {"name": "Orbital Relay", "rarity": "epic",    "desc": "Orbital Strike cooldown -50%",
-                        "effects": [{"type": "orbital_cooldown", "mult": 0.5}]},
-    "field_manual":    {"name": "Field Manual",     "rarity": "rare", "desc": "Augment drafts offer 1 extra choice",
-                        "effects": [{"type": "draft_choices", "add": 1}]},
-    "merchant_ledger": {"name": "Merchant's Ledger", "rarity": "rare", "desc": "Supply Cache prices -20%",
-                        "effects": [{"type": "shop_discount", "mult": 0.8}]},
-    "black_box":       {"name": "Black Box Recorder", "rarity": "rare", "desc": "+30% Salvage when the run ends",
-                        "effects": [{"type": "salvage", "mult": 1.3}]},
-    "spare_parts":     {"name": "Spare Parts Crate", "rarity": "rare", "desc": "Core max HP +10 and heals 10 HP after every sector",
-                        "effects": [{"type": "core_max", "add": 10}, {"type": "node_heal", "add": 10}]},
-    "fortune_engine":  {"name": "Fortune Engine",   "rarity": "epic", "desc": "Much better odds of Rare, Epic and Legendary cards",
-                        "effects": [{"type": "rarity_luck", "add": 0.5}]},
-    "relic_scanner":   {"name": "Relic Scanner",    "rarity": "epic", "desc": "Relic rewards offer 1 extra choice",
-                        "effects": [{"type": "relic_choices", "add": 1}]},
-    "command_uplink":  {"name": "Command Uplink",   "rarity": "epic", "desc": "Orbital Strike cooldown -30% and damage +40%",
-                        "effects": [{"type": "orbital_cooldown", "mult": 0.7}, {"type": "orbital_damage", "mult": 1.4}]},
-    "nanoforge":       {"name": "Nanoforge",        "rarity": "epic", "desc": "Towers and upgrades cost 20% less",
-                        "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.8}]},
-    "omega_shard":     {"name": "Omega Shard",      "rarity": "legendary", "desc": "All towers +30% damage and Core max HP +30",
-                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.3},
-                                    {"type": "core_max", "add": 30}]},
-    "chronoshift":     {"name": "Chronoshift Engine", "rarity": "legendary", "desc": "All towers fire 25% faster",
-                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.25}]},
-    "hive_translator": {"name": "Hive Translator",  "rarity": "legendary", "desc": "Kills give +40% Energy and +25 Energy after every wave",
-                        "effects": [{"type": "kill_reward", "mult": 1.4}, {"type": "wave_energy", "add": 25}]},
-    "overclocked":     {"name": "Overclocked Cores", "cursed": true, "desc": "+50% tower damage, but Core max HP is halved",
-                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.5},
-                                    {"type": "core_max", "mult": 0.5}]},
-    "glass_economy":   {"name": "Glass Economy",    "cursed": true, "desc": "+60% Energy from kills, but items never drop",
-                        "effects": [{"type": "kill_reward", "mult": 1.6}, {"type": "drop_chance", "set": 0}]},
-    "hair_trigger":    {"name": "Hair Trigger",     "cursed": true, "desc": "+35% tower fire rate, but -20% range",
-                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "fire_rate", "mult": 1.35},
-                                    {"type": "tower_stat", "tower": "*", "stat": "range", "mult": 0.8}]},
-    "scrappers_oath":  {"name": "Scrapper's Oath",  "cursed": true, "desc": "Towers cost 30% less, but selling refunds nothing",
-                        "effects": [{"type": "tower_cost", "tower": "*", "mult": 0.7}, {"type": "sell_refund", "set": 0}]},
-    "blood_pact":      {"name": "Blood Pact",       "cursed": true, "desc": "+40% tower damage, but build phases are 5 seconds shorter",
-                        "effects": [{"type": "tower_stat", "tower": "*", "stat": "damage", "mult": 1.4}, {"type": "build_time", "add": -5}]},
-    "greed_engine":    {"name": "Greed Engine",     "cursed": true, "desc": "+80% Scrap, but Core max HP -25%",
-                        "effects": [{"type": "scrap", "mult": 1.8}, {"type": "core_max", "mult": 0.75}]},
-    "unstable_reactor":{"name": "Unstable Reactor", "cursed": true, "desc": "+150 starting Energy, but kills give 30% less Energy",
-                        "effects": [{"type": "start_energy", "add": 150}, {"type": "kill_reward", "mult": 0.7}]},
-    "gamblers_coin":   {"name": "Gambler's Coin",   "cursed": true, "desc": "Far better card rarity odds, but towers cost 25% more",
-                        "effects": [{"type": "rarity_luck", "add": 1.0}, {"type": "tower_cost", "tower": "*", "mult": 1.25}]},
-    "ammo_cache": {"name": "Ammo Cache", "rarity": "rare", "desc": "+5% tower crit chance and +20% blaster damage", "effects": [{"type": "crit_chance", "add": 0.05}, {"type": "blaster_damage", "mult": 1.2}]},
-    "field_hospital": {"name": "Field Hospital", "rarity": "rare", "desc": "Commander respawns twice as fast and takes 20% less damage", "effects": [{"type": "respawn_time", "mult": 0.5}, {"type": "cmd_armor", "mult": 0.8}]},
-    "trophy_rack": {"name": "Trophy Rack", "rarity": "rare", "desc": "Veterancy bonuses are doubled", "effects": [{"type": "vet_bonus", "mult": 2.0}]},
-    "shield_capacitor": {"name": "Shield Capacitor", "rarity": "rare", "desc": "The Core gets a free 15 HP shield every wave", "effects": [{"type": "core_shield", "add": 15}]},
-    "branch_schematics": {"name": "Branch Schematics", "rarity": "rare", "desc": "Tier-4 branches cost 20% less", "effects": [{"type": "branch_discount", "mult": 0.8}]},
-    "hunters_mark": {"name": "Hunter's Mark", "rarity": "epic", "desc": "+40% damage to elites and +20% to bosses", "effects": [{"type": "elite_damage", "mult": 1.4}, {"type": "boss_damage", "mult": 1.2}]},
-    "mass_driver": {"name": "Mass Driver", "rarity": "epic", "desc": "Orbital Strike damage +50% and radius +25%", "effects": [{"type": "orbital_damage", "mult": 1.5}, {"type": "orbital_radius", "mult": 1.25}]},
-    "composite_armor": {"name": "Composite Armor", "rarity": "epic", "desc": "All towers +70% HP", "effects": [{"type": "tower_hp", "mult": 1.7}]},
-    "overseers_eye": {"name": "Overseer's Eye", "rarity": "epic", "desc": "All towers +12% range and +5% crit chance", "effects": [{"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.12}, {"type": "crit_chance", "add": 0.05}]},
-    "grim_reaper": {"name": "Grim Reaper", "rarity": "epic", "desc": "Tower hits kill non-boss aliens below 10% HP", "effects": [{"type": "execute", "set": 0.1}]},
-    "heart_of_hive": {"name": "Heart of the Hive", "rarity": "legendary", "desc": "+50% damage to bosses and elites, Core max HP +20", "effects": [{"type": "boss_damage", "mult": 1.5}, {"type": "elite_damage", "mult": 1.5}, {"type": "core_max", "add": 20}]},
-    "infinity_core": {"name": "Infinity Core", "rarity": "legendary", "desc": "30 HP Core shield every wave and Core heals 4 HP after every wave", "effects": [{"type": "core_shield", "add": 30}, {"type": "wave_heal", "add": 4}]},
-    "master_blueprint": {"name": "Master Blueprint", "rarity": "legendary", "desc": "Upgrades cost 30% less and branches 40% less", "effects": [{"type": "upgrade_discount", "mult": 0.7}, {"type": "branch_discount", "mult": 0.6}]},
-    "glass_cannon": {"name": "Glass Cannon", "cursed": true, "desc": "+20% crit chance and crits deal triple damage, but towers have half HP", "effects": [{"type": "crit_chance", "add": 0.2}, {"type": "crit_damage", "add": 1.0}, {"type": "tower_hp", "mult": 0.5}]},
-    "reapers_bargain": {"name": "Reaper's Bargain", "cursed": true, "desc": "Tower hits execute below 20% HP, but Core max HP -15% and the Commander takes 50% more damage", "effects": [{"type": "execute", "set": 0.2}, {"type": "core_max", "mult": 0.85}, {"type": "cmd_armor", "mult": 1.5}]},
-    "haunted_relay": {"name": "Haunted Relay", "cursed": true, "desc": "All towers +20% range, but build phases are 4 seconds shorter", "effects": [{"type": "tower_stat", "tower": "*", "stat": "range", "mult": 1.2}, {"type": "build_time", "add": -4}]}
+    "quantum_battery": {
+      "name": "Quantum Battery",
+      "rarity": "rare",
+      "desc": "+100 starting Energy in every sector",
+      "effects": [
+        {
+          "type": "start_energy",
+          "add": 100
+        }
+      ]
+    },
+    "targeting_ai": {
+      "name": "Targeting AI",
+      "rarity": "epic",
+      "desc": "All towers +15% range and +10% fire rate",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 1.15
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.1
+        }
+      ]
+    },
+    "salvage_drones": {
+      "name": "Salvage Drones",
+      "rarity": "rare",
+      "desc": "+40% Scrap from every reward",
+      "effects": [
+        {
+          "type": "scrap",
+          "mult": 1.4
+        }
+      ]
+    },
+    "repair_nanites": {
+      "name": "Repair Nanites",
+      "rarity": "rare",
+      "desc": "Core heals 15 HP after every sector",
+      "effects": [
+        {
+          "type": "node_heal",
+          "add": 15
+        }
+      ]
+    },
+    "orbital_relay": {
+      "name": "Orbital Relay",
+      "rarity": "epic",
+      "desc": "Orbital Strike cooldown -50%",
+      "effects": [
+        {
+          "type": "orbital_cooldown",
+          "mult": 0.5
+        }
+      ]
+    },
+    "field_manual": {
+      "name": "Field Manual",
+      "rarity": "rare",
+      "desc": "Augment drafts offer 1 extra choice",
+      "effects": [
+        {
+          "type": "draft_choices",
+          "add": 1
+        }
+      ]
+    },
+    "merchant_ledger": {
+      "name": "Merchant's Ledger",
+      "rarity": "rare",
+      "desc": "Supply Cache prices -20%",
+      "effects": [
+        {
+          "type": "shop_discount",
+          "mult": 0.8
+        }
+      ]
+    },
+    "black_box": {
+      "name": "Black Box Recorder",
+      "rarity": "rare",
+      "desc": "+30% Salvage when the run ends",
+      "effects": [
+        {
+          "type": "salvage",
+          "mult": 1.3
+        }
+      ]
+    },
+    "spare_parts": {
+      "name": "Spare Parts Crate",
+      "rarity": "rare",
+      "desc": "Core max HP +10 and heals 10 HP after every sector",
+      "effects": [
+        {
+          "type": "core_max",
+          "add": 10
+        },
+        {
+          "type": "node_heal",
+          "add": 10
+        }
+      ]
+    },
+    "fortune_engine": {
+      "name": "Fortune Engine",
+      "rarity": "epic",
+      "desc": "Much better odds of Rare, Epic and Legendary cards",
+      "effects": [
+        {
+          "type": "rarity_luck",
+          "add": 0.5
+        }
+      ]
+    },
+    "relic_scanner": {
+      "name": "Relic Scanner",
+      "rarity": "epic",
+      "desc": "Relic rewards offer 1 extra choice",
+      "effects": [
+        {
+          "type": "relic_choices",
+          "add": 1
+        }
+      ]
+    },
+    "command_uplink": {
+      "name": "Command Uplink",
+      "rarity": "epic",
+      "desc": "Orbital Strike cooldown -30% and damage +40%",
+      "effects": [
+        {
+          "type": "orbital_cooldown",
+          "mult": 0.7
+        },
+        {
+          "type": "orbital_damage",
+          "mult": 1.4
+        }
+      ]
+    },
+    "nanoforge": {
+      "name": "Nanoforge",
+      "rarity": "epic",
+      "desc": "Towers and upgrades cost 20% less",
+      "effects": [
+        {
+          "type": "tower_cost",
+          "tower": "*",
+          "mult": 0.8
+        }
+      ]
+    },
+    "omega_shard": {
+      "name": "Omega Shard",
+      "rarity": "legendary",
+      "desc": "All towers +30% damage and Core max HP +30",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.3
+        },
+        {
+          "type": "core_max",
+          "add": 30
+        }
+      ]
+    },
+    "chronoshift": {
+      "name": "Chronoshift Engine",
+      "rarity": "legendary",
+      "desc": "All towers fire 25% faster",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.25
+        }
+      ]
+    },
+    "hive_translator": {
+      "name": "Hive Translator",
+      "rarity": "legendary",
+      "desc": "Kills give +40% Energy and +25 Energy after every wave",
+      "effects": [
+        {
+          "type": "kill_reward",
+          "mult": 1.4
+        },
+        {
+          "type": "wave_energy",
+          "add": 25
+        }
+      ]
+    },
+    "overclocked": {
+      "name": "Overclocked Cores",
+      "cursed": true,
+      "desc": "+50% tower damage, but Core max HP is halved",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.5
+        },
+        {
+          "type": "core_max",
+          "mult": 0.5
+        }
+      ]
+    },
+    "glass_economy": {
+      "name": "Glass Economy",
+      "cursed": true,
+      "desc": "+60% Energy from kills, but items never drop",
+      "effects": [
+        {
+          "type": "kill_reward",
+          "mult": 1.6
+        },
+        {
+          "type": "drop_chance",
+          "set": 0
+        }
+      ]
+    },
+    "hair_trigger": {
+      "name": "Hair Trigger",
+      "cursed": true,
+      "desc": "+35% tower fire rate, but -20% range",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.35
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 0.8
+        }
+      ]
+    },
+    "scrappers_oath": {
+      "name": "Scrapper's Oath",
+      "cursed": true,
+      "desc": "Towers cost 30% less, but selling refunds nothing",
+      "effects": [
+        {
+          "type": "tower_cost",
+          "tower": "*",
+          "mult": 0.7
+        },
+        {
+          "type": "sell_refund",
+          "set": 0
+        }
+      ]
+    },
+    "blood_pact": {
+      "name": "Blood Pact",
+      "cursed": true,
+      "desc": "+40% tower damage, but build phases are 5 seconds shorter",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.4
+        },
+        {
+          "type": "build_time",
+          "add": -5
+        }
+      ]
+    },
+    "greed_engine": {
+      "name": "Greed Engine",
+      "cursed": true,
+      "desc": "+80% Scrap, but Core max HP -25%",
+      "effects": [
+        {
+          "type": "scrap",
+          "mult": 1.8
+        },
+        {
+          "type": "core_max",
+          "mult": 0.75
+        }
+      ]
+    },
+    "unstable_reactor": {
+      "name": "Unstable Reactor",
+      "cursed": true,
+      "desc": "+150 starting Energy, but kills give 30% less Energy",
+      "effects": [
+        {
+          "type": "start_energy",
+          "add": 150
+        },
+        {
+          "type": "kill_reward",
+          "mult": 0.7
+        }
+      ]
+    },
+    "gamblers_coin": {
+      "name": "Gambler's Coin",
+      "cursed": true,
+      "desc": "Far better card rarity odds, but towers cost 25% more",
+      "effects": [
+        {
+          "type": "rarity_luck",
+          "add": 1.0
+        },
+        {
+          "type": "tower_cost",
+          "tower": "*",
+          "mult": 1.25
+        }
+      ]
+    },
+    "ammo_cache": {
+      "name": "Ammo Cache",
+      "rarity": "rare",
+      "desc": "+5% tower crit chance and +20% blaster damage",
+      "effects": [
+        {
+          "type": "crit_chance",
+          "add": 0.05
+        },
+        {
+          "type": "blaster_damage",
+          "mult": 1.2
+        }
+      ]
+    },
+    "field_hospital": {
+      "name": "Field Hospital",
+      "rarity": "rare",
+      "desc": "Commander respawns twice as fast and takes 20% less damage",
+      "effects": [
+        {
+          "type": "respawn_time",
+          "mult": 0.5
+        },
+        {
+          "type": "cmd_armor",
+          "mult": 0.8
+        }
+      ]
+    },
+    "trophy_rack": {
+      "name": "Trophy Rack",
+      "rarity": "rare",
+      "desc": "Veterancy bonuses are doubled",
+      "effects": [
+        {
+          "type": "vet_bonus",
+          "mult": 2.0
+        }
+      ]
+    },
+    "shield_capacitor": {
+      "name": "Shield Capacitor",
+      "rarity": "rare",
+      "desc": "The Core gets a free 15 HP shield every wave",
+      "effects": [
+        {
+          "type": "core_shield",
+          "add": 15
+        }
+      ]
+    },
+    "branch_schematics": {
+      "name": "Branch Schematics",
+      "rarity": "rare",
+      "desc": "Tier-4 branches cost 20% less",
+      "effects": [
+        {
+          "type": "branch_discount",
+          "mult": 0.8
+        }
+      ]
+    },
+    "hunters_mark": {
+      "name": "Hunter's Mark",
+      "rarity": "epic",
+      "desc": "+40% damage to elites and +20% to bosses",
+      "effects": [
+        {
+          "type": "elite_damage",
+          "mult": 1.4
+        },
+        {
+          "type": "boss_damage",
+          "mult": 1.2
+        }
+      ]
+    },
+    "mass_driver": {
+      "name": "Mass Driver",
+      "rarity": "epic",
+      "desc": "Orbital Strike damage +50% and radius +25%",
+      "effects": [
+        {
+          "type": "orbital_damage",
+          "mult": 1.5
+        },
+        {
+          "type": "orbital_radius",
+          "mult": 1.25
+        }
+      ]
+    },
+    "composite_armor": {
+      "name": "Composite Armor",
+      "rarity": "epic",
+      "desc": "All towers +70% HP",
+      "effects": [
+        {
+          "type": "tower_hp",
+          "mult": 1.7
+        }
+      ]
+    },
+    "overseers_eye": {
+      "name": "Overseer's Eye",
+      "rarity": "epic",
+      "desc": "All towers +12% range and +5% crit chance",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 1.12
+        },
+        {
+          "type": "crit_chance",
+          "add": 0.05
+        }
+      ]
+    },
+    "grim_reaper": {
+      "name": "Grim Reaper",
+      "rarity": "epic",
+      "desc": "Tower hits kill non-boss aliens below 10% HP",
+      "effects": [
+        {
+          "type": "execute",
+          "set": 0.1
+        }
+      ]
+    },
+    "heart_of_hive": {
+      "name": "Heart of the Hive",
+      "rarity": "legendary",
+      "desc": "+50% damage to bosses and elites, Core max HP +20",
+      "effects": [
+        {
+          "type": "boss_damage",
+          "mult": 1.5
+        },
+        {
+          "type": "elite_damage",
+          "mult": 1.5
+        },
+        {
+          "type": "core_max",
+          "add": 20
+        }
+      ]
+    },
+    "infinity_core": {
+      "name": "Infinity Core",
+      "rarity": "legendary",
+      "desc": "30 HP Core shield every wave and Core heals 4 HP after every wave",
+      "effects": [
+        {
+          "type": "core_shield",
+          "add": 30
+        },
+        {
+          "type": "wave_heal",
+          "add": 4
+        }
+      ]
+    },
+    "master_blueprint": {
+      "name": "Master Blueprint",
+      "rarity": "legendary",
+      "desc": "Upgrades cost 30% less and branches 40% less",
+      "effects": [
+        {
+          "type": "upgrade_discount",
+          "mult": 0.7
+        },
+        {
+          "type": "branch_discount",
+          "mult": 0.6
+        }
+      ]
+    },
+    "glass_cannon": {
+      "name": "Glass Cannon",
+      "cursed": true,
+      "desc": "+20% crit chance and crits deal triple damage, but towers have half HP",
+      "effects": [
+        {
+          "type": "crit_chance",
+          "add": 0.2
+        },
+        {
+          "type": "crit_damage",
+          "add": 1.0
+        },
+        {
+          "type": "tower_hp",
+          "mult": 0.5
+        }
+      ]
+    },
+    "reapers_bargain": {
+      "name": "Reaper's Bargain",
+      "cursed": true,
+      "desc": "Tower hits execute below 20% HP, but Core max HP -15% and the Commander takes 50% more damage",
+      "effects": [
+        {
+          "type": "execute",
+          "set": 0.2
+        },
+        {
+          "type": "core_max",
+          "mult": 0.85
+        },
+        {
+          "type": "cmd_armor",
+          "mult": 1.5
+        }
+      ]
+    },
+    "haunted_relay": {
+      "name": "Haunted Relay",
+      "cursed": true,
+      "desc": "All towers +20% range, but build phases are 4 seconds shorter",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 1.2
+        },
+        {
+          "type": "build_time",
+          "add": -4
+        }
+      ]
+    },
+    "frost_core": {
+      "name": "Frost Core",
+      "rarity": "rare",
+      "set": "cryo_doctrine",
+      "desc": "Cryo Emitters slow 15% more (Cryo Doctrine 1/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "cryo",
+          "stat": "slow",
+          "mult": 1.15
+        }
+      ]
+    },
+    "cold_storage": {
+      "name": "Cold Storage",
+      "rarity": "rare",
+      "set": "cryo_doctrine",
+      "desc": "Slowed aliens take +10% damage (Cryo Doctrine 2/3)",
+      "effects": [
+        {
+          "type": "slowed_damage",
+          "mult": 1.1
+        }
+      ]
+    },
+    "ice_lattice": {
+      "name": "Ice Lattice",
+      "rarity": "rare",
+      "set": "cryo_doctrine",
+      "desc": "Cryo Emitters +15% range (Cryo Doctrine 3/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "cryo",
+          "stat": "range",
+          "mult": 1.15
+        }
+      ]
+    },
+    "shell_casings": {
+      "name": "Shell Casings",
+      "rarity": "rare",
+      "set": "siege_protocol",
+      "desc": "Mortar +20% damage (Siege Protocol 1/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "mortar",
+          "stat": "damage",
+          "mult": 1.2
+        }
+      ]
+    },
+    "spotter_drone": {
+      "name": "Spotter Drone",
+      "rarity": "rare",
+      "set": "siege_protocol",
+      "desc": "Missile Battery +15% range (Siege Protocol 2/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "missile",
+          "stat": "range",
+          "mult": 1.15
+        }
+      ]
+    },
+    "blast_shields": {
+      "name": "Blast Shields",
+      "rarity": "rare",
+      "set": "siege_protocol",
+      "desc": "Towers +10% HP (Siege Protocol 3/3)",
+      "effects": [
+        {
+          "type": "tower_hp",
+          "mult": 1.1
+        }
+      ]
+    },
+    "capacitor_bank": {
+      "name": "Capacitor Relic",
+      "rarity": "rare",
+      "set": "storm_network",
+      "desc": "Tesla +20% damage (Storm Network 1/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "damage",
+          "mult": 1.2
+        }
+      ]
+    },
+    "grounding_rod": {
+      "name": "Grounding Rod",
+      "rarity": "rare",
+      "set": "storm_network",
+      "desc": "Lightning Rods charge 25% faster (Storm Network 2/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "lightning",
+          "stat": "charge_rate",
+          "mult": 1.25
+        }
+      ]
+    },
+    "arc_relay": {
+      "name": "Arc Relay",
+      "rarity": "rare",
+      "set": "storm_network",
+      "desc": "Tesla +1 chain jump (Storm Network 3/3)",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "tesla",
+          "stat": "chain",
+          "add": 1
+        }
+      ]
+    },
+    "shattered_crown": {
+      "name": "Shattered Crown",
+      "rarity": "boss",
+      "desc": "BOSS: all towers +30% fire rate, Core max HP -30%",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "fire_rate",
+          "mult": 1.3
+        },
+        {
+          "type": "core_max",
+          "mult": 0.7
+        }
+      ]
+    },
+    "war_economy": {
+      "name": "War Economy",
+      "rarity": "boss",
+      "desc": "BOSS: kills pay double Energy, build phase 5 s shorter",
+      "effects": [
+        {
+          "type": "kill_reward",
+          "mult": 2.0
+        },
+        {
+          "type": "build_time",
+          "add": -5
+        }
+      ]
+    },
+    "supreme_command": {
+      "name": "Supreme Command",
+      "rarity": "boss",
+      "desc": "BOSS: Vance blaster x2 and +50% HP, Orbital Strike cooldown +50%",
+      "effects": [
+        {
+          "type": "blaster_damage",
+          "mult": 2.0
+        },
+        {
+          "type": "cmd_hp",
+          "mult": 1.5
+        },
+        {
+          "type": "orbital_cooldown",
+          "mult": 1.5
+        }
+      ]
+    },
+    "titan_plating": {
+      "name": "Titan Plating",
+      "rarity": "boss",
+      "desc": "BOSS: towers x2 HP, tower costs +25%",
+      "effects": [
+        {
+          "type": "tower_hp",
+          "mult": 2.0
+        },
+        {
+          "type": "tower_cost",
+          "tower": "*",
+          "mult": 1.25
+        }
+      ]
+    },
+    "hive_pact": {
+      "name": "Hive Pact",
+      "rarity": "boss",
+      "desc": "BOSS: +40% damage to bosses and elites, Core loses 2 HP after every wave",
+      "effects": [
+        {
+          "type": "boss_damage",
+          "mult": 1.4
+        },
+        {
+          "type": "elite_damage",
+          "mult": 1.4
+        },
+        {
+          "type": "wave_heal",
+          "add": -2
+        }
+      ]
+    }
   },
-
   "events": {
     "crashed_drone": {
       "title": "Crashed Drone",
       "text": "A supply drone lies in the sand, its cargo pod still sealed. The repair would take parts you need elsewhere.",
       "choices": [
-        {"label": "Repair it", "cost": {"scrap": 30}, "gain": {"augment": 1}, "sub": "-30 Scrap, gain a random augment"},
-        {"label": "Strip it for parts", "gain": {"scrap": 25}, "sub": "+25 Scrap"}
+        {
+          "label": "Repair it",
+          "cost": {
+            "scrap": 30
+          },
+          "gain": {
+            "augment": 1
+          },
+          "sub": "-30 Scrap, gain a random augment"
+        },
+        {
+          "label": "Strip it for parts",
+          "gain": {
+            "scrap": 25
+          },
+          "sub": "+25 Scrap"
+        }
       ]
     },
     "hive_cache": {
       "title": "Hive Cache",
       "text": "Glowing eggs pulse inside a cracked hive wall. Something valuable is buried in the resin, but the brood is waking.",
       "choices": [
-        {"label": "Dig it out", "cost": {"core_hp": 15}, "gain": {"relic": 1}, "sub": "-15 Core HP, gain a random relic"},
-        {"label": "Burn it and move on", "gain": {"scrap": 10}, "sub": "+10 Scrap"}
+        {
+          "label": "Dig it out",
+          "cost": {
+            "core_hp": 15
+          },
+          "gain": {
+            "relic": 1
+          },
+          "sub": "-15 Core HP, gain a random relic"
+        },
+        {
+          "label": "Burn it and move on",
+          "gain": {
+            "scrap": 10
+          },
+          "sub": "+10 Scrap"
+        }
       ]
     },
     "mercenary": {
       "title": "Mercenary Engineer",
       "text": "A drifter with a toolbelt offers to join your outpost. She only takes payment up front.",
       "choices": [
-        {"label": "Hire her", "cost": {"scrap": 40}, "gain": {"tower_card": 1}, "sub": "-40 Scrap, unlock a random tower"},
-        {"label": "Send her away", "gain": {}, "sub": "Nothing happens"}
+        {
+          "label": "Hire her",
+          "cost": {
+            "scrap": 40
+          },
+          "gain": {
+            "tower_card": 1
+          },
+          "sub": "-40 Scrap, unlock a random tower"
+        },
+        {
+          "label": "Send her away",
+          "gain": {},
+          "sub": "Nothing happens"
+        }
       ]
     },
     "black_market": {
       "title": "Black Market Signal",
       "text": "An encrypted channel offers military-grade tech. The seller's terms are strange, and the hardware runs hot.",
       "choices": [
-        {"label": "Take the deal", "gain": {"curse": 1, "scrap": 40}, "sub": "Gain a cursed relic and +40 Scrap"},
-        {"label": "Close the channel", "gain": {}, "sub": "Nothing happens"}
+        {
+          "label": "Take the deal",
+          "gain": {
+            "curse": 1,
+            "scrap": 40
+          },
+          "sub": "Gain a cursed relic and +40 Scrap"
+        },
+        {
+          "label": "Close the channel",
+          "gain": {},
+          "sub": "Nothing happens"
+        }
       ]
     },
     "shield_generator": {
       "title": "Derelict Shield Generator",
       "text": "An old shield generator still holds a charge. You can feed it into the Core now, or wire it in for good.",
       "choices": [
-        {"label": "Drain it now", "gain": {"core_hp": 30}, "sub": "Heal 30 Core HP"},
-        {"label": "Wire it in", "cost": {"scrap": 25}, "gain": {"core_max": 15}, "sub": "-25 Scrap, Core max HP +15"}
+        {
+          "label": "Drain it now",
+          "gain": {
+            "core_hp": 30
+          },
+          "sub": "Heal 30 Core HP"
+        },
+        {
+          "label": "Wire it in",
+          "cost": {
+            "scrap": 25
+          },
+          "gain": {
+            "core_max": 15
+          },
+          "sub": "-25 Scrap, Core max HP +15"
+        }
       ]
     },
     "refugees": {
       "title": "Refugee Convoy",
       "text": "Colonists fleeing the siege ask for an escort. It will cost you time, but they promise to repay the favor.",
       "choices": [
-        {"label": "Escort them", "cost": {"core_hp": 10}, "gain": {"scrap": 50}, "sub": "-10 Core HP, +50 Scrap"},
-        {"label": "Share supplies", "cost": {"scrap": 15}, "gain": {"augment": 1}, "sub": "-15 Scrap, gain a random augment"}
+        {
+          "label": "Escort them",
+          "cost": {
+            "core_hp": 10
+          },
+          "gain": {
+            "scrap": 50
+          },
+          "sub": "-10 Core HP, +50 Scrap"
+        },
+        {
+          "label": "Share supplies",
+          "cost": {
+            "scrap": 15
+          },
+          "gain": {
+            "augment": 1
+          },
+          "sub": "-15 Scrap, gain a random augment"
+        }
       ]
     }
+  },
+  "_p5_comment": "Phase 5: rest / forge / gamble / miniboss nodes, relic sets, boss relics (rarity 'boss', offered after bosses), alien factions, hero decks, act-wide events and the debt merchant.",
+  "relic_sets": {
+    "cryo_doctrine": {
+      "name": "Cryo Doctrine",
+      "pieces": 3,
+      "desc": "Set bonus: slowed aliens take +25% damage",
+      "effects": [
+        {
+          "type": "slowed_damage",
+          "mult": 1.25
+        }
+      ]
+    },
+    "siege_protocol": {
+      "name": "Siege Protocol",
+      "pieces": 3,
+      "desc": "Set bonus: +30% splash on every tower",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "splash",
+          "mult": 1.3
+        }
+      ]
+    },
+    "storm_network": {
+      "name": "Storm Network",
+      "pieces": 3,
+      "desc": "Set bonus: towers crit 10% of the time",
+      "effects": [
+        {
+          "type": "crit_chance",
+          "add": 0.1
+        }
+      ]
+    }
+  },
+  "factions": {
+    "hive": {
+      "name": "Hive",
+      "color": [
+        110,
+        230,
+        60
+      ],
+      "desc": "Swarms, broods and queens",
+      "weights": {
+        "skitter": 2.0,
+        "brood_sac": 2.5,
+        "swarm_mind": 3.0,
+        "necro_spore": 2.0,
+        "blob": 2.5,
+        "swarm_queenlet": 2.0,
+        "mender": 1.5
+      }
+    },
+    "machine": {
+      "name": "Machine",
+      "color": [
+        140,
+        152,
+        168
+      ],
+      "desc": "Armor, drones and saboteurs",
+      "weights": {
+        "brute": 2.0,
+        "juggernaut": 2.5,
+        "saboteur": 2.5,
+        "shield_drone": 2.5,
+        "reflector": 3.0,
+        "jammer": 2.5,
+        "bomber": 2.0,
+        "artillery_grub": 2.0
+      }
+    },
+    "void": {
+      "name": "Void",
+      "color": [
+        200,
+        110,
+        240
+      ],
+      "desc": "Cloakers, phasers and parasites",
+      "weights": {
+        "cloaker": 3.0,
+        "burrower": 2.5,
+        "phaser": 3.0,
+        "leech": 2.5,
+        "infector": 2.5,
+        "thief": 2.0,
+        "pathcutter": 2.0,
+        "adaptive": 2.0
+      }
+    }
+  },
+  "hero_decks": {
+    "ignis": [
+      "flamer",
+      "tar"
+    ],
+    "rime": [
+      "cryo",
+      "chrono"
+    ],
+    "bastion": [
+      "shield",
+      "barricade"
+    ],
+    "kestrel": [
+      "drone",
+      "mines"
+    ],
+    "ledger": [
+      "harvester",
+      "biolab"
+    ],
+    "hawk": [
+      "railgun",
+      "mirror"
+    ],
+    "engineer": [
+      "repair"
+    ],
+    "tactician": [
+      "radar"
+    ],
+    "vanguard": [
+      "tesla"
+    ]
+  },
+  "act_events": {
+    "solar_flare": {
+      "name": "Solar Flare",
+      "desc": "Towers +20% damage, Vance takes double damage",
+      "effects": [
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "damage",
+          "mult": 1.2
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "dps",
+          "mult": 1.2
+        },
+        {
+          "type": "cmd_armor",
+          "mult": 2.0
+        }
+      ]
+    },
+    "ion_storm": {
+      "name": "Ion Storm",
+      "desc": "Orbital Strike cooldown -40%, towers -10% range",
+      "effects": [
+        {
+          "type": "orbital_cooldown",
+          "mult": 0.6
+        },
+        {
+          "type": "tower_stat",
+          "tower": "*",
+          "stat": "range",
+          "mult": 0.9
+        }
+      ]
+    },
+    "supply_surplus": {
+      "name": "Supply Surplus",
+      "desc": "+100 starting Energy, kills pay 20% less",
+      "effects": [
+        {
+          "type": "start_energy",
+          "add": 100
+        },
+        {
+          "type": "kill_reward",
+          "mult": 0.8
+        }
+      ]
+    },
+    "blood_moon": {
+      "name": "Blood Moon",
+      "desc": "Core heals 2 HP every wave, towers -15% HP",
+      "effects": [
+        {
+          "type": "wave_heal",
+          "add": 2
+        },
+        {
+          "type": "tower_hp",
+          "mult": 0.85
+        }
+      ]
+    },
+    "scrap_rush": {
+      "name": "Scrap Rush",
+      "desc": "+30% Scrap, Supply Cache prices +20%",
+      "effects": [
+        {
+          "type": "scrap",
+          "mult": 1.3
+        },
+        {
+          "type": "shop_discount",
+          "mult": 1.2
+        }
+      ]
+    }
+  },
+  "debt": {
+    "loan": 100,
+    "repay": 150,
+    "nodes": 2,
+    "penalty_hp": 25
+  },
+  "gamble": {
+    "cheap": 40,
+    "rich": 80,
+    "curse_chance": 0.25
+  },
+  "rest_heal": 0.4,
+  "black_market": {
+    "common": 25,
+    "rare": 45,
+    "epic": 70,
+    "legendary": 100,
+    "cursed": 40
   }
 }

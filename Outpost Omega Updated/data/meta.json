@@ -1,0 +1,34 @@
+{
+  "_comment": "Phase 5 meta progression (systems/meta.py): achievements, skins, tower mastery, leaderboards.",
+  "achievements": {
+    "first_blood":  {"name": "First Blood",     "desc": "Kill your first alien",                     "stat": "kills", "goal": 1},
+    "exterminator": {"name": "Exterminator",    "desc": "Kill 2,500 aliens",                         "stat": "kills", "goal": 2500, "skin": "crimson"},
+    "architect":    {"name": "Architect",       "desc": "Build 300 towers",                          "stat": "towers_built", "goal": 300},
+    "boss_slayer":  {"name": "Boss Slayer",     "desc": "Kill 10 bosses",                            "stat": "bosses", "goal": 10, "skin": "gold"},
+    "zoologist":    {"name": "Zoologist",       "desc": "Kill every kind of boss",                   "stat": "boss_kinds", "goal": 10, "skin": "shadow"},
+    "survivor":     {"name": "Survivor",        "desc": "Reach wave 25 in Endless",                  "stat": "best_wave", "goal": 25, "skin": "arctic"},
+    "marathon":     {"name": "Marathon",        "desc": "Reach wave 50 in Endless",                  "stat": "best_wave", "goal": 50},
+    "conqueror":    {"name": "Conqueror",       "desc": "Win a Siege Run",                           "stat": "runs_won", "goal": 1, "skin": "royal"},
+    "ascendant":    {"name": "Ascendant",       "desc": "Win a Siege Run at Ascension 3",            "stat": "ascension_won", "goal": 3},
+    "fusionist":    {"name": "Fusionist",       "desc": "Fuse two towers",                           "stat": "fusions", "goal": 1},
+    "legends":      {"name": "Living Legends",  "desc": "Turn 5 towers into named veterans",         "stat": "veterans", "goal": 5},
+    "untouchable":  {"name": "Untouchable",     "desc": "Win a sector without Core damage",          "stat": "perfect_wins", "goal": 1},
+    "lights_out":   {"name": "Lights Out",      "desc": "Beat Sector 7 without building a Radar Relay", "stat": "lights_out", "goal": 1},
+    "tamer":        {"name": "Beast Tamer",     "desc": "Tame an alien",                             "stat": "tamed", "goal": 1},
+    "rich":         {"name": "War Chest",       "desc": "Hold 3,000 Energy at once",                 "stat": "max_energy", "goal": 3000},
+    "completionist":{"name": "Sector Sweep",    "desc": "Win all 12 campaign sectors",               "stat": "sectors_won", "goal": 12},
+    "rush":         {"name": "Rush Hour",       "desc": "Clear Boss Rush",                           "stat": "boss_rush", "goal": 1},
+    "puzzler":      {"name": "Puzzler",         "desc": "Solve every puzzle",                        "stat": "puzzles", "goal": 3},
+    "hardcore":     {"name": "Hard as Nails",   "desc": "Reach wave 15 in Hardcore",                 "stat": "hardcore_wave", "goal": 15}
+  },
+  "skins": {
+    "classic": {"name": "Classic"},
+    "crimson": {"name": "Crimson",  "palette": {"c": [235, 60, 60], "s": [120, 40, 40], "S": [200, 90, 90]}},
+    "gold":    {"name": "Gold",     "palette": {"c": [255, 214, 60], "s": [180, 140, 40], "S": [240, 200, 90]}},
+    "shadow":  {"name": "Shadow",   "palette": {"c": [200, 110, 240], "s": [50, 46, 64], "S": [90, 84, 110]}},
+    "arctic":  {"name": "Arctic",   "palette": {"c": [120, 200, 255], "s": [200, 220, 235], "S": [245, 250, 255]}},
+    "royal":   {"name": "Royal",    "palette": {"c": [255, 214, 60], "s": [60, 40, 140], "S": [110, 90, 200]}}
+  },
+  "mastery_levels": [100, 500, 2000],
+  "_mastery_comment": "Tower kills across every game. Level 1: +3% damage, level 2: +6%, level 3: +10% and its tier-4 branches unlock in Endless too."
+}

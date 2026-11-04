@@ -1,0 +1,21 @@
+{
+  "_comment": "Phase 5 economy (systems/economy.py). Biomass drops from every kill; Bio-Labs boost it. Interest only in Endless and Siege Run.",
+  "biomass_per_kill": 1,
+  "biomass_boss": 25,
+  "interest_rate": 0.05,
+  "interest_cap": 50,
+  "insurance_cost": 60,
+  "insurance_refund": 0.25,
+  "research": {
+    "alloys":   {"name": "Hardened Alloys",     "desc": "Towers +25% max HP",         "cost": 30, "waves": 3, "tower_hp": 1.25},
+    "loaders":  {"name": "Rapid Loaders",       "desc": "Towers +8% fire rate",       "cost": 40, "waves": 4, "rate": 0.08},
+    "barrels":  {"name": "Long Barrels",        "desc": "Towers +6% range",           "cost": 40, "waves": 4, "range": 0.06},
+    "reactor":  {"name": "Reactor Tuning",      "desc": "+15 Energy after each wave", "cost": 35, "waves": 3, "wave_energy": 15},
+    "orbital":  {"name": "Orbital Calibration", "desc": "Orbital Strike cooldown -20%", "cost": 45, "waves": 4, "orbital_cd": 0.8},
+    "salvage":  {"name": "Salvage Protocols",   "desc": "Sell refunds +10%",          "cost": 25, "waves": 2, "sell": 0.1},
+    "mutagen":  {"name": "Mutagen Rounds",      "desc": "Towers +10% damage",         "cost": 60, "waves": 5, "damage": 0.1}
+  },
+  "black_market": {"_comment": "Siege Run Supply Cache: sell a relic or a tower card for Scrap",
+                   "relic_scrap": {"common": 25, "rare": 45, "epic": 70, "legendary": 100, "cursed": 40},
+                   "tower_scrap": 30}
+}

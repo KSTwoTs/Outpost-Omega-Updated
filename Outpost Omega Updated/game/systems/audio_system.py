@@ -105,6 +105,9 @@ class AudioSystem:
                 pygame.mixer.music.play(loops)
                 return
 
+    def has_music(self, name="music"):
+        return any(os.path.exists(os.path.join(S.SOUND_DIR, name + ext)) for ext in (".ogg", ".mp3", ".wav"))
+
     def stop_music(self):
         if self.enabled:
             pygame.mixer.music.stop()

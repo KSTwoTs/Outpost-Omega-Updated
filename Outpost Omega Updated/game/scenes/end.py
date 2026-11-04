@@ -13,8 +13,9 @@ class _EndScene(Scene):
 
     def __init__(self, game, level_id="sector1", difficulty=S.DEFAULT_DIFFICULTY, mode="campaign",
                  stars=0, score=0, kills=0, core=0.0, waves=0, new_best=False, launch=None, daily=None,
-                 **kwargs):
+                 custom=None, **kwargs):
         super().__init__(game, **kwargs)
+        self.custom = custom or {}     # {"title", "color", "lines", "no_next", "story"} from PlayScene.end_summary
         self.level_id = level_id
         self.difficulty = difficulty
         self.mode = mode
@@ -30,7 +31,7 @@ class _EndScene(Scene):
         cx = S.SCREEN_W // 2
         self.buttons = [Button((cx - 150, 470, 300, 52), "RETRY", "retry"),
                         Button((cx - 150, 536, 300, 52), "LEVEL SELECT", "select")]
-        nxt = self.next_level()
+        nxt = None if self.custom.get("no_next") or self.custom.get("lines") else self.next_level()
         if nxt:
             self.buttons.insert(0, Button((cx - 150, 404, 300, 52), "NEXT SECTOR", "next"))
 
@@ -54,7 +55,7 @@ class _EndScene(Scene):
         if command == "retry":
             scenes.change("play", **self.launch)
         elif command == "next":
-            scenes.change("play", level_id=self.next_level(), difficulty=self.difficulty)
+            self.game.start_sector(self.next_level(), self.difficulty, "campaign")
         elif command == "select":
             self.audio.stop_music()
             scenes.change("level_select")
@@ -69,9 +70,9 @@ class _EndScene(Scene):
     def on_render(self, screen):
         a = self.assets
         self.bg.draw(screen)
-        title = a.text(self.title, 90, self.color, True)
+        title = a.text(self.custom.get("title", self.title), 90, self.custom.get("color", self.color), True)
         screen.blit(title, title.get_rect(center=(S.SCREEN_W // 2, 130)))
-        for i, line in enumerate(self.stats_lines()):
+        for i, line in enumerate(self.custom.get("lines") or self.stats_lines()):
             t = a.text(line, 32, S.WHITE)
             screen.blit(t, t.get_rect(center=(S.SCREEN_W // 2, 280 + i * 36)))
         self.render_extra(screen)
@@ -95,6 +96,8 @@ class WinScene(_EndScene):
         return None
 
     def render_extra(self, screen):
+        if self.custom.get("lines"):
+            return
         for s in range(3):
             draw_star(screen, (S.SCREEN_W // 2 - 60 + s * 60, 215), 24, s < self.stars_earned)
 

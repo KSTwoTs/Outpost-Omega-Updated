@@ -37,6 +37,9 @@ T_BLOCK = "X"     # rocks / crates: blocks building and the Commander
 T_HAZARD = "~"    # acid pool (Sector 3)
 T_ICE = "I"       # ice: buildable, Commander slides (Sector 2)
 T_WALL = "W"      # hive wall (Sector 3, can appear mid-level)
+T_HIGH = "H"      # high ground / rooftop: buildable, towers on it get +20% range
+T_RESOURCE = "R"  # resource node: buildable, Harvesters / Bio-Refineries on it earn double
+T_CRYSTAL = "K"   # crystal: blocks like a rock; beam towers next to one hit 25% harder
 
 # --- Gameplay constants ----------------------------------------------------
 START_ENERGY = 200

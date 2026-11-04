@@ -25,8 +25,8 @@ from .. import settings as S
 from . import procgen
 from ..core.pathfinding import astar, compress_path
 
-SOLID_TILES = {S.T_BLOCK, S.T_CORE, S.T_WALL}
-BUILDABLE_TILES = {S.T_BUILD, S.T_ICE}
+SOLID_TILES = {S.T_BLOCK, S.T_CORE, S.T_WALL, S.T_CRYSTAL}
+BUILDABLE_TILES = {S.T_BUILD, S.T_ICE, S.T_HIGH, S.T_RESOURCE}
 PATH_TILES = {S.T_PATH, S.T_SPAWN}
 
 # Colors per sector theme: (ground, ground speckle dark, speckle light, grid,
@@ -52,14 +52,34 @@ THEMES = {
     "twin":   dict(ground=(84, 76, 108), dark=(70, 62, 92), light=(110, 100, 140),
                    grid=(76, 68, 100), path=(126, 108, 90), path_dark=(98, 84, 70),
                    rock=(104, 96, 120), rock_dark=(70, 64, 84)),
+    "jungle": dict(ground=(46, 92, 52), dark=(34, 72, 40), light=(80, 130, 60),
+                   grid=(40, 82, 46), path=(104, 84, 56), path_dark=(80, 62, 40),
+                   rock=(70, 88, 64), rock_dark=(44, 58, 40)),
+    "crystal": dict(ground=(52, 50, 78), dark=(40, 38, 62), light=(90, 110, 150),
+                    grid=(60, 58, 90), path=(86, 80, 100), path_dark=(64, 58, 78),
+                    rock=(96, 90, 110), rock_dark=(62, 58, 74)),
+    "ruins":  dict(ground=(110, 104, 96), dark=(90, 84, 78), light=(132, 126, 116),
+                   grid=(98, 92, 86), path=(70, 68, 66), path_dark=(52, 50, 48),
+                   rock=(128, 112, 96), rock_dark=(90, 78, 66), wall_style="door"),
+    "gas":    dict(ground=(120, 92, 70), dark=(100, 74, 56), light=(170, 130, 96),
+                   grid=(110, 84, 64), path=(70, 76, 92), path_dark=(52, 56, 70),
+                   rock=(140, 120, 100), rock_dark=(96, 82, 66)),
     "plains": dict(ground=(98, 142, 74), dark=(82, 122, 62), light=(126, 168, 92),
                    grid=(88, 130, 68), path=(150, 128, 86), path_dark=(122, 102, 66),
                    rock=(110, 108, 100), rock_dark=(76, 74, 70)),
 }
 
 
+CUSTOM_LEVEL_DIR = os.path.join(S.ROOT_DIR, "mods", "levels")   # maps made in the Map Editor
+
+
 def level_path(level_id):
-    return os.path.join(S.LEVEL_DIR, f"{level_id}.json")
+    path = os.path.join(S.LEVEL_DIR, f"{level_id}.json")
+    if not os.path.exists(path):
+        custom = os.path.join(CUSTOM_LEVEL_DIR, f"{level_id}.json")
+        if os.path.exists(custom):
+            return custom
+    return path
 
 
 def level_exists(level_id):
@@ -92,6 +112,7 @@ class LevelSystem:
         self.free_path = self.data.get("free_path", False)
         self.weather_ice = False    # Blizzard weather makes every tile slippery
         self.occupied = {}   # (tx, ty) -> Tower
+        self.digs = 0        # shortcuts dug by Pathcutters / the Architect
         self.spawn_tiles = sorted(self._find_all(S.T_SPAWN), key=lambda t: (t[1], t[0]))
         self.core_tiles = sorted(self._find_all(S.T_CORE), key=lambda t: (t[1], t[0]))
         if not self.spawn_tiles or not self.core_tiles:
@@ -112,6 +133,13 @@ class LevelSystem:
             for t in belt["tiles"]:
                 self.conveyors[tuple(t)] = tuple(belt["dir"])
         self.wall_events = [dict(e, done=False) for e in self.data.get("wall_events", [])]
+        # Phase 5 map features (MapFeatures drives them): gates Vance can flip, teleporters
+        self.gates = [{"tiles": [tuple(t) for t in g["tiles"]], "switch": tuple(g["switch"]),
+                       "open": g.get("open", True)} for g in self.data.get("gates", [])]
+        for g in self.gates:
+            for tx, ty in g["tiles"]:
+                self.tiles[ty][tx] = S.T_PATH if g["open"] else S.T_WALL
+        self.teleporters = [(tuple(a), tuple(b)) for a, b in self.data.get("teleporters", [])]
         self.routes = []          # one waypoint list per lane
         self.route_tiles = []     # one tile list per lane (for debug drawing)
         self.recompute_path(announce=False)
@@ -172,9 +200,14 @@ class LevelSystem:
     def is_buildable(self, tx, ty):
         return self.tile_at(tx, ty) in BUILDABLE_TILES and (tx, ty) not in self.occupied
 
+    def blocked_by_tower(self, tx, ty):
+        """A tower stands here that can't be walked over (Tar Pits can)."""
+        obj = self.occupied.get((tx, ty))
+        return obj is not None and not getattr(obj, "walkable", False)
+
     def is_solid(self, tx, ty):
         """Solid for the Commander: rocks, walls, the Core and towers."""
-        return self.tile_at(tx, ty) in SOLID_TILES or (tx, ty) in self.occupied
+        return self.tile_at(tx, ty) in SOLID_TILES or self.blocked_by_tower(tx, ty)
 
     def is_ice(self, tx, ty):
         return self.weather_ice or self.tile_at(tx, ty) == S.T_ICE
@@ -187,7 +220,7 @@ class LevelSystem:
             return False
         ch = self.tile_at(tx, ty)
         if self.free_path:
-            return ch not in SOLID_TILES and (tx, ty) not in self.occupied
+            return ch not in SOLID_TILES and not self.blocked_by_tower(tx, ty)
         return ch in PATH_TILES
 
     # ---- pathing ---------------------------------------------------------
@@ -250,6 +283,88 @@ class LevelSystem:
         if self.free_path:
             self.recompute_path()
 
+    # ---- Pathcutter / Architect ----------------------------------------------
+    @staticmethod
+    def _between(a, b):
+        """Tiles strictly between two tiles on the same row or column, else None."""
+        (ax, ay), (bx, by) = a, b
+        if ax == bx:
+            step = 1 if by > ay else -1
+            return [(ax, y) for y in range(ay + step, by, step)]
+        if ay == by:
+            step = 1 if bx > ax else -1
+            return [(x, ay) for x in range(ax + step, bx, step)]
+        return None
+
+    def dig_shortcut(self, from_tile=None, fill=False, max_digs=3, min_saving=4):
+        """Turn a straight run of open ground between two points of the route into path,
+        if that skips at least min_saving tiles. fill=True also turns the stretch it
+        bypassed back into buildable ground (the Architect). Returns True if dug."""
+        if self.free_path or self.digs >= max_digs:
+            return False
+        best = None
+        for lane, tiles in enumerate(self.route_tiles):
+            if from_tile is None:
+                i0 = 0
+            else:
+                i0 = min(range(len(tiles)), key=lambda i: abs(tiles[i][0] - from_tile[0])
+                         + abs(tiles[i][1] - from_tile[1]))
+            for i in range(i0, min(len(tiles), i0 + 30)):
+                for j in range(i + min_saving + 2, len(tiles)):
+                    mid = self._between(tiles[i], tiles[j])
+                    if not mid:
+                        continue
+                    if any(self.tile_at(*t) not in BUILDABLE_TILES or t in self.occupied for t in mid):
+                        continue
+                    saving = (j - i) - (len(mid) + 1)
+                    if saving >= min_saving and (best is None or saving > best[0]):
+                        best = (saving, lane, i, j, mid)
+        if best is None:
+            return False
+        _saving, lane, i, j, mid = best
+        old = {}
+        for tx, ty in mid:
+            old[(tx, ty)] = self.tiles[ty][tx]
+            self.tiles[ty][tx] = S.T_PATH
+        if fill:
+            others = {t for k, tiles in enumerate(self.route_tiles) if k != lane for t in tiles}
+            for tx, ty in self.route_tiles[lane][i + 1:j]:
+                if (tx, ty) not in others and (tx, ty) not in self.occupied and self.tiles[ty][tx] == S.T_PATH:
+                    old[(tx, ty)] = self.tiles[ty][tx]
+                    self.tiles[ty][tx] = S.T_BUILD
+        if not self.all_lanes_connected():
+            for (tx, ty), ch in old.items():
+                self.tiles[ty][tx] = ch
+            return False
+        self.digs += 1
+        self.rebuild_surface()
+        self.recompute_path(announce=True)
+        return True
+
+    def architect_rebuild(self, from_tile):
+        """Architect boss phase: reroute the path (fixed maps) or raise rock walls (Open Plains)."""
+        if not self.free_path:
+            return self.dig_shortcut(from_tile, fill=True, max_digs=99, min_saving=3) or \
+                self.dig_shortcut(None, fill=True, max_digs=99, min_saving=3)
+        spots = [t for tiles in self.route_tiles for t in tiles[3:-3]]
+        random.shuffle(spots)
+        placed = 0
+        for tx, ty in spots:
+            if placed >= 5:
+                break
+            if self.tile_at(tx, ty) not in BUILDABLE_TILES or (tx, ty) in self.occupied:
+                continue
+            old = self.tiles[ty][tx]
+            self.tiles[ty][tx] = S.T_BLOCK   # a rock wall right where the aliens were walking
+            if self.all_lanes_connected():
+                placed += 1
+            else:
+                self.tiles[ty][tx] = old
+        if placed:
+            self.rebuild_surface()
+            self.recompute_path(announce=True)
+        return placed > 0
+
     # ---- hive walls (Sector 3) ---------------------------------------------
     def apply_wall_event(self, event):
         grow = [tuple(t) for t in event.get("grow", [])]
@@ -305,6 +420,23 @@ class LevelSystem:
                     surf.fill(shade, (px, py, 2, 2))
                 if ch == S.T_ICE:
                     self._draw_ice(surf, rect, rng)
+                elif ch == S.T_HIGH:   # raised plateau / rooftop
+                    surf.fill(th["light"], rect.inflate(-2, -2))
+                    pygame.draw.line(surf, th["rock_dark"], rect.bottomleft, rect.bottomright, 3)
+                    pygame.draw.line(surf, th["rock_dark"], rect.topright, rect.bottomright, 2)
+                elif ch == S.T_RESOURCE:
+                    pygame.draw.circle(surf, th["dark"], rect.center, 11)
+                    for k in range(3):
+                        cx, cy = rect.centerx - 6 + k * 6, rect.centery + (k % 2) * 4 - 2
+                        pygame.draw.polygon(surf, S.ENERGY, [(cx, cy - 6), (cx + 3, cy), (cx, cy + 4), (cx - 3, cy)])
+                elif ch == S.T_CRYSTAL:
+                    cx, cy = rect.center
+                    for k, (dx, h) in enumerate(((-7, 16), (0, 24), (7, 14))):
+                        col = ((120, 200, 255), (190, 230, 255), (150, 120, 255))[k]
+                        pygame.draw.polygon(surf, (30, 30, 60), [(cx + dx - 5, cy + 12), (cx + dx, cy + 12 - h - 1),
+                                                                 (cx + dx + 5, cy + 12)])
+                        pygame.draw.polygon(surf, col, [(cx + dx - 4, cy + 11), (cx + dx, cy + 12 - h),
+                                                        (cx + dx + 4, cy + 11)])
                 if ch in BUILDABLE_TILES:
                     pygame.draw.rect(surf, th["grid"], rect, 1)
                 elif ch == S.T_BLOCK:

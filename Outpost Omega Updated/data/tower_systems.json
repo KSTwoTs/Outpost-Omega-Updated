@@ -1,0 +1,78 @@
+{
+  "_comment": "Phase 5 tower systems. Mods are {stat: [mult, add]} applied on top of a tower's tier stats (see Tower.refresh_mods). 'rate' is a fire-rate bonus (+0.2 = 20% faster).",
+
+  "synergies": [
+    {"tower": "railgun",   "partner": "cryo",     "mods": {"damage": [1.15, 0]},      "text": "Cryo next to it: +15% damage"},
+    {"tower": "tesla",     "partner": "cryo",     "mods": {"chain": [1, 1]},          "text": "Cryo next to it: +1 chain jump"},
+    {"tower": "cryo",      "partner": "tesla",    "mods": {"slow": [1, 0.05]},        "text": "Tesla next to it: +5% slow"},
+    {"tower": "mortar",    "partner": "flamer",   "mods": {"splash": [1.2, 0]},       "text": "Flamer next to it: +20% splash"},
+    {"tower": "pulse",     "partner": "radar",    "mods": {"damage": [1.15, 0]},      "text": "Radar next to it: +15% damage"},
+    {"tower": "missile",   "partner": "radar",    "mods": {"range": [1.1, 0]},        "text": "Radar next to it: +10% range"},
+    {"tower": "laser",     "partner": "mirror",   "mods": {"dps": [1.15, 0]},         "text": "Mirror next to it: +15% beam damage"},
+    {"tower": "sonic",     "partner": "gravity",  "mods": {"stun": [1, 0.2]},         "text": "Gravity Well next to it: +0.2 s stun"},
+    {"tower": "acid",      "partner": "magnet",   "mods": {"shred": [1, 2]},          "text": "Magnet Coil next to it: +2 armor shred"},
+    {"tower": "fence",     "partner": "magnet",   "mods": {"dps": [1.2, 0]},          "text": "Magnet Coil next to it: +20% beam damage"},
+    {"tower": "flak",      "partner": "missile",  "mods": {"burst": [1, 1]},          "text": "Missile Battery next to it: +1 shell per burst"},
+    {"tower": "lightning", "partner": "tesla",    "mods": {"charge_rate": [1.25, 0]}, "text": "Tesla next to it: +25% charge rate"},
+    {"tower": "drone",     "partner": "repair",   "mods": {"drones": [1, 1]},         "text": "Repair Bay next to it: +1 drone"},
+    {"tower": "harvester", "partner": "biolab",   "mods": {"income": [1, 10]},        "text": "Bio-Lab next to it: +10 Energy a wave"},
+    {"tower": "ion",       "partner": "shield",   "mods": {"damage": [1.1, 0]},       "text": "Shield Projector next to it: +10% damage"},
+    {"tower": "chrono",    "partner": "hacker",   "mods": {"rewind": [1, 0.5]},       "text": "Hacker Spire next to it: +0.5 s rewind"}
+  ],
+
+  "chips": {
+    "damage":  {"name": "Damage Chip",  "desc": "+20% damage",                  "color": [235, 60, 60],
+                "mods": {"damage": [1.2, 0], "dps": [1.2, 0], "burn_dps": [1.2, 0], "contact_dps": [1.2, 0], "max_charge": [1.2, 0]}},
+    "range":   {"name": "Range Chip",   "desc": "+15% range",                   "color": [0, 229, 255], "mods": {"range": [1.15, 0]}},
+    "rapid":   {"name": "Rapid Chip",   "desc": "+20% fire rate",               "color": [255, 214, 60], "rate": 0.2},
+    "plating": {"name": "Plating Chip", "desc": "+50% tower HP",                "color": [140, 152, 168], "hp_mult": 1.5},
+    "salvage": {"name": "Salvage Chip", "desc": "+2 Energy per kill, sells for 20% more", "color": [80, 220, 110], "kill_energy": 2, "sell_bonus": 0.2}
+  },
+  "chip_drop_elite": 0.2,
+  "chip_drop_boss": 2,
+
+  "stances": {
+    "focus":    {"name": "Focus",    "desc": "+20% damage",                 "mods": {"damage": [1.2, 0], "dps": [1.2, 0]}},
+    "suppress": {"name": "Suppress", "desc": "-20% damage, hits slow 25%", "mods": {"damage": [0.8, 0], "dps": [0.8, 0]}, "slow": 0.25}
+  },
+
+  "veteran_names": ["Old Faithful", "Big Bertha", "Sergeant Spark", "The Warden", "Lucky Seven", "Iron Maiden",
+                    "Doc Holliday", "Night Owl", "Grandma", "The Professor", "Red Baron", "Lady Luck",
+                    "Bulldog", "Ghost", "Mother Hen", "Hammer", "Thunder", "Sunny"],
+  "veteran_traits": {
+    "sharpshooter": {"name": "Sharpshooter", "desc": "+15% range",          "mods": {"range": [1.15, 0]}},
+    "relentless":   {"name": "Relentless",   "desc": "+15% fire rate",      "rate": 0.15},
+    "heavy":        {"name": "Heavy Hitter", "desc": "+20% damage",         "mods": {"damage": [1.2, 0], "dps": [1.2, 0]}},
+    "ironclad":     {"name": "Ironclad",     "desc": "+50% HP",             "hp_mult": 1.5},
+    "lucky":        {"name": "Lucky",        "desc": "Kills pay +3 Energy", "kill_energy": 3}
+  },
+
+  "relocate_fee": 0.15,
+  "fusion_cost": 150,
+  "fusions": {
+    "frost_arc":      {"name": "Frost Arc",      "parts": ["tesla", "cryo"],      "behavior": "chain",
+                       "desc": "Chain lightning that also slows everything it hits",
+                       "stats": {"damage": 40, "range": 160, "fire_rate": 1.6, "chain": 7, "chain_range": 110, "slow": 0.4}},
+    "photon_lance":   {"name": "Photon Lance",   "parts": ["railgun", "laser"],   "behavior": "pierce",
+                       "desc": "A railgun that fires twice as often and hits flyers",
+                       "stats": {"damage": 220, "range": 380, "fire_rate": 1.0}, "can_target_air": true},
+    "napalm_spitter": {"name": "Napalm Spitter", "parts": ["flamer", "acid"],     "behavior": "cone",
+                       "desc": "Wide fire cone that also melts armor",
+                       "stats": {"damage": 16, "range": 130, "fire_rate": 8.0, "cone": 0.7, "burn_dps": 25, "burn_time": 3.0, "shred": 4}},
+    "siege_battery":  {"name": "Siege Battery",  "parts": ["missile", "mortar"],  "behavior": "missile",
+                       "desc": "Homing missiles with mortar-sized blasts",
+                       "stats": {"damage": 90, "range": 280, "fire_rate": 1.0, "splash": 110, "projectile_speed": 340, "turn_rate": 5.0}},
+    "gunship_hangar": {"name": "Gunship Hangar", "parts": ["pulse", "drone"],     "behavior": "drones",
+                       "desc": "Five heavy gunships that hunt anything in range",
+                       "stats": {"range": 240, "drones": 5, "damage": 16, "fire_rate": 3.0, "speed": 300}},
+    "quake_engine":   {"name": "Quake Engine",   "parts": ["sonic", "gravity"],   "behavior": "shockwave",
+                       "desc": "Shockwaves that stun and drag aliens back along the path",
+                       "stats": {"damage": 60, "range": 140, "fire_rate": 0.5, "stun": 0.8, "pull": 50}},
+    "storm_coil":     {"name": "Storm Coil",     "parts": ["lightning", "tesla"], "behavior": "lightning",
+                       "desc": "Charges fast and chains through 8 aliens",
+                       "stats": {"range": 200, "charge_rate": 40, "max_charge": 400, "chain": 8, "weather_mult": 4}},
+    "bio_refinery":   {"name": "Bio-Refinery",   "parts": ["harvester", "biolab"], "behavior": "income",
+                       "desc": "150 Energy a wave plus 5 Biomass per kill in range",
+                       "stats": {"range": 160, "income": 150, "per_kill": 5}}
+  }
+}

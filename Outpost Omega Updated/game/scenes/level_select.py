@@ -21,10 +21,17 @@ SECTORS = [
     ("sector6", "Sector 6", "Orbital Platform", S.STEEL_LIGHT),
     ("sector7", "Sector 7", "Derelict Ship", S.TEXT_DIM),
     ("sector8", "Sector 8", "Twin Cores", S.CRYO),
+    ("sector9", "Sector 9", "Jungle", (80, 180, 90)),
+    ("sector10", "Sector 10", "Crystal Caves", (150, 140, 255)),
+    ("sector11", "Sector 11", "Ruined City", (200, 190, 170)),
+    ("sector12", "Sector 12", "Gas Giant Station", (230, 160, 110)),
+    ("sector13", "Sector 13", "The Hive Heart", (230, 80, 230)),
     ("procedural", "Uncharted", "New map every time", S.ENERGY),
+    ("editor", "Map Editor", "Build your own sector", S.CYAN),
 ]
+EDITOR = "editor"
 PROCEDURAL = "procedural"     # Endless only: a freshly generated map each play
-CARD_W, CARD_H, CARD_PITCH_X, CARD_PITCH_Y = 224, 150, 240, 164
+CARD_W, CARD_H, CARD_PITCH_X, CARD_PITCH_Y = 150, 150, 156, 164
 
 
 def draw_star(screen, center, r, filled):
@@ -43,18 +50,22 @@ class LevelSelectScene(Scene):
         super().__init__(game, **kwargs)
         self.stars = Starfield()
         self.cards = []
-        per_row = 5
+        per_row = 8
         for i, (sid, title, sub, color) in enumerate(SECTORS):
             row, col = divmod(i, per_row)
             in_row = min(per_row, len(SECTORS) - row * per_row)
             x0 = S.SCREEN_W // 2 - (in_row * CARD_PITCH_X - (CARD_PITCH_X - CARD_W)) // 2
             rect = pygame.Rect(x0 + col * CARD_PITCH_X, 128 + row * CARD_PITCH_Y, CARD_W, CARD_H)
-            # All sectors unlocked for the demo. To restore progression:
-            # unlocked = level_exists(sid) and i < game.save.get("unlocked", 1)
-            unlocked = sid == PROCEDURAL or level_exists(sid)
+            # Settings > "Unlock all sectors" (on by default). Off: beat a sector to open the next.
+            if sid in (PROCEDURAL, EDITOR):
+                unlocked = True
+            elif game.settings.get("unlock_all", True):
+                unlocked = level_exists(sid)
+            else:
+                unlocked = level_exists(sid) and i < game.save.get("unlocked", 1)
             self.cards.append((rect, sid, title, sub, color, unlocked))
         self.thumbs = {sid: self.make_thumbnail(sid) for _, sid, *_ in self.cards
-                       if sid != PROCEDURAL and level_exists(sid)}
+                       if sid not in (PROCEDURAL, EDITOR) and level_exists(sid)}
         self.diff_buttons = [
             Button((S.SCREEN_W // 2 - 240 + i * 165, 504, 150, 42), name, "difficulty", name)
             for i, name in enumerate(S.DIFFICULTIES)
@@ -68,7 +79,7 @@ class LevelSelectScene(Scene):
         self.picker = CommanderPicker(game, 608, mode=lambda: game.mode)
 
     @staticmethod
-    def make_thumbnail(level_id, size=(150, 75)):
+    def make_thumbnail(level_id, size=(128, 64)):
         """Shrink the level's real tile map down to a mini-map for the card."""
         try:
             level = LevelSystem(EventBus(), level_id)
@@ -94,11 +105,13 @@ class LevelSelectScene(Scene):
         elif cmd.name == "click":
             for rect, sid, *_rest, unlocked in self.cards:
                 if rect.collidepoint(cmd.pos):
-                    if self.playable(sid, unlocked):
+                    if sid == EDITOR:
+                        self.audio.play("click")
+                        self.game.scenes.change("editor")
+                    elif self.playable(sid, unlocked):
                         self.audio.play("click")
                         level_id = f"proc_{random.randrange(1, 10 ** 6)}" if sid == PROCEDURAL else sid
-                        self.game.scenes.change("play", level_id=level_id, difficulty=self.game.difficulty,
-                                                mode=self.game.mode)
+                        self.game.start_sector(level_id, self.game.difficulty, self.game.mode)
                     else:
                         self.audio.play("error")
             for b in self.diff_buttons:
@@ -129,7 +142,7 @@ class LevelSelectScene(Scene):
             hover = ok and rect.collidepoint(mouse)
             pygame.draw.rect(screen, S.PANEL_HI if hover else S.PANEL, rect, border_radius=10)
             pygame.draw.rect(screen, color if ok else S.HUD_EDGE, rect, 3, border_radius=10)
-            preview = pygame.Rect(rect.x + 10, rect.y + 8, 154, 79)
+            preview = pygame.Rect(rect.x + 9, rect.y + 8, CARD_W - 18, 79)
             pygame.draw.rect(screen, S.SPACE, preview, border_radius=6)
             thumb = self.thumbs.get(sid)
             if thumb is not None:
@@ -137,14 +150,21 @@ class LevelSelectScene(Scene):
                     thumb = thumb.copy()
                     thumb.set_alpha(80)
                 screen.blit(thumb, thumb.get_rect(center=preview.center))
+            elif sid == EDITOR:
+                for gx in range(preview.x + 8, preview.right - 4, 12):
+                    pygame.draw.line(screen, S.HUD_EDGE, (gx, preview.y + 4), (gx, preview.bottom - 4))
+                q = a.text("EDIT", 34, color, True)
+                screen.blit(q, q.get_rect(center=preview.center))
             else:
                 q = a.text("?", 56, color if ok else S.TEXT_DIM, True)
                 screen.blit(q, q.get_rect(center=preview.center))
             pygame.draw.rect(screen, color if ok else S.HUD_EDGE, preview, 2, border_radius=6)
-            screen.blit(a.text(name, 26, S.WHITE if ok else S.TEXT_DIM, True), (rect.x + 12, rect.y + 94))
-            screen.blit(a.text(sub, 18, S.TEXT_DIM), (rect.x + 12, rect.y + 122))
+            screen.blit(a.text(name, 24, S.WHITE if ok else S.TEXT_DIM, True), (rect.x + 10, rect.y + 94))
+            screen.blit(a.text(sub, 16, S.TEXT_DIM), (rect.x + 10, rect.y + 122))
             side_x = rect.right - 50
-            if sid == PROCEDURAL and not endless:
+            if sid == EDITOR:
+                pass
+            elif sid == PROCEDURAL and not endless:
                 t = a.text("ENDLESS", 15, S.TEXT_DIM, True)
                 screen.blit(t, t.get_rect(center=(side_x + 18, rect.y + 32)))
                 t = a.text("ONLY", 15, S.TEXT_DIM, True)

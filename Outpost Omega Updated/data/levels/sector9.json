@@ -1,0 +1,251 @@
+{
+ "legend": {
+  ".": "buildable",
+  "#": "path",
+  "S": "spawn",
+  "C": "core",
+  "X": "blocked",
+  "~": "hazard",
+  "I": "ice",
+  "W": "wall / gate",
+  "H": "high ground",
+  "R": "resource node",
+  "K": "crystal"
+ },
+ "core_hp": 100,
+ "start_energy": 320,
+ "build_time": 15,
+ "name": "Sector 9 - Jungle",
+ "id": "sector9",
+ "theme": "jungle",
+ "enemy_hp_mult": 1.4,
+ "vines": true,
+ "tiles": [
+  "........X...X...........................",
+  "...............X.....X....X............X",
+  "R.........................X...........X.",
+  "S########...............................",
+  ".......X#...............................",
+  "........#.X......##########.............",
+  "........#........#........#.............",
+  "........#....X...#........#.............",
+  "........#...~~...#.....X.X#........XXXX.",
+  "......X.#...~~...#........#........XXXX.",
+  "X.......#........#........#......###CXX.",
+  "........#........#........#......#.XXXX.",
+  "....X...#........#........#......#.XXXX.",
+  "........#...R..R.#........#.X....#......",
+  "........#........#........#.....X#......",
+  "........##########......X.#......#......",
+  "..........................########......",
+  "........R............X.........R........",
+  ".....R..........................X.......",
+  ".............................X.........."
+ ],
+ "waves": [
+  {
+   "groups": [
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.8,
+     "delay": 0.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "skitter",
+     "count": 12,
+     "interval": 0.7,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "mender",
+     "count": 2,
+     "interval": 2.0,
+     "delay": 6.199999999999999,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "brute",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 10,
+     "interval": 0.6,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "thief",
+     "count": 3,
+     "interval": 2.5,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.6,
+     "delay": 5.75,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "blob",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 16,
+     "interval": 0.5,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "necro_spore",
+     "count": 2,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 5,
+     "interval": 1.6,
+     "delay": 5.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "glider",
+     "count": 8,
+     "interval": 1.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "swarm_mind",
+     "count": 2,
+     "interval": 3.0,
+     "delay": 6.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.5,
+     "delay": 11.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "leech",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "swarm_queenlet",
+     "count": 1,
+     "interval": 1.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "blob",
+     "count": 3,
+     "interval": 3.0,
+     "delay": 2.5,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 18,
+     "interval": 0.4,
+     "delay": 9.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "brute",
+     "count": 8,
+     "interval": 1.2,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "mender",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 6.8,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 20,
+     "interval": 0.4,
+     "delay": 11.8,
+     "lane": 0
+    }
+   ],
+   "boss": "hive_mind"
+  }
+ ]
+}

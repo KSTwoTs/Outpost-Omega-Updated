@@ -1,0 +1,262 @@
+{
+ "legend": {
+  ".": "buildable",
+  "#": "path",
+  "S": "spawn",
+  "C": "core",
+  "X": "blocked",
+  "~": "hazard",
+  "I": "ice",
+  "W": "wall / gate",
+  "H": "high ground",
+  "R": "resource node",
+  "K": "crystal"
+ },
+ "core_hp": 100,
+ "start_energy": 320,
+ "build_time": 15,
+ "name": "Sector 11 - Ruined City",
+ "id": "sector11",
+ "theme": "ruins",
+ "enemy_hp_mult": 1.5,
+ "gates": [
+  {
+   "tiles": [
+    [
+     12,
+     10
+    ],
+    [
+     13,
+     10
+    ]
+   ],
+   "switch": [
+    12,
+    13
+   ],
+   "open": true
+  }
+ ],
+ "tiles": [
+  "........................................",
+  "........................................",
+  "................................HHHH....",
+  "......#############.............HHHH....",
+  "..HHH.#...........#X......HHH...HHHH....",
+  "..HHH.#..HHHXHHH..#..HHHH.HHH..........X",
+  "..HHH.#..HHH.HHH..#..HHHH.HHH...........",
+  "......#..HHH.HHH..#..HHHH.HHH...........",
+  "......#...........#................XXXX.",
+  "......#...........#................XXXX.",
+  "S##################...........######CXX.",
+  "..................#..HHH......#....XXXX.",
+  ".........HHH.HHH..#..HHH.HHH..#....XXXX.",
+  "..HHH....HHH.HHH..#..HHH.HHH..#.........",
+  "..HHH.X..HHH.HHH..#......X...X#.........",
+  "..HHH.............#...........#.HHHH....",
+  "..................#############.HHHH....",
+  ".....X......................X...HHHH....",
+  "................................X.......",
+  "..X....................................."
+ ],
+ "waves": [
+  {
+   "groups": [
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.8,
+     "delay": 0.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "hunter",
+     "count": 3,
+     "interval": 2.5,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 10,
+     "interval": 0.7,
+     "delay": 5.75,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "jammer",
+     "count": 2,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 5.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "saboteur",
+     "count": 3,
+     "interval": 2.5,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.6,
+     "delay": 5.75,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "artillery_grub",
+     "count": 2,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "hunter",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 5.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "bomber",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "pathcutter",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "jammer",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 6.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 16,
+     "interval": 0.5,
+     "delay": 11.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "infector",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "hunter",
+     "count": 5,
+     "interval": 1.6,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "bomber",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "artillery_grub",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.5,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "juggernaut",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "jammer",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 6.0,
+     "lane": 0
+    },
+    {
+     "enemy": "hunter",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 11.0,
+     "lane": 0
+    }
+   ],
+   "boss": "fallen_commander"
+  }
+ ]
+}

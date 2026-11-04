@@ -186,5 +186,186 @@
     "emerge_range": 80, "emerge_damage": 40,
     "intro": "It tunnels ahead and bursts out under your towers",
     "description": "Boss. Tunnels forward along the path and erupts under towers."
+  },
+  "adaptive": {
+    "name": "Adaptive",
+    "enabled": true,
+    "threat": 5, "unlock_wave": 13, "hp": 110, "speed": 55,
+    "armor": 1, "radius": 11, "reward": 14, "score": 35,
+    "core_damage": 5, "flying": false, "attack_dps": 8, "adapt": 0.8,
+    "max_resist": 0.6,
+    "description": "Builds up to 60% resistance to whichever damage type hits it most."
+  },
+  "thief": {
+    "name": "Thief",
+    "enabled": true,
+    "threat": 3, "unlock_wave": 8, "hp": 70, "speed": 80,
+    "armor": 0, "radius": 9, "reward": 10, "score": 25,
+    "core_damage": 0, "flying": false, "attack_dps": 4, "steal": 40,
+    "description": "Steals Energy at the Core and runs back to spawn. Kill it to get the Energy back."
+  },
+  "leech": {
+    "name": "Leech",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 10, "hp": 90, "speed": 60,
+    "armor": 1, "radius": 10, "reward": 12, "score": 30,
+    "core_damage": 4, "flying": false, "attack_dps": 6, "latch_range": 60,
+    "drain_dps": 10, "knock_damage": 30, "relatch": 4.0,
+    "description": "Latches onto a tower and drains it until Vance knocks it off."
+  },
+  "phaser": {
+    "name": "Phaser",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 9, "hp": 60, "speed": 60,
+    "armor": 0, "radius": 9, "reward": 12, "score": 30,
+    "core_damage": 4, "flying": false, "attack_dps": 6, "blink_interval": 3.0,
+    "blink_dist": 96,
+    "description": "Blinks a few tiles ahead along the path."
+  },
+  "reflector": {
+    "name": "Reflector",
+    "enabled": true,
+    "threat": 5, "unlock_wave": 12, "hp": 120, "speed": 45,
+    "armor": 2, "radius": 12, "reward": 16, "score": 40,
+    "core_damage": 6, "flying": false, "attack_dps": 8,
+    "description": "Bullets and missiles bounce back at their tower. Beams, fire and splash get through."
+  },
+  "swarm_mind": {
+    "name": "Swarm Mind",
+    "enabled": true,
+    "threat": 6, "unlock_wave": 15, "hp": 140, "speed": 45,
+    "armor": 1, "radius": 13, "reward": 20, "score": 45,
+    "core_damage": 6, "flying": false, "attack_dps": 8, "aura": 110,
+    "dr_per": 0.06, "max_dr": 0.6, "speed_buff": 0.15,
+    "description": "Tougher for every alien around it, and hurries them along."
+  },
+  "necro_spore": {
+    "name": "Necro-Spore",
+    "enabled": true,
+    "threat": 6, "unlock_wave": 16, "hp": 100, "speed": 45,
+    "armor": 1, "radius": 11, "reward": 18, "score": 45,
+    "core_damage": 5, "flying": false, "attack_dps": 6, "raise_interval": 4.0,
+    "raise_count": 2, "raise_range": 110, "zombie_hp": 0.4,
+    "description": "Raises aliens that just died nearby as weaker zombies."
+  },
+  "infector": {
+    "name": "Infector",
+    "enabled": true,
+    "threat": 5, "unlock_wave": 14, "hp": 90, "speed": 55,
+    "armor": 1, "radius": 10, "reward": 16, "score": 40,
+    "core_damage": 5, "flying": false, "attack_dps": 6, "infect_range": 50,
+    "infect_cooldown": 8.0,
+    "description": "Corrupts a tower so it shoots your towers until it's repaired."
+  },
+  "blob": {
+    "name": "Blob",
+    "enabled": true,
+    "threat": 6, "unlock_wave": 15, "hp": 160, "speed": 35,
+    "armor": 1, "radius": 13, "reward": 20, "score": 45,
+    "core_damage": 8, "flying": false, "attack_dps": 10, "absorb": 0.8,
+    "max_radius": 26,
+    "description": "Absorbs aliens it touches and grows."
+  },
+  "bomber": {
+    "name": "Bomber",
+    "enabled": true,
+    "threat": 5, "unlock_wave": 12, "hp": 70, "speed": 70,
+    "armor": 0, "radius": 12, "reward": 16, "score": 40,
+    "core_damage": 6, "flying": true, "attack_dps": 0, "bomb_damage": 35,
+    "bomb_interval": 2.5,
+    "description": "Flyer that bombs towers instead of heading for the Core."
+  },
+  "jammer": {
+    "name": "Jammer",
+    "enabled": true,
+    "threat": 4, "unlock_wave": 11, "hp": 100, "speed": 50,
+    "armor": 1, "radius": 11, "reward": 16, "score": 35,
+    "core_damage": 5, "flying": false, "attack_dps": 6, "jam_range": 150,
+    "description": "Vance can't shoot, repair or call Orbital Strikes near it."
+  },
+  "artillery_grub": {
+    "name": "Artillery Grub",
+    "enabled": true,
+    "threat": 6, "unlock_wave": 17, "hp": 130, "speed": 30,
+    "armor": 3, "radius": 13, "reward": 18, "score": 45,
+    "core_damage": 8, "flying": false, "attack_dps": 6, "spit_range": 240,
+    "spit_damage": 30, "spit_cooldown": 4.0,
+    "description": "Shells towers from outside their range."
+  },
+  "pathcutter": {
+    "name": "Pathcutter",
+    "enabled": true,
+    "threat": 6, "unlock_wave": 18, "hp": 120, "speed": 55,
+    "armor": 2, "radius": 12, "reward": 18, "score": 45,
+    "core_damage": 8, "flying": false, "attack_dps": 8, "dig_at": 0.15,
+    "max_digs": 3,
+    "description": "Digs a new shortcut through the terrain mid-wave."
+  },
+  "swarm_queenlet": {
+    "name": "Swarm Queenlet",
+    "enabled": true,
+    "threat": 16, "unlock_wave": 20, "hp": 600, "speed": 40,
+    "armor": 3, "radius": 16, "reward": 60, "score": 150,
+    "core_damage": 15, "flying": false, "attack_dps": 15, "aura": 150,
+    "speed_buff": 0.3, "dr": 0.25, "escort": {"enemy": "skitter", "count": 6},
+    "description": "Mini-boss. Her escort and every alien near her are faster and tougher."
+  },
+  "mothership": {
+    "name": "Mothership",
+    "enabled": true,
+    "hp": 2600, "speed": 18, "armor": 4, "radius": 30,
+    "reward": 400, "score": 1500, "core_damage": 80, "flying": true,
+    "attack_dps": 0, "drop_phases": [0.75, 0.5, 0.25], "drop": {"skitter": 6, "brute": 2, "glider": 3},
+    "intro": "It drops reinforcements as it takes damage",
+    "description": "Boss. Floats across the map and drops waves of aliens."
+  },
+  "hive_mind": {
+    "name": "Hive Mind",
+    "enabled": true,
+    "hp": 700, "speed": 28, "armor": 3, "radius": 18,
+    "reward": 150, "score": 500, "core_damage": 25, "flying": false,
+    "attack_dps": 20, "revive_time": 6.0, "revive_hp": 0.5,
+    "intro": "Three bodies. Kill them close together or they revive",
+    "description": "Boss. Three bodies share one bar; a body killed alone revives after 6 s."
+  },
+  "fallen_commander": {
+    "name": "Fallen Commander",
+    "enabled": true,
+    "hp": 1800, "speed": 34, "armor": 4, "radius": 14,
+    "reward": 380, "score": 1400, "core_damage": 60, "flying": false,
+    "attack_dps": 30, "shoot_range": 160, "shoot_damage": 12, "fire_rate": 3.0,
+    "roll_cooldown": 4.0, "roll_dist": 70, "strike_interval": 14.0, "strike_radius": 80,
+    "strike_damage": 60,
+    "intro": "An infected Vance. She knows all your tricks",
+    "description": "Boss. Shoots towers, dodge-rolls when hurt and calls Orbital Strikes on tower clusters."
+  },
+  "acid_leviathan": {
+    "name": "Acid Leviathan",
+    "enabled": true,
+    "hp": 2000, "speed": 24, "armor": 5, "radius": 26,
+    "reward": 400, "score": 1500, "core_damage": 70, "flying": false,
+    "attack_dps": 35, "surface_time": 5.0, "under_time": 2.5, "jump": [120, 220],
+    "emerge_range": 80, "emerge_damage": 30, "drag_range": 140, "drag_damage": 0.5,
+    "drag_time": 6.0,
+    "intro": "It surfaces from the acid and drags towers under",
+    "description": "Boss. Swims under the path and drags the nearest tower under when it surfaces."
+  },
+  "nest_heart": {
+    "name": "Nest Heart",
+    "enabled": true,
+    "hp": 3500, "speed": 0, "armor": 6, "radius": 28,
+    "reward": 450, "score": 1600, "core_damage": 0, "flying": false,
+    "attack_dps": 0, "position": 0.3, "spawn_interval": 2.5, "spawns": ["skitter", "skitter", "brute", "skitter", "spitter"],
+    "intro": "It won't come to you. Push out and destroy it",
+    "description": "Boss. A stationary hive heart that births aliens until it's destroyed."
+  },
+  "architect": {
+    "name": "Architect",
+    "enabled": true,
+    "hp": 2400, "speed": 24, "armor": 6, "radius": 22,
+    "reward": 420, "score": 1500, "core_damage": 70, "flying": false,
+    "attack_dps": 30, "rebuild_phases": [0.66, 0.33],
+    "intro": "It rebuilds the path as you hurt it",
+    "description": "Boss. At 66% and 33% HP it digs a new route and fills in the old one."
   }
 }

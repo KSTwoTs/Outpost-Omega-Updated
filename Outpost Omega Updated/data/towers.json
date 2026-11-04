@@ -1,5 +1,6 @@
 {
   "pulse": {
+    "category": "assault",
     "name": "Pulse Turret",
     "key": 1,
     "cost": 50,
@@ -19,6 +20,7 @@
     ]
   },
   "tesla": {
+    "category": "assault",
     "name": "Tesla Coil",
     "key": 2,
     "cost": 120,
@@ -38,6 +40,7 @@
     ]
   },
   "cryo": {
+    "category": "control",
     "name": "Cryo Emitter",
     "key": 3,
     "cost": 90,
@@ -57,6 +60,7 @@
     ]
   },
   "railgun": {
+    "category": "assault",
     "name": "Railgun",
     "key": 4,
     "cost": 175,
@@ -76,6 +80,7 @@
     ]
   },
   "missile": {
+    "category": "assault",
     "name": "Missile Battery",
     "key": 5,
     "cost": 150,
@@ -95,6 +100,7 @@
     ]
   },
   "flamer": {
+    "category": "assault",
     "name": "Flamer",
     "key": 6,
     "cost": 80,
@@ -114,6 +120,7 @@
     ]
   },
   "mortar": {
+    "category": "assault",
     "name": "Mortar",
     "key": 7,
     "cost": 140,
@@ -133,6 +140,7 @@
     ]
   },
   "gravity": {
+    "category": "control",
     "name": "Gravity Well",
     "key": 8,
     "cost": 130,
@@ -152,6 +160,7 @@
     ]
   },
   "harvester": {
+    "category": "support",
     "name": "Harvester",
     "key": 9,
     "cost": 100,
@@ -171,6 +180,7 @@
     ]
   },
   "radar": {
+    "category": "support",
     "name": "Radar Relay",
     "key": 10,
     "cost": 110,
@@ -190,6 +200,7 @@
     ]
   },
   "drone": {
+    "category": "assault",
     "name": "Drone Bay",
     "key": 11,
     "cost": 150,
@@ -209,6 +220,7 @@
     ]
   },
   "barricade": {
+    "category": "support",
     "name": "Barricade",
     "key": 12,
     "cost": 60,
@@ -228,6 +240,7 @@
     ]
   },
   "mines": {
+    "category": "control",
     "name": "Mine Layer",
     "key": 13,
     "cost": 120,
@@ -247,6 +260,7 @@
     ]
   },
   "laser": {
+    "category": "assault",
     "name": "Laser Lance",
     "key": 14,
     "cost": 160,
@@ -266,6 +280,7 @@
     ]
   },
   "acid": {
+    "category": "control",
     "name": "Acid Spitter",
     "key": 15,
     "cost": 110,
@@ -285,6 +300,7 @@
     ]
   },
   "repair": {
+    "category": "support",
     "name": "Repair Bay",
     "key": 16,
     "cost": 120,
@@ -304,6 +320,7 @@
     ]
   },
   "sonic": {
+    "category": "control",
     "name": "Sonic Disruptor",
     "key": 17,
     "cost": 130,
@@ -320,6 +337,347 @@
     "branches": [
       {"name": "Earthshaker", "desc": "Slow, huge quakes that stun for 1.2 seconds", "cost": 260, "stats": {"damage": 70, "range": 125, "fire_rate": 0.4, "stun": 1.2}},
       {"name": "Resonance Cannon", "desc": "Rapid pulses that ignore armor", "cost": 260, "stats": {"damage": 34, "range": 110, "fire_rate": 1.3, "stun": 0.2, "pierce_armor": true}}
+    ]
+  },
+  "flak": {
+    "category": "assault",
+    "name": "Flak Cannon",
+    "key": 18,
+    "cost": 110,
+    "enabled": true,
+    "behavior": "flak",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Anti-air only. Bursts of flak that splash nearby flyers.",
+    "tiers": [
+      {"damage": 22, "splash": 40, "range": 190, "fire_rate": 0.6, "burst": 3, "upgrade_cost": 0},
+      {"damage": 34, "splash": 44, "range": 205, "fire_rate": 0.65, "burst": 4, "upgrade_cost": 90},
+      {"damage": 50, "splash": 50, "range": 220, "fire_rate": 0.7, "burst": 5, "upgrade_cost": 140}
+    ],
+    "branches": [
+      {"name": "Skyburst", "desc": "Huge air bursts that stun flyers", "cost": 240, "stats": {"damage": 85, "splash": 80, "range": 250, "fire_rate": 0.6, "burst": 3, "stun": 0.5}},
+      {"name": "Hailstorm", "desc": "Rapid flak that shreds ground aliens too", "cost": 240, "stats": {"damage": 26, "splash": 34, "range": 210, "fire_rate": 2.2, "burst": 2, "hits_ground": true}}
+    ]
+  },
+  "ion": {
+    "category": "assault",
+    "name": "Ion Cannon",
+    "key": 19,
+    "cost": 200,
+    "enabled": true,
+    "behavior": "ion",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Charges 20 s, then blasts the whole path. Ignores armor.",
+    "tiers": [
+      {"damage": 300, "range": 160, "fire_rate": 0.05, "upgrade_cost": 0},
+      {"damage": 500, "range": 170, "fire_rate": 0.057, "upgrade_cost": 150},
+      {"damage": 800, "range": 180, "fire_rate": 0.067, "upgrade_cost": 220}
+    ],
+    "branches": [
+      {"name": "Orbital Lance", "desc": "Fires every 8 seconds for smaller blasts", "cost": 300, "stats": {"damage": 380, "range": 180, "fire_rate": 0.125}},
+      {"name": "Planet Cracker", "desc": "Colossal blast: hits flyers, stuns all", "cost": 300, "stats": {"damage": 1600, "range": 200, "fire_rate": 0.05, "stun": 1.5, "hits_air": true}}
+    ]
+  },
+  "shield": {
+    "category": "support",
+    "name": "Shield Projector",
+    "key": 20,
+    "cost": 120,
+    "enabled": true,
+    "behavior": "shield",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Shields nearby towers from acid, blasts and stomps.",
+    "tiers": [
+      {"range": 90, "shield": 40, "regen": 6, "delay": 3.0, "upgrade_cost": 0},
+      {"range": 110, "shield": 70, "regen": 10, "delay": 3.0, "upgrade_cost": 90},
+      {"range": 125, "shield": 110, "regen": 15, "delay": 2.5, "upgrade_cost": 140}
+    ],
+    "branches": [
+      {"name": "Aegis Dome", "desc": "Huge 180 HP shields over a wide area", "cost": 250, "stats": {"range": 160, "shield": 180, "regen": 15, "delay": 2.5}},
+      {"name": "Rapid Recharge", "desc": "Shields refill fast and slowly repair tower HP", "cost": 250, "stats": {"range": 125, "shield": 80, "regen": 40, "delay": 1.0, "heal": 4}}
+    ]
+  },
+  "tar": {
+    "category": "control",
+    "name": "Tar Pit",
+    "key": 21,
+    "cost": 70,
+    "enabled": true,
+    "behavior": "tar",
+    "hp": 200,
+    "walkable": true,
+    "can_target_air": false,
+    "description": "Goes ON the path. Slows aliens. Fire sets it ablaze.",
+    "tiers": [
+      {"range": 30, "slow": 0.35, "burn_dps": 20, "ignite_time": 4.0, "upgrade_cost": 0},
+      {"range": 34, "slow": 0.45, "burn_dps": 35, "ignite_time": 4.5, "upgrade_cost": 60},
+      {"range": 40, "slow": 0.55, "burn_dps": 55, "ignite_time": 5.0, "upgrade_cost": 90}
+    ],
+    "branches": [
+      {"name": "Napalm Bog", "desc": "Always ablaze: 60 damage a second", "cost": 180, "stats": {"range": 42, "slow": 0.4, "burn_dps": 60, "ignite_time": 5.0, "always_burning": true}},
+      {"name": "Deep Tar", "desc": "70% slow, roots aliens every 3 s", "cost": 180, "stats": {"range": 44, "slow": 0.7, "burn_dps": 40, "ignite_time": 5.0, "fire_rate": 0.33, "root": 0.8}}
+    ]
+  },
+  "chrono": {
+    "category": "control",
+    "name": "Chrono Spire",
+    "key": 22,
+    "cost": 150,
+    "enabled": true,
+    "behavior": "chrono",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Rewinds the lead alien back along the path.",
+    "tiers": [
+      {"range": 120, "fire_rate": 0.25, "rewind": 2.0, "targets": 1, "upgrade_cost": 0},
+      {"range": 135, "fire_rate": 0.3, "rewind": 2.5, "targets": 1, "upgrade_cost": 110},
+      {"range": 150, "fire_rate": 0.33, "rewind": 3.0, "targets": 2, "upgrade_cost": 160}
+    ],
+    "branches": [
+      {"name": "Time Loop", "desc": "Rewinds the 4 lead aliens 3 seconds each", "cost": 280, "stats": {"range": 160, "fire_rate": 0.33, "rewind": 3.0, "targets": 4}},
+      {"name": "Stasis Lock", "desc": "Rewinds, then freezes it for 2.5 s", "cost": 280, "stats": {"range": 150, "fire_rate": 0.4, "rewind": 1.5, "targets": 1, "stasis": 2.5}}
+    ]
+  },
+  "decoy": {
+    "category": "support",
+    "name": "Decoy Beacon",
+    "key": 23,
+    "cost": 90,
+    "enabled": true,
+    "behavior": "decoy",
+    "hp": 160,
+    "can_target_air": false,
+    "description": "Hologram of Vance. Lures Hunters and nearby aliens to attack it.",
+    "tiers": [
+      {"range": 90, "fire_rate": 0.2, "lure": 2.0, "targets": 4, "hunter_range": 220, "max_hp": 160, "upgrade_cost": 0},
+      {"range": 105, "fire_rate": 0.22, "lure": 2.5, "targets": 6, "hunter_range": 260, "max_hp": 240, "upgrade_cost": 70},
+      {"range": 120, "fire_rate": 0.25, "lure": 3.0, "targets": 8, "hunter_range": 300, "max_hp": 340, "upgrade_cost": 110}
+    ],
+    "branches": [
+      {"name": "Mirage Field", "desc": "Lures up to 14 aliens for 4 s", "cost": 220, "stats": {"range": 150, "fire_rate": 0.22, "lure": 4.0, "targets": 14, "hunter_range": 360, "max_hp": 420}},
+      {"name": "Booby Trap", "desc": "Shocks attackers; explodes if destroyed", "cost": 220, "stats": {"range": 120, "fire_rate": 0.25, "lure": 3.0, "targets": 8, "hunter_range": 300, "max_hp": 300, "thorns": 30, "blast": 160, "splash": 90}}
+    ]
+  },
+  "fence": {
+    "category": "control",
+    "name": "Plasma Fence",
+    "key": 24,
+    "cost": 70,
+    "enabled": true,
+    "behavior": "fence",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Pylon. Build two near each other: a plasma beam links them.",
+    "tiers": [
+      {"range": 130, "dps": 30, "upgrade_cost": 0},
+      {"range": 150, "dps": 50, "upgrade_cost": 60},
+      {"range": 170, "dps": 80, "upgrade_cost": 100}
+    ],
+    "branches": [
+      {"name": "Arc Wall", "desc": "90 damage a second and slows 40%", "cost": 200, "stats": {"range": 170, "dps": 90, "slow": 0.4}},
+      {"name": "Overload Grid", "desc": "Links to every pylon in range; hits flyers", "cost": 200, "stats": {"range": 190, "dps": 110, "link_all": true, "hits_air": true}}
+    ]
+  },
+  "mirror": {
+    "category": "support",
+    "name": "Mirror Array",
+    "key": 25,
+    "cost": 100,
+    "enabled": true,
+    "behavior": "mirror",
+    "hp": 90,
+    "can_target_air": true,
+    "description": "Bends Railgun and Laser Lance beams in range at aliens near it.",
+    "tiers": [
+      {"range": 140, "reflect_range": 150, "reflect": 0.7, "splits": 1, "upgrade_cost": 0},
+      {"range": 160, "reflect_range": 165, "reflect": 0.85, "splits": 1, "upgrade_cost": 80},
+      {"range": 180, "reflect_range": 180, "reflect": 1.0, "splits": 1, "upgrade_cost": 120}
+    ],
+    "branches": [
+      {"name": "Prism Splitter", "desc": "Splits each beam into 3 at 60% power", "cost": 230, "stats": {"range": 180, "reflect_range": 180, "reflect": 0.6, "splits": 3}},
+      {"name": "Focusing Lens", "desc": "Reflected beams hit 1.5x harder", "cost": 230, "stats": {"range": 200, "reflect_range": 220, "reflect": 1.5, "splits": 1}}
+    ]
+  },
+  "hacker": {
+    "category": "control",
+    "name": "Hacker Spire",
+    "key": 26,
+    "cost": 160,
+    "enabled": true,
+    "behavior": "hacker",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Hacks an alien: it walks back and attacks its own kind.",
+    "tiers": [
+      {"range": 130, "fire_rate": 0.125, "hack_time": 3.0, "targets": 1, "contact_dps": 20, "upgrade_cost": 0},
+      {"range": 140, "fire_rate": 0.14, "hack_time": 4.0, "targets": 1, "contact_dps": 30, "upgrade_cost": 120},
+      {"range": 150, "fire_rate": 0.16, "hack_time": 5.0, "targets": 1, "contact_dps": 45, "upgrade_cost": 170}
+    ],
+    "branches": [
+      {"name": "Virus", "desc": "Hacked aliens explode when the hack ends", "cost": 280, "stats": {"range": 150, "fire_rate": 0.16, "hack_time": 4.0, "targets": 1, "contact_dps": 45, "blast": 140, "splash": 70}},
+      {"name": "Botnet", "desc": "Hacks 3 aliens at once for 5 s", "cost": 280, "stats": {"range": 160, "fire_rate": 0.14, "hack_time": 5.0, "targets": 3, "contact_dps": 35}}
+    ]
+  },
+  "magnet": {
+    "category": "control",
+    "name": "Magnet Coil",
+    "key": 27,
+    "cost": 110,
+    "enabled": true,
+    "behavior": "magnet",
+    "hp": 110,
+    "can_target_air": false,
+    "description": "Strips armor in range. Even slows Juggernauts a little.",
+    "tiers": [
+      {"range": 100, "shred": 3, "dps": 4, "jugg_slow": 0.15, "upgrade_cost": 0},
+      {"range": 110, "shred": 5, "dps": 6, "jugg_slow": 0.2, "upgrade_cost": 80},
+      {"range": 120, "shred": 7, "dps": 9, "jugg_slow": 0.25, "upgrade_cost": 120}
+    ],
+    "branches": [
+      {"name": "Demagnetizer", "desc": "Strips all armor and drains shields", "cost": 220, "stats": {"range": 130, "shred": 12, "dps": 10, "jugg_slow": 0.25, "shield_drain": 40}},
+      {"name": "Maglock", "desc": "Slows every ground alien 25%, Juggernauts 45%", "cost": 220, "stats": {"range": 130, "shred": 7, "dps": 9, "jugg_slow": 0.45, "slow": 0.25}}
+    ]
+  },
+  "lightning": {
+    "category": "assault",
+    "name": "Lightning Rod",
+    "key": 28,
+    "cost": 130,
+    "enabled": true,
+    "behavior": "lightning",
+    "hp": 100,
+    "can_target_air": true,
+    "description": "Stores charge (4x faster in weather), then calls down a chain bolt.",
+    "tiers": [
+      {"range": 150, "charge_rate": 10, "max_charge": 150, "chain": 3, "weather_mult": 4, "upgrade_cost": 0},
+      {"range": 165, "charge_rate": 14, "max_charge": 220, "chain": 4, "weather_mult": 4, "upgrade_cost": 100},
+      {"range": 180, "charge_rate": 18, "max_charge": 320, "chain": 5, "weather_mult": 4, "upgrade_cost": 150}
+    ],
+    "branches": [
+      {"name": "Storm Caller", "desc": "8x charge in weather, 7-alien chains", "cost": 260, "stats": {"range": 190, "charge_rate": 18, "max_charge": 320, "chain": 7, "weather_mult": 8}},
+      {"name": "Capacitor Bank", "desc": "Banks 700 charge for one giant strike", "cost": 260, "stats": {"range": 200, "charge_rate": 24, "max_charge": 700, "chain": 2, "weather_mult": 4, "stun": 1.0}}
+    ]
+  },
+  "biolab": {
+    "category": "support",
+    "name": "Bio-Lab",
+    "key": 29,
+    "cost": 110,
+    "enabled": true,
+    "behavior": "biolab",
+    "hp": 90,
+    "can_target_air": true,
+    "description": "No attack. Aliens dying in range give extra Biomass.",
+    "tiers": [
+      {"range": 120, "per_kill": 2, "upgrade_cost": 0},
+      {"range": 135, "per_kill": 3, "upgrade_cost": 90},
+      {"range": 150, "per_kill": 4, "upgrade_cost": 130}
+    ],
+    "branches": [
+      {"name": "Rendering Plant", "desc": "+7 Biomass per kill in range", "cost": 220, "stats": {"range": 160, "per_kill": 7}},
+      {"name": "Mutagen Lab", "desc": "Aliens in range take +20% damage", "cost": 220, "stats": {"range": 150, "per_kill": 4, "vuln": 0.2}}
+    ]
+  },
+  "overclock": {
+    "category": "support",
+    "name": "Overclocker",
+    "key": 30,
+    "cost": 120,
+    "enabled": true,
+    "behavior": "overclock",
+    "hp": 100,
+    "can_target_air": false,
+    "description": "Adjacent towers fire much faster but slowly lose HP.",
+    "tiers": [
+      {"range": 48, "haste": 0.6, "burn": 3.0, "upgrade_cost": 0},
+      {"range": 48, "haste": 0.8, "burn": 2.5, "upgrade_cost": 100},
+      {"range": 48, "haste": 1.0, "burn": 2.0, "upgrade_cost": 150}
+    ],
+    "branches": [
+      {"name": "Turbo Core", "desc": "+150% fire rate, 4 HP a second burn", "cost": 260, "stats": {"range": 48, "haste": 1.5, "burn": 4.0}},
+      {"name": "Cryo-Cooled", "desc": "+80% fire rate with no burn", "cost": 260, "stats": {"range": 48, "haste": 0.8, "burn": 0}}
+    ]
+  },
+  "uplink": {
+    "category": "support",
+    "name": "Uplink Dish",
+    "key": 31,
+    "cost": 100,
+    "enabled": true,
+    "behavior": "uplink",
+    "hp": 90,
+    "can_target_air": true,
+    "description": "Each kill in range cuts the Orbital Strike cooldown.",
+    "tiers": [
+      {"range": 130, "cut": 0.4, "upgrade_cost": 0},
+      {"range": 145, "cut": 0.6, "upgrade_cost": 80},
+      {"range": 160, "cut": 0.8, "upgrade_cost": 120}
+    ],
+    "branches": [
+      {"name": "Twin Strike", "desc": "Orbital Strike stores a second charge", "cost": 240, "stats": {"range": 160, "cut": 0.8, "extra_charge": true}},
+      {"name": "Targeting Array", "desc": "Orbital Strike +50% damage, +30% radius", "cost": 240, "stats": {"range": 170, "cut": 1.0, "orbital_mult": 1.5, "radius_mult": 1.3}}
+    ]
+  },
+  "bait": {
+    "category": "support",
+    "name": "Bait Pod",
+    "key": 32,
+    "cost": 40,
+    "enabled": true,
+    "behavior": "bait",
+    "hp": 400,
+    "can_target_air": false,
+    "description": "Cheap and tough. Aliens that shoot towers aim for it first.",
+    "tiers": [
+      {"range": 0, "max_hp": 400, "regen": 3, "upgrade_cost": 0},
+      {"range": 0, "max_hp": 700, "regen": 5, "upgrade_cost": 50},
+      {"range": 0, "max_hp": 1100, "regen": 8, "upgrade_cost": 80}
+    ],
+    "branches": [
+      {"name": "Spore Pod", "desc": "Bursts spores at aliens when it's hit", "cost": 160, "stats": {"range": 70, "max_hp": 1200, "regen": 8, "spores": 35}},
+      {"name": "Regenerator", "desc": "1500 HP and heals 30 HP a second", "cost": 160, "stats": {"range": 0, "max_hp": 1500, "regen": 30}}
+    ]
+  },
+  "generator": {
+    "category": "support",
+    "name": "Generator",
+    "key": 33,
+    "cost": 110,
+    "enabled": true,
+    "behavior": "generator",
+    "hp": 110,
+    "can_target_air": false,
+    "description": "Powers towers in range: they fire 20% faster. EMPs knock it out.",
+    "tiers": [
+      {"range": 130, "power": 0.2, "upgrade_cost": 0},
+      {"range": 150, "power": 0.25, "upgrade_cost": 90},
+      {"range": 170, "power": 0.3, "upgrade_cost": 130}
+    ],
+    "branches": [
+      {"name": "Fusion Reactor", "desc": "+40% fire rate over a big area", "cost": 240, "stats": {"range": 200, "power": 0.4}},
+      {"name": "Grid Hub", "desc": "+25% fire rate and +10% range", "cost": 240, "stats": {"range": 180, "power": 0.25, "range_boost": 0.1}}
+    ]
+  },
+  "brood": {
+    "category": "control",
+    "name": "Brood Turret",
+    "key": 34,
+    "cost": 140,
+    "enabled": true,
+    "behavior": "brood",
+    "hp": 120,
+    "can_target_air": false,
+    "description": "Alien tower: hatches tame Skitters that run back down the path biting aliens.",
+    "tiers": [
+      {"range": 140, "fire_rate": 0.25, "hatch": 2, "contact_dps": 25, "life": 8.0, "upgrade_cost": 0},
+      {"range": 150, "fire_rate": 0.3, "hatch": 3, "contact_dps": 35, "life": 9.0, "upgrade_cost": 110},
+      {"range": 160, "fire_rate": 0.33, "hatch": 4, "contact_dps": 45, "life": 10.0, "upgrade_cost": 160}
+    ],
+    "branches": [
+      {"name": "Brute Hatchery", "desc": "Hatches tame Brutes that hit hard", "cost": 260, "stats": {"range": 160, "fire_rate": 0.25, "hatch": 2, "contact_dps": 80, "life": 12.0, "spawn": "brute"}},
+      {"name": "Swarm Nest", "desc": "Hatches 7 Skitters at a time", "cost": 260, "stats": {"range": 160, "fire_rate": 0.33, "hatch": 7, "contact_dps": 35, "life": 9.0}}
     ]
   }
 }

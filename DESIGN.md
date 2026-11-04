@@ -1,12 +1,12 @@
 # Outpost Omega: Endless & Roguelike Design
 
-Oct 30, 2026 · Trenton McDonald · Updated Nov 1, 2026
+Oct 30, 2026 · Trenton McDonald · Updated Nov 3, 2026
 
 Living version: https://claude.ai/artifact/RuWnHzqEDZ2rVH8YT4z4m7 (this file is a snapshot of it).
 
 ## Overview
 
-Outpost Omega grows from a 3-sector campaign into a replayable game: an Endless mode first, then a roguelike Siege Run built on top of it, then batches of new towers, enemies and maps. Phases 1–4 are done; Phase 5 (a large expansion) is in progress.
+Outpost Omega grows from a 3-sector campaign into a replayable game: an Endless mode first, then a roguelike Siege Run built on top of it, then batches of new towers, enemies and maps. Phases 1–4 are done; Phase 5 (a large expansion) is in progress, with all 15 new towers, the first UI pass and all new enemies and bosses, and the tower systems built.
 
 The base game already has 3 sectors of 10 waves, 5 towers with 3 tiers, 6 enemies including the Hive Overseer boss, Commander Vance, a loot table and a 3-star rating. Stats live in JSON, systems talk over the EventBus, and enemies route with A*. Most additions are new JSON entries plus one new system each.
 
@@ -167,7 +167,7 @@ Four towers that fill the remaining gaps (ramping damage, armor stripping, repai
 
 ## Phase 5: Expansion (in progress)
 
-Added Nov 1, 2026. The next batch of content and systems, picked from a brainstorm. Nothing here is built yet; numbers are starting points for tuning.
+Added Nov 1, 2026. The next batch of content and systems, picked from a brainstorm. Numbers are starting points for tuning. **Batch 1 (Nov 3):** Flak Cannon, Ion Cannon, Shield Projector, Tar Pit and Chrono Spire are built, each with 3 tiers, 2 tier-4 branches and their own art (keys G, H, J, K, L; the HUD tower bar now uses two rows). **Batch 2 (Nov 3):** Decoy Beacon, Plasma Fence, Mirror Array, Hacker Spire and Magnet Coil. **Batch 3 (Nov 3):** Lightning Rod, Bio-Lab (pays Energy per kill, standing in for Biomass for now), Overclocker, Uplink Dish and Bait Pod. **UI pass (Nov 3):** the HUD tower bar became Assault / Control / Support tabs (number row builds from the open tab, Tab switches), with hover tooltips, a 5-wave timeline, a post-wave report and a Settings menu.
 
 ### New towers
 
@@ -345,7 +345,7 @@ Endless mode ships first because the roguelike runs on its wave generator, and n
 - [x] Elite affixes on enemies, drawn with a ring and tag
 - [x] Endless button in Level Select, best wave saved per sector
 - [x] 1× / 2× / 3× game speed (F key) and a next-wave preview in the HUD
-- [ ] Playtest and tune the budget curve and elite chance in `endless.json`
+- [x] Playtest and tune the budget curve and elite chance in `endless.json`
 
 **Phase 2 tasks**
 
@@ -357,7 +357,7 @@ Endless mode ships first because the roguelike runs on its wave generator, and n
 - [x] Salvage and a Command Tech Lab with 8 permanent upgrades (`data/tech.json`)
 - [x] Tier-4 tower branches: 2 per original tower, chosen from an in-game panel
 - [x] A run in progress is saved to `save.json` and resumes after a restart
-- [ ] Playtest and tune rewards, prices and node difficulty
+- [x] Playtest and tune rewards, prices and node difficulty
 
 **Phase 3 tasks**
 
@@ -373,7 +373,7 @@ Endless mode ships first because the roguelike runs on its wave generator, and n
 - [x] Tower veterancy: +6% damage per rank at 10 / 30 / 75 kills
 - [x] Core upgrades: click the Core to buy a turret, a shield or regeneration
 - [x] Daily Challenge: one generated map per day, same waves and weather for everyone, best wave saved
-- [ ] Playtest and balance everything
+- [x] Playtest and balance everything
 
 **Phase 4 tasks**
 
@@ -385,19 +385,25 @@ Endless mode ships first because the roguelike runs on its wave generator, and n
 - [x] Tech Lab expanded to 20 upgrades with ranks
 - [ ] Playtest and balance
 
-**Phase 5 tasks** (in progress)
+**Phase 5 tasks** (done except balance)
 
-- [ ] 15 new towers: Shield Projector, Decoy Beacon, Plasma Fence, Chrono Spire, Mirror Array, Flak Cannon, Ion Cannon, Hacker Spire, Magnet Coil, Tar Pit, Lightning Rod, Bio-Lab, Overclocker, Uplink Dish, Bait Pod
-- [ ] Tower systems: adjacency bonuses, power grid, sockets, relocate, named veterans, fusion, stance toggle
-- [ ] 14 new enemies: Adaptive, Thief, Leech, Phaser, Reflector, Swarm Mind, Necro-Spore, Infector, Blob, Bomber, Jammer, Artillery Grub, Pathcutter, Swarm Queenlet
-- [ ] 6 new bosses: Mothership, Hive Mind, Fallen Commander, Acid Leviathan, Nest Heart, Architect
-- [ ] Commander: dash, weapon pickups, grenades, mech suit, carry system, drone buddy, gear loadout, skins
-- [ ] Modes: local co-op, Boss Rush, Puzzle, Last Stand, Reverse, Ascension, Weekly Challenge, Hardcore, Sandbox, Story campaign
-- [ ] Siege Run: Rest, Forge, Gamble and Mini-boss nodes; relic sets; boss relics; factions; seeds; hero decks; run-wide events; debt merchant
-- [ ] Maps: high ground, overheat on hot maps plus Heatwave weather, destructible terrain, day/night, rising tide, switches and gates, teleporters, supply drops, meteors, wildlife, resource nodes, earthquakes
-- [ ] 4 new sectors: Jungle, Crystal Caves, Ruined City, Gas Giant Station
-- [ ] Economy: Biomass, interest, black market, insurance, research queue
-- [ ] Meta: achievements, Codex, tower mastery, profile stats, local leaderboards, unlock progression back on
-- [ ] QoL: undo placement, post-wave stats, rebinding and controller, colorblind mode, settings menu, tutorial, wave timeline, combo tooltips
-- [ ] Juice: adaptive music, boss-kill slow-mo, goo splats, tower destruction, radio chatter, low-Core tint
-- [ ] Wild ideas: tameable alien pet, alien towers, Living Core, tower sacrifice, map editor and mod folder, itch.io release
+- [x] Towers batch 1: Flak Cannon, Ion Cannon, Shield Projector, Tar Pit, Chrono Spire (tiers, branches and art)
+- [x] Towers batch 2: Decoy Beacon, Plasma Fence, Mirror Array, Hacker Spire, Magnet Coil (tiers, branches and art)
+- [x] Towers batch 3: Lightning Rod, Bio-Lab, Overclocker, Uplink Dish, Bait Pod (tiers, branches and art)
+- [x] Tower menu: Assault / Control / Support tabs replace the single bar
+- [ ] Playtest and balance all 15 new towers
+- [x] Tower systems: adjacency synergies (16 pairs), bonus power grid (Generator tower), chip sockets (elite/boss drops), relocate, named veterans, fusion (8 recipes, Endless + Siege Run), Focus/Suppress stance
+- [x] 14 new enemies: Adaptive, Thief, Leech, Phaser, Reflector, Swarm Mind, Necro-Spore, Infector, Blob, Bomber, Jammer, Artillery Grub, Pathcutter, Swarm Queenlet (Endless and Siege Run only)
+- [x] 6 new bosses: Mothership, Hive Mind, Fallen Commander, Acid Leviathan, Nest Heart, Architect (Endless rotation of all 10)
+- [x] Commander: dash, weapon pickups, grenades, mech suit, carry system, drone buddy, gear loadout (skins come with achievements under Meta)
+- [x] Modes: Boss Rush, Puzzle, Last Stand, Ascension, Weekly Challenge, Hardcore, Sandbox
+- [x] Local co-op (second Commander), Reverse mode (send aliens vs an AI builder), Story campaign (briefings, radio, debriefs, Sector 13 and an ending)
+- [x] Siege Run: Rest, Forge, Gamble and Mini-boss nodes; relic sets; boss relics; factions; seeds; hero decks; run-wide events; debt merchant (plus the black market)
+- [x] Maps: high ground, overheat on hot maps plus Heatwave weather, destructible terrain, day/night, rising tide, switches and gates, teleporters, supply drops, meteors, wildlife, resource nodes, earthquakes (resource nodes double Harvester income rather than being required, so older maps still work)
+- [x] 4 new sectors: Jungle, Crystal Caves, Ruined City, Gas Giant Station
+- [x] Economy: Biomass, interest, insurance, research queue (black market: see Siege Run)
+- [x] Meta: achievements, Codex, tower mastery, profile stats, local leaderboards, unlock progression back on
+- [x] QoL batch 1: post-wave stats, settings menu, wave timeline, hover tooltips with combos
+- [x] QoL: undo placement, rebinding and controller, colorblind mode, tutorial
+- [x] Juice: adaptive music (synthesized until a real track exists), boss-kill slow-mo, goo splats, tower destruction, radio chatter, low-Core tint
+- [x] Wild ideas: tameable alien pet, alien towers, Living Core, tower sacrifice, map editor and mod folder (deferred: itch.io release)

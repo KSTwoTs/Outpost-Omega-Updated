@@ -74,6 +74,13 @@ class ProjectileSystem:
 
     def on_hit(self, p, enemy):
         p.active = False
+        if getattr(enemy, "reflects", False):   # Reflector: the shot bounces back at its tower
+            src = p.source
+            if src is not None and hasattr(src, "health"):
+                src.health.damage(p.damage * 0.5, ignore_armor=True)
+                self.effects.beam(p.x, p.y, src.x, src.y, S.WHITE, 0.1)
+            self.effects.sparks(p.x, p.y, S.WHITE)
+            return
         if p.splash > 0:
             splash, damage = p.splash, p.damage
             if enemy.burn_timer > 0:   # combo: Detonate (missiles blow up burning aliens harder)

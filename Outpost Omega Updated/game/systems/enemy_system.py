@@ -24,6 +24,7 @@ class EnemySystem:
         self.assets = assets       # the boss builds its collision mask from its sprite
         self.enemies = []
         self.commander = None      # set by PlayScene after PlayerSystem exists
+        self.partner = None        # local co-op Player 2
         self.towers = None         # set by PlayScene (Saboteurs look for towers)
         self.elite_data = elite_data or {}
         self.mods = {}             # current wave's endless modifiers
@@ -34,6 +35,10 @@ class EnemySystem:
         self.crit_mult = 2.0
         self.execute = 0.0              # non-boss aliens below this HP fraction die to tower hits
         self.env_speed_mult = 1.0       # Blizzard weather
+        self.session = None             # set by PlayScene (Thieves steal Energy)
+        self.corpses = []               # recent deaths a Necro-Spore can raise
+        self.terrain_blast = None       # MapFeatures.blast: splash breaks rocks (Endless / Siege Run)
+        self.force_elite = 0.0          # Weekly "Elite Storm" / Ascension
         events.subscribe("spawn_enemy", self.on_spawn_enemy)
         events.subscribe("wave_started", self.on_wave_started)
         events.subscribe("path_changed", self.on_path_changed)
@@ -49,7 +54,7 @@ class EnemySystem:
 
     def on_spawn_enemy(self, enemy_type, wave, lane=0, **_):
         e = self.spawn(enemy_type, wave, lane=lane)
-        chance = self.mods.get("elite_chance", 0.0)
+        chance = max(self.mods.get("elite_chance", 0.0), self.force_elite)
         affixes = self.elite_data.get("affixes", {})
         if not e.is_boss and affixes and chance > 0 and random.random() < chance:
             self.make_elite(e, random.choice(list(affixes)))
@@ -75,7 +80,7 @@ class EnemySystem:
             if e.targetable and not e.flying:
                 e.reroute(self.level.route_from(e.pos.x, e.pos.y))
 
-    def spawn(self, kind, wave, start_distance=0.0, pos=None, route=None, lane=0):
+    def spawn(self, kind, wave, start_distance=0.0, pos=None, route=None, lane=0, announce=True):
         if kind not in self.data:
             raise KeyError(f"Wave asks for unknown enemy '{kind}' (check enemies.json)")
         stats = self.data[kind]
@@ -93,7 +98,8 @@ class EnemySystem:
             boss_mult = m.get("boss_hp_mult", 1.0)
             e.health.max_hp *= boss_mult
             e.health.hp = e.health.max_hp
-            self.events.publish("boss_spawned", enemy=e)
+            if announce:
+                self.events.publish("boss_spawned", enemy=e)
         if pos is not None and not e.flying:
             e.pos.update(pos)
         self.enemies.append(e)
@@ -122,14 +128,28 @@ class EnemySystem:
             return 0
         if enemy.slow > 0:
             amount *= self.slowed_damage_mult
+        if enemy.aura_dr:   # Swarm Mind / Queenlet
+            amount *= 1.0 - enemy.aura_dr
+        if source is not None and hasattr(enemy, "damage_type_mult"):   # Adaptive
+            amount *= enemy.damage_type_mult(source)
+            enemy.note_damage(source, amount)
+        vuln = getattr(enemy, "vuln", 0.0)   # Mutagen Lab
+        if vuln:
+            amount *= 1.0 + vuln
         if enemy.shield > 0:   # Shielded elites soak damage before HP
             absorbed = min(enemy.shield, amount)
             enemy.shield -= absorbed
             amount -= absorbed
             if amount <= 0:
                 enemy.flash_timer = 0.05
+                if source is not None and hasattr(source, "wave_damage"):
+                    source.wave_damage += absorbed
                 return absorbed
         dealt = enemy.health.damage(amount, ignore_armor=ignore_armor)
+        if source is not None and getattr(source, "stance", None) == "suppress":
+            enemy.apply_slow(0.25, 0.8)
+        if source is not None and hasattr(source, "wave_damage"):   # post-wave report
+            source.wave_damage += dealt
         if dealt and not quiet:
             enemy.flash_timer = 0.08
             self.effects.number(enemy.pos.x, enemy.pos.y - enemy.radius, dealt,
@@ -139,6 +159,8 @@ class EnemySystem:
             enemy.health.damage(enemy.health.hp + 1, ignore_armor=True)
             self.effects.floating_text(enemy.pos.x, enemy.pos.y - 24, "EXECUTED", S.RED, 16)
         if enemy.health.is_dead:
+            if hasattr(enemy, "intercept_death") and enemy.intercept_death():
+                return dealt   # Hive Mind body went dormant instead
             if source is not None and hasattr(source, "record_kill"):
                 source.record_kill()
             self.kill(enemy)
@@ -146,6 +168,8 @@ class EnemySystem:
 
     def splash(self, x, y, radius, damage, include_air=True, knockback=10, source=None):
         """Area damage with linear falloff (100% at center, 40% at the edge)."""
+        if self.terrain_blast is not None and damage >= 20:
+            self.terrain_blast(x, y, radius, damage)
         for e in list(self.enemies):
             if not e.targetable or e.hidden or (e.flying and not include_air):
                 continue
@@ -159,6 +183,15 @@ class EnemySystem:
     def kill(self, enemy):
         enemy.fsm.change("dying")
         self.events.publish("enemy_killed", enemy=enemy)
+        carrying = getattr(enemy, "carrying", 0)
+        if carrying and self.session is not None:   # caught a Thief: Energy back plus a bonus
+            back = int(carrying * 1.25)
+            self.session.energy += back
+            self.effects.floating_text(enemy.pos.x, enemy.pos.y - 20, f"+{back} E RECOVERED", S.ENERGY, 20)
+        if not enemy.is_boss and not enemy.flying and not enemy.zombie:   # Necro-Spore fodder
+            self.corpses.append({"kind": enemy.kind, "x": enemy.pos.x, "y": enemy.pos.y,
+                                 "distance": enemy.follower.distance, "route": enemy.follower.waypoints,
+                                 "wave": getattr(enemy, "wave", 1), "t": 3.0})
         if enemy.affix == "volatile":
             self.volatile_blast(enemy)
         spawn = enemy.stats.get("spawn_on_death")
@@ -194,24 +227,27 @@ class EnemySystem:
         if self.towers is not None:
             relays = [(t.x, t.y, t.stats["range"]) for t in self.towers.towers
                       if t.behavior == "support" and t.fsm.name == "active"]
-        cmd = self.commander
+        cmds = [c for c in self.all_commanders() if c is not None and c.alive]
         for e in self.enemies:
             if not hasattr(e, "revealed"):
                 continue
             r = e.stats.get("reveal_range", 140)
-            seen = cmd is not None and cmd.alive and e.pos.distance_squared_to(cmd.pos) <= r * r
+            seen = any(e.pos.distance_squared_to(c.pos) <= r * r for c in cmds)
             if not seen:
                 seen = any((e.pos.x - x) ** 2 + (e.pos.y - y) ** 2 <= rr * rr for x, y, rr in relays)
             e.revealed = seen
+
+    def all_commanders(self):
+        return (self.commander, self.partner) if self.partner is not None else (self.commander,)
 
     def light_sources(self):
         """(x, y, radius) of everything that lights up a dark sector."""
         lights = [(x, y, 150) for x, y in self.level.core_positions]
         if self.towers is not None:
             lights += [(t.x, t.y, 120 + 40 * (t.behavior == "support")) for t in self.towers.towers]
-        cmd = self.commander
-        if cmd is not None and cmd.alive:
-            lights.append((cmd.pos.x, cmd.pos.y, 160))
+        for cmd in self.all_commanders():
+            if cmd is not None and cmd.alive:
+                lights.append((cmd.pos.x, cmd.pos.y, 160))
         return lights
 
     def update_lighting(self):
@@ -222,9 +258,22 @@ class EnemySystem:
             e.in_dark = not e.is_boss and not any(
                 (e.pos.x - x) ** 2 + (e.pos.y - y) ** 2 <= r * r for x, y, r in lights)
 
+    def update_auras(self, dt):
+        """Swarm Mind and Swarm Queenlet buffs; also ages the corpse list."""
+        for e in self.enemies:
+            e.aura_speed = 0.0
+            e.aura_dr = 0.0
+        for e in self.enemies:
+            if getattr(e, "aura_source", False) and e.targetable:
+                e.apply_aura(self.enemies)
+        for c in self.corpses:
+            c["t"] -= dt
+        self.corpses = [c for c in self.corpses if c["t"] > 0]
+
     def on_update(self, dt):
         self.update_reveals()
         self.update_lighting()
+        self.update_auras(dt)
         for e in list(self.enemies):
             e.update(dt)
         self.enemies = [e for e in self.enemies if not e.remove]

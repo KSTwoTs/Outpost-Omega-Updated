@@ -1,0 +1,244 @@
+{
+ "legend": {
+  ".": "buildable",
+  "#": "path",
+  "S": "spawn",
+  "C": "core",
+  "X": "blocked",
+  "~": "hazard",
+  "I": "ice",
+  "W": "wall / gate",
+  "H": "high ground",
+  "R": "resource node",
+  "K": "crystal"
+ },
+ "core_hp": 100,
+ "start_energy": 320,
+ "build_time": 15,
+ "name": "Sector 12 - Gas Giant Station",
+ "id": "sector12",
+ "theme": "gas",
+ "enemy_hp_mult": 1.55,
+ "low_gravity": true,
+ "tiles": [
+  "........................................",
+  ".X........H.............................",
+  "S############............X......H.......",
+  "............#...............H...........",
+  "............#..............H............",
+  "............#..........X...........H....",
+  "............#........X..................",
+  "............#################...X.XXXX..",
+  "............................#.X...XXXX..",
+  "............................#######CXX..",
+  "............................#######XXX..",
+  "X...........................#....XXXXX..",
+  ".........X..#################...........",
+  ".....H......#...........................",
+  ".........X..#...........................",
+  "............#...........................",
+  "............#...........................",
+  "S############.X........................H",
+  "...X....................................",
+  "X........................H...X.........."
+ ],
+ "waves": [
+  {
+   "groups": [
+    {
+     "enemy": "skitter",
+     "count": 10,
+     "interval": 0.8,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 10,
+     "interval": 0.8,
+     "delay": 6.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "glider",
+     "count": 8,
+     "interval": 1.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 10,
+     "interval": 0.7,
+     "delay": 6.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "bomber",
+     "count": 3,
+     "interval": 2.5,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 5.75,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "carrier",
+     "count": 1,
+     "interval": 1.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.6,
+     "delay": 2.5,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "shield_drone",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 5.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "bomber",
+     "count": 5,
+     "interval": 1.8,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "glider",
+     "count": 10,
+     "interval": 0.8,
+     "delay": 6.5,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "swarm_mind",
+     "count": 2,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 18,
+     "interval": 0.5,
+     "delay": 5.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "carrier",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "bomber",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 6.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "swarm_queenlet",
+     "count": 1,
+     "interval": 1.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "glider",
+     "count": 14,
+     "interval": 0.6,
+     "delay": 2.5,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "carrier",
+     "count": 3,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "juggernaut",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 6.5,
+     "lane": 1
+    },
+    {
+     "enemy": "bomber",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 12.5,
+     "lane": 0
+    }
+   ],
+   "boss": "mothership"
+  }
+ ]
+}

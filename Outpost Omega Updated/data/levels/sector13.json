@@ -1,0 +1,310 @@
+{
+ "legend": {
+  ".": "buildable",
+  "#": "path",
+  "S": "spawn",
+  "C": "core",
+  "X": "blocked",
+  "~": "hazard",
+  "I": "ice",
+  "W": "wall / gate",
+  "H": "high ground",
+  "R": "resource node",
+  "K": "crystal"
+ },
+ "core_hp": 120,
+ "start_energy": 360,
+ "build_time": 15,
+ "name": "Sector 13 - The Hive Heart",
+ "id": "sector13",
+ "theme": "hive",
+ "enemy_hp_mult": 1.65,
+ "story_only": true,
+ "tiles": [
+  "........................................",
+  "........................................",
+  ".........~K.............................",
+  "S#########........##########............",
+  ".........#.~......#........#...........X",
+  ".........#........#..K.....#......X.....",
+  ".........#.....H..#........#............",
+  ".......K.#.~......#........#.....XXXX...",
+  ".........##########...X....#.....XXXX.X.",
+  ".............~..~..........#######CXX...",
+  "...........................X..####XXX...",
+  ".......X........X..........X..#..XXXX...",
+  ".........##############.......#.........",
+  ".........#............#.......#.........",
+  ".........#......X.....#X....X.#.........",
+  ".........#....X.......#.......#.........",
+  "S#########.X..........#.......#.........",
+  "....~.....K...........#########H........",
+  "........H......H...................X....",
+  "................H......................."
+ ],
+ "waves": [
+  {
+   "groups": [
+    {
+     "enemy": "skitter",
+     "count": 12,
+     "interval": 0.7,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 12,
+     "interval": 0.7,
+     "delay": 6.199999999999999,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "brute",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "glider",
+     "count": 8,
+     "interval": 1.0,
+     "delay": 6.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "cloaker",
+     "count": 5,
+     "interval": 1.6,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "mender",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 6.0,
+     "lane": 1
+    },
+    {
+     "enemy": "skitter",
+     "count": 12,
+     "interval": 0.5,
+     "delay": 11.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "burrower",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "spitter",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.199999999999999,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "hunter",
+     "count": 5,
+     "interval": 1.6,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "bomber",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "brute",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 16,
+     "interval": 0.5,
+     "delay": 6.199999999999999,
+     "lane": 1
+    }
+   ],
+   "boss": "hive_queen"
+  },
+  {
+   "groups": [
+    {
+     "enemy": "reflector",
+     "count": 5,
+     "interval": 1.6,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "phaser",
+     "count": 6,
+     "interval": 1.3,
+     "delay": 6.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "carrier",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "shield_drone",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.0,
+     "lane": 1
+    },
+    {
+     "enemy": "glider",
+     "count": 10,
+     "interval": 0.8,
+     "delay": 12.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "juggernaut",
+     "count": 3,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "mender",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.5,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "swarm_queenlet",
+     "count": 2,
+     "interval": 6.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "necro_spore",
+     "count": 3,
+     "interval": 2.5,
+     "delay": 8.0,
+     "lane": 1
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "adaptive",
+     "count": 8,
+     "interval": 1.2,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "jammer",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.8,
+     "lane": 1
+    },
+    {
+     "enemy": "bomber",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 12.8,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "juggernaut",
+     "count": 3,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "carrier",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 6.5,
+     "lane": 1
+    },
+    {
+     "enemy": "brute",
+     "count": 10,
+     "interval": 0.9,
+     "delay": 12.5,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 24,
+     "interval": 0.3,
+     "delay": 19.0,
+     "lane": 1
+    }
+   ],
+   "boss": "architect"
+  }
+ ]
+}

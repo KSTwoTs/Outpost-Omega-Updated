@@ -86,8 +86,15 @@ class Commander(pygame.sprite.Sprite):
         self.repair_time = S.REPAIR_TIME
         self.blaster_range = S.BLASTER_RANGE
         self.damage_taken = 1.0                   # hero / augment armor
+        self.jammed = 0.0                         # >0 while a Jammer is close: no abilities
+        self.invuln = 0.0                         # dash i-frames
+        self.dash_time = 0.0
+        self.weapon_cd = 0.0                      # weapon pickups (CommanderKit)
         self.respawn_time = S.CMD_RESPAWN
         self.skin = None                          # hero palette id (asset name suffix)
+        self.disabled = False                     # Reverse mode: no Commander on the field
+        self.player_no = 1                        # 2 = local co-op partner
+        self.dash_cd = 0.0                        # Player 2's own dash cooldown
         self.respawn_timer = 0.0
         self.hurt_timer = 0.0
         self.facing_left = False
@@ -102,12 +109,17 @@ class Commander(pygame.sprite.Sprite):
         }, "idle")
 
     @property
+    def kit(self):
+        """Player 1's CommanderKit (gear, weapons, mech). Co-op Player 2 has no kit of her own."""
+        return getattr(self.system, "kit", None) if self.player_no == 1 else None
+
+    @property
     def skin_suffix(self):
         return f"~{self.skin}" if self.skin else ""
 
     @property
     def alive(self):
-        return self.fsm.name != "downed"
+        return self.fsm.name != "downed" and not self.disabled
 
     @property
     def state(self):
@@ -115,8 +127,11 @@ class Commander(pygame.sprite.Sprite):
 
     # ---- actions -------------------------------------------------------------
     def take_damage(self, amount):
-        if not self.alive or amount <= 0:
+        if not self.alive or amount <= 0 or self.invuln > 0:
             return
+        kit = self.kit
+        if kit is not None:
+            amount *= kit.damage_taken_mult
         self.health.damage(amount * self.damage_taken, ignore_armor=True)
         self.hurt_timer = 0.15
         if self.health.is_dead:
@@ -129,19 +144,31 @@ class Commander(pygame.sprite.Sprite):
         self.system.events.publish("commander_respawned", commander=self)
 
     def find_repair_target(self):
+        if self.jammed > 0:
+            return None
         tower = self.system.towers.nearest_damaged_tower(self.pos.x, self.pos.y, S.REPAIR_RANGE)
         self.repair_target = tower
         return tower
 
+    def weapon_cd_ready(self):
+        return self.weapon_cd <= 0
+
     def try_fire_blaster(self):
+        if self.jammed > 0:
+            return False
+        kit = self.kit
+        if kit is not None and kit.weapon:
+            return kit.fire_weapon(self)
         if not self.blaster.ready:
             return False
-        target = self.system.collision.nearest_enemy(self.pos.x, self.pos.y, self.blaster_range)
+        rng = self.blaster_range * (kit.range_mult if kit else 1.0)
+        target = self.system.collision.nearest_enemy(self.pos.x, self.pos.y, rng)
         if target is None:
             return False
         self.blaster.trigger()
         aim = self.system.projectiles.fire_at(
-            self.pos.x, self.pos.y, target, S.BLASTER_SPEED, self.blaster_damage,
+            self.pos.x, self.pos.y, target, S.BLASTER_SPEED,
+            self.blaster_damage * (kit.blaster_mult if kit else 1.0),
             color=S.CYAN, hits_air=True, radius=2)
         self.aim_angle = math.atan2(aim[1] - self.pos.y, aim[0] - self.pos.x)
         self.facing_left = math.cos(self.aim_angle) < 0
@@ -157,8 +184,10 @@ class Commander(pygame.sprite.Sprite):
         self.vel += accel * dt
         # Friction: exponential decay, frame-rate independent.
         self.vel *= math.exp(-friction * dt)
-        if self.vel.length_squared() > self.max_speed ** 2:
-            self.vel.scale_to_length(self.max_speed)
+        kit = self.kit
+        top = self.max_speed * (kit.speed_mult if kit else 1.0)
+        if self.dash_time <= 0 and self.vel.length_squared() > top ** 2:
+            self.vel.scale_to_length(top)
         if self.vel.length_squared() < 4 and not any(move):
             self.vel.update(0, 0)
         push = level.conveyor_at(self.pos.x, self.pos.y) or (0, 0)   # Orbital Platform belts
@@ -183,6 +212,14 @@ class Commander(pygame.sprite.Sprite):
         self.repair_input = repair_held
         self.blaster.update(dt)
         self.hurt_timer = max(0.0, self.hurt_timer - dt)
+        self.jammed = max(0.0, self.jammed - dt)
+        self.invuln = max(0.0, self.invuln - dt)
+        self.dash_time = max(0.0, self.dash_time - dt)
+        self.weapon_cd = max(0.0, self.weapon_cd - dt)
+        self.dash_cd = max(0.0, self.dash_cd - dt)
+        kit = self.kit
+        if kit is not None and kit.mech_time > 0:   # mech suit fires faster
+            self.blaster.update(dt * 0.5)
         self.fsm.update(dt)
 
     def render(self, screen, assets, offset):
@@ -197,6 +234,10 @@ class Commander(pygame.sprite.Sprite):
         frame = f"commander_{int(self.anim_t) % 2}{self.skin_suffix}"
         tint = "white" if self.hurt_timer > 0 else None
         assets.blit_centered(screen, frame, (x, y), flip=self.facing_left, tint=tint)
+        if self.jammed > 0:   # static over her head
+            for k in range(3):
+                px = x - 8 + k * 8
+                pygame.draw.line(screen, (230, 120, 60), (px, y - 22), (px + 4, y - 18), 2)
         if self.fsm.name == "shoot":
             mx = x + math.cos(self.aim_angle) * 14
             my = y + math.sin(self.aim_angle) * 14
@@ -211,5 +252,9 @@ class Commander(pygame.sprite.Sprite):
                 pts.append((px, py))
             pygame.draw.lines(screen, S.GREEN, False, pts, 2)
         # HP bar
+        bar = S.CYAN if self.player_no == 1 else S.ORANGE
         pygame.draw.rect(screen, (30, 0, 0), (x - 14, y - 22, 28, 4))
-        pygame.draw.rect(screen, S.CYAN, (x - 14, y - 22, int(28 * self.health.ratio), 4))
+        pygame.draw.rect(screen, bar, (x - 14, y - 22, int(28 * self.health.ratio), 4))
+        if getattr(self.system, "partner", None) is not None:
+            tag = assets.text(f"P{self.player_no}", 14, bar, True)
+            screen.blit(tag, tag.get_rect(center=(x, y - 30)))

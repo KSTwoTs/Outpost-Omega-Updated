@@ -1,0 +1,265 @@
+{
+ "legend": {
+  ".": "buildable",
+  "#": "path",
+  "S": "spawn",
+  "C": "core",
+  "X": "blocked",
+  "~": "hazard",
+  "I": "ice",
+  "W": "wall / gate",
+  "H": "high ground",
+  "R": "resource node",
+  "K": "crystal"
+ },
+ "core_hp": 100,
+ "start_energy": 320,
+ "build_time": 15,
+ "name": "Sector 10 - Crystal Caves",
+ "id": "sector10",
+ "theme": "crystal",
+ "enemy_hp_mult": 1.45,
+ "teleporters": [
+  [
+   [
+    24,
+    8
+   ],
+   [
+    10,
+    10
+   ]
+  ],
+  [
+   [
+    14,
+    12
+   ],
+   [
+    15,
+    17
+   ]
+  ]
+ ],
+ "tiles": [
+  "..............K....X................KK..",
+  "........................................",
+  "..........###########.K.......#########S",
+  "..........#.........#.........#.........",
+  "..........#....K.K..#.........#..K....K.",
+  "..........#.........#.......K.#.........",
+  "..........#.........#......K..#.........",
+  "..........#.........#.........#.........",
+  "..........#.........###########.K.......",
+  "..........#.K..................K........",
+  "..........#....K.....K...............X..",
+  "..........#.............................",
+  "..XXXX....###############.K.............",
+  "..XXXX..................#...............",
+  "..XC###......K..KK......#...............",
+  "..XXXX#...K......K......#...X........X..",
+  "..XXXX#.................#...............",
+  ".....X###################.K.............",
+  "....K....................KX.............",
+  "....X...K.X......K......................"
+ ],
+ "waves": [
+  {
+   "groups": [
+    {
+     "enemy": "skitter",
+     "count": 14,
+     "interval": 0.8,
+     "delay": 0.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "cloaker",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 10,
+     "interval": 0.7,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "phaser",
+     "count": 5,
+     "interval": 1.6,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 3,
+     "interval": 2.0,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "reflector",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 12,
+     "interval": 0.6,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "adaptive",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "phaser",
+     "count": 4,
+     "interval": 1.5,
+     "delay": 6.0,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "infector",
+     "count": 3,
+     "interval": 2.5,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "brute",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 5.75,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "glider",
+     "count": 10,
+     "interval": 0.9,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "reflector",
+     "count": 4,
+     "interval": 2.0,
+     "delay": 6.5,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "adaptive",
+     "count": 6,
+     "interval": 1.6,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "cloaker",
+     "count": 6,
+     "interval": 1.4,
+     "delay": 6.800000000000001,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "artillery_grub",
+     "count": 3,
+     "interval": 3.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "phaser",
+     "count": 8,
+     "interval": 1.0,
+     "delay": 6.5,
+     "lane": 0
+    },
+    {
+     "enemy": "skitter",
+     "count": 16,
+     "interval": 0.4,
+     "delay": 12.5,
+     "lane": 0
+    }
+   ],
+   "boss": null
+  },
+  {
+   "groups": [
+    {
+     "enemy": "juggernaut",
+     "count": 2,
+     "interval": 4.0,
+     "delay": 0.0,
+     "lane": 0
+    },
+    {
+     "enemy": "reflector",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 6.0,
+     "lane": 0
+    },
+    {
+     "enemy": "adaptive",
+     "count": 6,
+     "interval": 1.5,
+     "delay": 12.5,
+     "lane": 0
+    }
+   ],
+   "boss": "acid_leviathan"
+  }
+ ]
+}

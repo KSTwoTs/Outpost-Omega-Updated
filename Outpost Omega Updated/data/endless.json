@@ -5,7 +5,10 @@
   "max_groups": 3,
   "enemy_weights": {"skitter": 3.0, "glider": 1.5, "brute": 1.5, "brood_sac": 1.2, "saboteur": 0.6,
                     "mender": 0.8, "juggernaut": 0.8, "cloaker": 1.0, "burrower": 1.0, "spitter": 0.8,
-                    "shield_drone": 0.7, "hunter": 0.8, "mimic": 0.6, "carrier": 0.5},
+                    "shield_drone": 0.7, "hunter": 0.8, "mimic": 0.6, "carrier": 0.5,
+                    "adaptive": 0.8, "thief": 0.6, "leech": 0.7, "phaser": 0.9, "reflector": 0.7,
+                    "swarm_mind": 0.5, "necro_spore": 0.5, "infector": 0.6, "blob": 0.5, "bomber": 0.6,
+                    "jammer": 0.6, "artillery_grub": 0.5, "pathcutter": 0.3, "swarm_queenlet": 0.25},
   "wave_length": 20.0,
   "min_interval": 0.25,
   "max_interval": 1.2,
@@ -14,7 +17,8 @@
 
   "boss_every": 10,
   "boss": "hive_overseer",
-  "bosses": ["hive_overseer", "siege_titan", "hive_queen", "burrow_wyrm"],
+  "bosses": ["hive_overseer", "siege_titan", "hive_queen", "burrow_wyrm", "mothership", "hive_mind",
+             "fallen_commander", "acid_leviathan", "nest_heart", "architect"],
   "boss_hp_step": 0.5,
 
   "mutator_every": 5,

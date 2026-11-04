@@ -16,7 +16,9 @@ class CollisionSystem:
 
     def rebuild(self, enemies):
         self.hash.clear()
-        self.enemies = [e for e in enemies if e.targetable and not e.hidden]
+        # Hacked aliens fight for us for a few seconds: towers and Vance leave them alone.
+        self.enemies = [e for e in enemies if e.targetable and not e.hidden
+                        and getattr(e, "hacked", 0) <= 0]
         for e in self.enemies:
             self.hash.insert(e, e.pos.x, e.pos.y, e.radius)
 

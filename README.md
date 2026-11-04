@@ -50,11 +50,19 @@ If you already have classic `pygame` installed, it works too. Don't install both
 
 | Input | Action |
 |---|---|
+| R / V / B / Z | Dash / throw grenade / next grenade / mech suit |
+| Backspace | Undo the last tower placed (build phase) |
+| H / Delete | Tame a weakened alien next to Vance / sacrifice the selected tower |
+| Y | Sandbox mode: show / hide the alien spawn menu |
+| Arrows, Right Ctrl, Right Shift | Local co-op Player 2: move, repair, dash (a controller also works) |
 | WASD / arrows | Move Commander Vance (she auto-fires at the closest alien within 160 px) |
 | E (hold) | Repair a nearby damaged or EMP'd tower |
 | Click a drop | Collect it (or walk over it) |
 | Q, then click | Orbital Strike (1 s delay, 45 s cooldown). Right-click cancels |
-| 1–9, 0, -, =, \\, Z, C, V, B or HUD buttons | Pick a tower to build. Click a green tile to place it. Shift+click places several |
+| 1–9, 0, - or HUD buttons | Pick a tower from the current HUD tab (Assault, Control, Support). Click a green tile to place it. Shift+click places several. Hover a button for stats and combos |
+| Tab | Next tower tab (or click a tab) |
+| I | Show / hide the post-wave report |
+| M / G / K / J | Move / stance / socket a chip / fuse the selected tower |
 | Click a tower | Select it (HUD shows Upgrade / Sell / Targeting) |
 | Click the Core | Core upgrades: Gun, Shield, Regen, Reactor, Nova, Plating |
 | Level-up panel | Click one of 3 perks when your Commander levels up (the game keeps running) |
@@ -62,7 +70,7 @@ If you already have classic `pygame` installed, it works too. Don't install both
 | U / X / T | Upgrade / Sell (70% refund) / cycle targeting (first, last, strongest, closest) |
 | Space | Start the next wave early |
 | F | Game speed 1x / 2x / 3x |
-| Esc / P | Pause |
+| Esc / P | Pause (Settings is in the pause menu and on the main menu) |
 | F11 | Toggle fullscreen. The window can also be resized or maximized; the game scales to fit |
 | F1 | Debug overlay: waypoints, ranges, spatial-hash cells, hitboxes (boss shows its pixel-mask outline), FPS |
 
@@ -155,16 +163,16 @@ best wave saved per day). All modes are reachable from the main menu and Level S
 
 **New towers** (available in every mode; unlocked as tower cards in a Siege Run)
 
-| Key | Tower | What it does |
+| Tab | Tower | What it does |
 |---|---|---|
-| 6 | Flamer | Short cone; damages and burns ground aliens |
-| 7 | Mortar | Lobbed shells with big splash; can't hit close or flying targets |
-| 8 | Gravity Well | Every few seconds pulls ground aliens back along the path |
-| 9 | Harvester | No attack; pays Energy after every wave |
-| 0 | Radar Relay | +15–25% range to nearby towers; reveals Cloakers and Burrowers |
-| - | Drone Bay | Drones hunt aliens anywhere in range, flyers included |
-| = | Barricade | Goes ON the path; aliens stop to chew through it; repair it with E |
-| \\ | Mine Layer | Scatters proximity mines on path tiles in range |
+| Assault | Flamer | Short cone; damages and burns ground aliens |
+| Assault | Mortar | Lobbed shells with big splash; can't hit close or flying targets |
+| Control | Gravity Well | Every few seconds pulls ground aliens back along the path |
+| Support | Harvester | No attack; pays Energy after every wave |
+| Support | Radar Relay | +15–25% range to nearby towers; reveals Cloakers and Burrowers |
+| Assault | Drone Bay | Drones hunt aliens anywhere in range, flyers included |
+| Support | Barricade | Goes ON the path; aliens stop to chew through it; repair it with E |
+| Control | Mine Layer | Scatters proximity mines on path tiles in range |
 
 **Combos:** Railgun hits on slowed aliens *Shatter* (2x damage); Missiles and Mortar
 shells *Detonate* (1.5x splash) on burning aliens; Tesla *Conducts* 2 extra jumps
@@ -208,12 +216,12 @@ picks a perk at each level (`data/perks.json`); in a Siege Run his level carries
 
 **More towers** (every mode; tower cards in a Siege Run)
 
-| Key | Tower | What it does |
+| Tab | Tower | What it does |
 |---|---|---|
-| Z | Laser Lance | Continuous beam whose damage ramps up the longer it holds one alien |
-| C | Acid Spitter | Lobs acid that pools on the path, melting aliens and stripping their armor |
-| V | Repair Bay | No attack; repairs towers in range, broken ones included |
-| B | Sonic Disruptor | Shockwaves hit every ground alien in range and stun them |
+| Assault | Laser Lance | Continuous beam whose damage ramps up the longer it holds one alien |
+| Control | Acid Spitter | Lobs acid that pools on the path, melting aliens and stripping their armor |
+| Support | Repair Bay | No attack; repairs towers in range, broken ones included |
+| Control | Sonic Disruptor | Shockwaves hit every ground alien in range and stun them |
 
 **Tier-4 branches for every tower** (Siege Run): Flamer (Dragon's Breath / Napalm
 Sprayer), Mortar (Siege Cannon / Rapid Battery), Gravity Well (Singularity / Stasis
@@ -234,33 +242,220 @@ with a `modes` list; `palette` recolors the Commander sprite.
 every 10 s), Plating (+20/40/70 Core max HP). **Tech Lab:** 20 upgrades, most with
 more ranks.
 
-## Phase 5 (in progress)
+## Phase 5
 
-Nothing below is built yet. Full details and the task checklist are in `DESIGN.md`.
+Full details and the task checklist are in `DESIGN.md`.
 
-| Area | Planned |
+**Batch 1: five new towers** (every mode; tower cards in a Siege Run).
+
+| Tab | Tower | What it does |
+|---|---|---|
+| Assault | Flak Cannon | Anti-air only. Fires bursts of shells that splash every flyer around the target |
+| Assault | Ion Cannon | Charges for about 20 s (ring around it), then one armor-piercing blast down every lane |
+| Support | Shield Projector | Gives towers in range (itself included) a shield that soaks damage from Spitter acid, Volatile blasts, Titan stomps, Saboteur EMPs and acid rain. Recharges after a few seconds without a hit |
+| Control | Tar Pit | Goes ON the path like a Barricade, but aliens and Vance walk through it. Slows ground aliens; a Flamer hit or a burning alien sets it ablaze |
+| Control | Chrono Spire | Every few seconds rewinds the lead alien back along the path (2–3 s of walking). Bosses and Juggernauts can't be moved |
+
+Tier-4 branches: Flak Cannon (Skyburst / Hailstorm, which also hits ground), Ion Cannon
+(Orbital Lance / Planet Cracker), Shield Projector (Aegis Dome / Rapid Recharge), Tar Pit
+(Napalm Bog / Deep Tar), Chrono Spire (Time Loop / Stasis Lock). Every tier and branch
+has its own look.
+
+**Batch 2: five more towers.**
+
+| Tab | Tower | What it does |
+|---|---|---|
+| Support | Decoy Beacon | A hologram of Vance. Every few seconds it lures the nearest ground aliens, which stop and attack it instead of walking on. Hunters within range chase it instead of Vance. Repair it with E |
+| Control | Plasma Fence | A pylon. Build two within range of each other and a plasma beam links them; aliens crossing it take damage. Build a row of pylons to chain fences |
+| Support | Mirror Array | No attack of its own. Railguns and Laser Lances within its range also bounce their beams off it at aliens near the mirror, so they can shoot around corners |
+| Control | Hacker Spire | Hacks the lead ground alien for a few seconds: it walks back toward spawn and damages every alien it touches. Towers ignore it while hacked. Bosses, Juggernauts and flyers can't be hacked |
+| Control | Magnet Coil | Strips armor from everything in range and chips it. Slows Juggernauts a little despite their slow immunity |
+
+Tier-4 branches: Decoy Beacon (Mirage Field / Booby Trap, which shocks attackers and
+explodes when destroyed), Plasma Fence (Arc Wall / Overload Grid, which links to every
+pylon in range and hits flyers), Mirror Array (Prism Splitter / Focusing Lens), Hacker
+Spire (Virus, whose hacked aliens explode / Botnet, 3 at once), Magnet Coil
+(Demagnetizer, which also drains shields / Maglock).
+
+**Batch 3: the last five towers.**
+
+| Tab | Tower | What it does |
+|---|---|---|
+| Assault | Lightning Rod | Builds charge (4x faster while weather is on the map), then calls down a bolt that chains through nearby aliens. The yellow ring shows the charge |
+| Support | Bio-Lab | No attack. Every alien that dies in its range pays 2–4 Energy |
+| Support | Overclocker | Towers next to it (8 surrounding tiles) fire 60–100% faster, but lose HP while they're shooting |
+| Support | Uplink Dish | Each kill in range takes 0.4–0.8 s off the Orbital Strike cooldown |
+| Support | Bait Pod | Cheap, 400+ HP and regenerates. Spitters shoot it before any other tower |
+
+Tier-4 branches: Lightning Rod (Storm Caller / Capacitor Bank), Bio-Lab (Rendering Plant /
+Mutagen Lab, aliens in range take +20% damage), Overclocker (Turbo Core / Cryo-Cooled, no
+burn), Uplink Dish (Twin Strike, a second stored Orbital Strike / Targeting Array, +50%
+damage and +30% radius), Bait Pod (Spore Pod / Regenerator).
+
+**Phase 5 UI**
+
+- **Tower tabs:** the 32 towers are split into Assault (11), Control (10) and Support (11).
+  The number row (1–9, 0, -) builds from the open tab; Tab or a click switches tabs.
+  Each tower's tab is the `category` field in `data/towers.json`.
+- **Tooltips:** hover a build button for its stats, upgrade costs, tier-4 branches and
+  combos (Shatter, Conduct, Detonate, Tar ignition, Mirror bounces...).
+- **Wave timeline:** in the build phase the top-right panel shows the next wave in detail
+  plus the four after it (bosses in magenta, mutators in orange). During a wave it shrinks
+  to five chips.
+- **Post-wave report:** after each wave a panel lists damage and kills per tower and calls
+  out attacking towers that did nothing. I or the x button hides it.
+- **Settings** (main menu and pause menu): sound and music volume, screen shake, particle
+  amount, damage numbers, post-wave report and wave timeline. Saved in `save.json`.
+
+**New aliens** (Endless and Siege Run; the campaign sectors keep their original waves).
+Each one counters a strategy:
+
+| Alien | From wave | What it does |
+|---|---|---|
+| Thief | 8 | Steals Energy at the Core and runs back to spawn. Kill it to get the Energy back (+25%) |
+| Phaser | 9 | Blinks a few tiles ahead along the path every few seconds |
+| Leech | 10 | Latches onto a tower and drains it. Walk Vance up to it to knock it off |
+| Jammer | 11 | Vance can't shoot, repair or call an Orbital Strike near it |
+| Reflector | 12 | Bullets and missiles bounce back and hurt the tower that fired. Beams, fire and splash work |
+| Bomber | 12 | Flyer that bombs towers instead of heading for the Core |
+| Adaptive | 13 | Builds up to 60% resistance to the damage type (kinetic, energy, fire, chemical) that hits it most |
+| Infector | 14 | Corrupts a tower so it zaps your other towers until you repair it to full |
+| Swarm Mind | 15 | Takes less damage for every alien near it and speeds them up |
+| Blob | 15 | Absorbs aliens it touches and grows |
+| Necro-Spore | 16 | Raises aliens that just died nearby as weaker zombies (purple ring, no reward) |
+| Artillery Grub | 17 | Shells towers from 240 px away |
+| Pathcutter | 18 | Digs a permanent shortcut through open ground between two parts of the path |
+| Swarm Queenlet | 20 | Mini-boss with an escort; aliens near her are faster and take 25% less damage |
+
+**New bosses** (Endless rotates all ten bosses every 10th wave; they're also in the Siege Run
+endless acts):
+
+| Boss | What it does |
 |---|---|
-| Towers | Shield Projector, Decoy Beacon, Plasma Fence, Chrono Spire, Mirror Array, Flak Cannon, Ion Cannon, Hacker Spire, Magnet Coil, Tar Pit, Lightning Rod, Bio-Lab, Overclocker, Uplink Dish, Bait Pod |
-| Tower systems | Adjacency bonuses, power grid, sockets, relocate, named veterans, tower fusion, Focus/Suppress stance |
-| Enemies | Adaptive, Thief, Leech, Phaser, Reflector, Swarm Mind, Necro-Spore, Infector, Blob, Bomber, Jammer, Artillery Grub, Pathcutter, Swarm Queenlet |
-| Bosses | Mothership, Hive Mind, Fallen Commander, Acid Leviathan, Nest Heart, Architect |
-| Commander | Dash, weapon pickups, grenades, mech suit ultimate, carry system, drone buddy, gear loadout, skins |
-| Modes | Local co-op, Boss Rush, Puzzle, Last Stand, Reverse, Ascension, Weekly Challenge, Hardcore, Sandbox, Story campaign |
-| Siege Run | Rest, Forge, Gamble and Mini-boss nodes; relic sets; boss relics; alien factions; shareable seeds; hero starting decks; run-wide events; debt merchant |
-| Maps | High ground, overheat on hot maps (Magma Forge, Desert Outpost, new Heatwave weather), destructible terrain, day/night, rising tide, switches and gates, teleporters, supply drops, meteor showers, wildlife, resource nodes, earthquakes |
-| New sectors | Jungle, Crystal Caves, Ruined City, Gas Giant Station |
-| Economy | Biomass, interest, black market, insurance, research queue |
-| Meta | Achievements, Codex, tower mastery, profile stats, local leaderboards, unlock progression |
-| QoL | Undo placement, post-wave stats, key rebinding and controller, colorblind mode, settings menu, tutorial, wave timeline, combo tooltips |
-| Juice | Adaptive music, boss-kill slow-mo, goo splats, tower destruction, radio chatter, low-Core tint |
-| Wild ideas | Tameable alien pet, alien towers, Living Core, tower sacrifice, map editor and mod folder, itch.io release |
+| Mothership | Flies slowly toward the Core and drops a wave of aliens at 75%, 50% and 25% HP |
+| Hive Mind | Three bodies share one bar. A body killed while another stands goes dormant and revives at half HP after 6 s |
+| Fallen Commander | An infected Vance: shoots towers, dodge-rolls ahead when hurt, and calls Orbital Strikes on tower clusters |
+| Acid Leviathan | Swims under the path; when it surfaces it drags the nearest tower under (disabled 6 s, half its HP) |
+| Nest Heart | Doesn't move. Sits 30% of the way down the path spawning aliens until you destroy it |
+| Architect | At 66% and 33% HP it digs a new route and fills in the old one (on Open Plains it drops rock walls on the aliens' route) |
+
+**Tower systems.** Select a tower and an action bar appears above the HUD:
+
+| Key | System | How it works |
+|---|---|---|
+| (build) | Adjacency synergies | 16 pairs buff each other when on neighboring tiles, e.g. Railgun next to Cryo +15% damage, Tesla next to Cryo +1 chain. Build tooltips list them; the selected tower shows which are active |
+| (build) | Generator (Support tab) | Powers towers in range: +20–30% fire rate, shown as cables. EMPs, vents and damage can knock it offline. Towers still work unpowered |
+| K | Augment chips | Elites sometimes drop a chip and bosses drop two. Socket them into a tower: Damage, Range, Rapid, Plating or Salvage. 1 socket, 2 at tier 3 / tier 4. Selling returns the chips. Chips carry over between Siege Run fights |
+| M | Move | Between waves, move a tower for 15% of what you've spent on it, without selling it |
+| G | Stance | Normal / Focus (+20% damage) / Suppress (-20% damage, every hit slows 25%) |
+| (75 kills) | Named veterans | At veteran rank 3 a tower gets a name and a random trait (Sharpshooter, Relentless, Heavy Hitter, Ironclad, Lucky) |
+| J | Fusion (Endless and Siege Run) | Two maxed towers from a recipe on neighboring tiles fuse into a hybrid for 150 Energy: Frost Arc (Tesla + Cryo), Photon Lance (Railgun + Laser), Napalm Spitter (Flamer + Acid), Siege Battery (Missile + Mortar), Gunship Hangar (Pulse + Drone), Quake Engine (Sonic + Gravity), Storm Coil (Lightning + Tesla), Bio-Refinery (Harvester + Bio-Lab) |
+
+All the numbers live in `data/tower_systems.json`.
+
+**Commander kit** (all numbers in `data/commander_kit.json`):
+
+| Key | Feature | How it works |
+|---|---|---|
+| R | Dash | A quick burst in the direction you're moving, with a moment of invulnerability (3 s cooldown) |
+| V / B | Grenades | Throw the selected grenade at the mouse; B cycles type. Frag (damage), Cryo (60% slow) and EMP Cleanse (stuns aliens, strips shields, un-corrupts towers, knocks off Leeches). You start each sector with 2 Frags; more drop from aliens |
+| Z | Mech suit | Charges from kills (60). For 15 s Vance takes 80% less damage, her blaster hits 4x harder and faster, and she stomps nearby aliens |
+| (pickup) | Weapons | Shotgun, Sniper Rifle, Flamethrower and Rocket Launcher drop from aliens and replace the blaster for 30–40 s |
+| (walk) | Ammo crates | A crate lands near the Core every wave. Walk over it, then walk up to a tower: it fires twice as fast for 15 s and repairs 30% |
+| — | Drone buddy | Orbits Vance and shoots nearby aliens; it gets stronger as she levels up |
+| (pickup) | Gear | Helmets (+range), armor (-damage taken) and boots (+speed, shorter dash cooldown) drop from elites and bosses in tiers 1–3 and equip automatically if better. Gear carries over between Siege Run fights |
+
+A status strip above the HUD shows the weapon, grenade, mech charge, dash and gear.
+
+**Economy** (`data/economy.json`):
+
+- **Biomass** (green, under your Energy): every kill drops 1 (bosses 25) and Bio-Labs add more in their range. It pays for research.
+- **Research:** the Research button by Start Wave. One project at a time (towers +HP, fire rate, range or damage, +Energy per wave, faster Orbital Strike, better sell refunds). It finishes after a few cleared waves and lasts the rest of the sector (the whole run in a Siege Run).
+- **Interest** (Endless and Siege Run): +5% of unspent Energy after each wave, up to 50.
+- **Insurance:** the Insure button (60 E, before a wave). Towers broken during the wave are rebuilt for free at the end and refund 25% of their value.
+- **Black market:** see the Siege Run additions.
+
+**Quality of life:** Backspace undoes the last tower placed this build phase (full refund);
+Settings > Controls rebinds every key; a controller works (left stick moves, A wave, B
+grenade, X repair, Y mech, RB dash, LB tab, RT Orbital Strike); Settings > Colorblind mode
+swaps the good/bad and elite colors for a colorblind-safe palette; the main menu's TUTORIAL
+button starts a guided Sector 1.
+
+**Juice:** alien splats that fade over 20 s, debris and smoke from broken towers, slow
+motion and a white flash when a boss dies, a pulsing red edge when the Core is under 20%,
+radio callouts from Vance (new alien types, bosses, lost towers, low Core), and adaptive
+music: without a `music.ogg`, a synthesized track plays whose bass and drums come in as
+the threat rises.
+
+**Siege Run additions** (`data/run.json`):
+
+- **New nodes:** Rest (repair 40% of the Core, or train an augment so it stacks twice), Forge (merge two augments into an Epic/Legendary one), Gamble (blind relic for 40 Scrap with a 25% curse chance, or a Rare+ relic for 80), and Mini-boss (an elite fight capped by a Swarm Queenlet; relic + draft).
+- **Relic sets:** Cryo Doctrine, Siege Protocol and Storm Network. Own all 3 pieces of a set for a bonus. Progress shows on the run map.
+- **Boss relics:** after each boss, choose one of 3 powerful relics with a catch (e.g. Shattered Crown: +30% fire rate, Core max HP -30%).
+- **Alien factions:** each run rolls Hive, Machine or Void, which shifts the alien mix of every fight.
+- **Run-wide events:** each act can roll an event like Solar Flare (towers +20% damage, Vance takes double damage).
+- **Hero decks:** every Commander and hero starts with their own tower cards (Ignis: Flamer + Tar Pit, Rime: Cryo + Chrono Spire...).
+- **Supply Cache:** the debt merchant (+100 Scrap now, repay 150 after 2 nodes or lose 25 Core HP) and the black market (sells one of your relics for Scrap).
+- **Seeds:** the run seed is shown on the map; SEED RUN on the main menu starts a run from a typed seed.
+
+**Map mechanics** (`systems/map_features.py`):
+
+- **Terrain:** high ground / rooftops (H tiles: +20% tower range), resource nodes (R: Harvesters there earn double), crystals (K: beam towers next to one hit 25% harder).
+- **Gates and switches:** walk Vance onto a switch to close (or open) its gate and reroute the aliens. A gate that is the only way through won't close.
+- **Teleporters:** pads that jump aliens ahead along the path; Vance can use them too.
+- **Endless and Siege Run only** (the campaign plays as before):
+  - **Overheat** on hot sectors (Magma Forge, Desert Outpost) and in the new **Heatwave** weather: towers heat up while firing (faster near vents) and shut down for 3 s at max heat. Cryo coverage, ice and neighboring rocks cool them. A heat bar shows under each tower.
+  - **Destructible rocks:** splash damage (mortar shells, missiles, grenades, meteors) breaks rocks into new build space.
+  - **Day/night:** an 80 s day and 40 s night. At night the map darkens except around towers, Vance and the Core, tower range drops 10%, and Cloakers move faster.
+  - **Map events** (some waves from wave 4): supply drop, meteor shower (damages everything, leaves crystals), earthquake (moves rocks, stuns aliens, shakes towers), wildlife (critters that bite anyone nearby) and rising tide (tiles beside the path flood and shut down towers on them until the wave ends).
+
+**New sectors** (campaign, Endless and Siege Run):
+
+| Sector | Mechanic | Boss |
+|---|---|---|
+| 9 · Jungle | Vines overgrow a tower every 14 s (half fire rate) until Vance walks up to it; resource nodes | Hive Mind |
+| 10 · Crystal Caves | Crystals boost beam towers; two teleporter pairs | Acid Leviathan |
+| 11 · Ruined City | Rooftops (high ground) and a gate on the shortcut through the city | Fallen Commander |
+| 12 · Gas Giant Station | Low gravity: mortar, missile, flak and acid get +25% range and splash; Vance slides; two lanes | Mothership |
+
+**Game modes** (main menu > MODES, `systems/modes.py`):
+
+| Mode | Rules |
+|---|---|
+| Boss Rush | All 10 bosses back to back with escorts, 800 Energy to start |
+| Last Stand | Endless with no towers: just Vance, her grenades, the mech suit and Core upgrades |
+| Weekly Challenge | Endless on the week's map with two odd rules (Tesla Only, Double Time, No Repairs, Inflation, Glass Core, Elite Storm, Trust Fund). Same for everyone that week |
+| Sandbox | Unlimited Energy, waves only start when you press Space, Y opens a menu to spawn any alien |
+| Puzzles | Choke Point, Air Defense, Armored Column: a fixed tower set, fixed Energy, a 1 HP Core, no Energy from kills |
+| Hardcore (toggle) | Vance going down ends the game |
+| Ascension (toggle) | Siege Run difficulty levels 1-6 (alien HP, Core HP, prices, elites, speed, fewer draft choices). Each win unlocks the next |
+| Reverse | You are the hive (`systems/reverse.py`, `data/reverse.json`). Earn Biomass every second (and more for Core damage), send packs of aliens from the card bar (1-0, -, = or click), buy Growth (G, more income) and Evolve (V, more alien HP). An AI builds and upgrades towers, and answers flyers with anti-air. Break its Core within 6 minutes. Difficulty sets the AI's income |
+| Local co-op (toggle) | A second Commander joins on the same screen with shared Energy and towers. Player 1: WASD + E. Player 2: arrow keys, Right Ctrl / Numpad 0 to repair, Right Shift / Numpad Enter to dash, or a controller. Player 2 has no grenades, mech or weapon pickups. In Hardcore the game ends when both are down |
+| Story campaign (toggle, on by default) | Briefings before every campaign sector, radio chatter during it, a debrief after a win, a new final **Sector 13: The Hive Heart** (12 waves, Hive Queen at wave 6, the Architect at wave 12) and an ending. Esc skips a scene; Retry skips the briefing |
+
+**Meta progression** (`systems/meta.py`, `data/meta.json`, saved in `save.json`):
+
+- **Codex** (main menu > CODEX): Aliens (each entry unlocks on your first kill), Towers (with mastery), Profile stats, local Scores (top 10 per mode) and Achievements.
+- **19 achievements**; five of them unlock Commander skins (Crimson, Gold, Shadow, Arctic, Royal), picked in Settings.
+- **Tower mastery:** tower kills across every game. 100 / 500 / 2,000 kills give +3% / +6% / +10% damage, and level 3 unlocks that tower's tier-4 branches in Endless too.
+- **Unlock progression:** Settings > "Unlock all sectors" (on by default). Turn it off to open sectors one by one by beating them.
+
+**Wild ideas** (`systems/wild.py`):
+
+- **Tame a pet (H):** walk Vance up to a non-boss ground alien under 35% HP and press H. It follows her and bites nearby aliens for the rest of the sector (the whole run in a Siege Run).
+- **Brood Turret** (Control tab, alien tower): hatches tame Skitters that run back down the path biting aliens. Branches: Brute Hatchery, Swarm Nest.
+- **Living Core** (Endless and Siege Run): aliens killed near the Core feed it. At 40 and 120 it evolves down the path of what it ate most: Carapace (less Core damage), Spore Launcher (shoots flyers) or Regrowth (heals after each wave).
+- **Tower sacrifice (Delete):** destroys the selected tower for an Orbital Strike on its spot, stronger the more you'd spent on it. Its chips come back.
+- **Map editor** (Play > Map Editor card): paint a 40x20 sector with 10 tile types and 10 themes, SAVE it to `mods/levels/`, PLAY it in Endless.
+- **Mods folder:** a `mods/<name>.json` file is merged over `data/<name>.json` at startup, so a mod only lists what it changes (see `mods/README.txt`).
 
 ## Still to build
 
 | Feature | Where |
 |---|---|
 | Playtesting and balance for all new content | Numbers live in `data/*.json` |
-| Unlock progression | Turned off for the demo; one line in `scenes/level_select.py` restores it |
+| Standalone EXE | Run `Build Standalone EXE.bat` again to include Phase 5 |
+| Deferred ideas | itch.io release |
 | Music | Drop `assets/sounds/music.ogg` in |
 
 The grading write-up (items developed) is in `readme.txt`.
@@ -274,14 +469,19 @@ main.py                     entry point
 data/towers.json            tower stats per tier
 data/enemies.json           enemy stats
 data/items.json             loot table
-data/levels/sector1-3.json  tile maps (40x20), waves, lanes, hive-wall events
+data/levels/sector1-13.json tile maps (40x20), waves, lanes, hive-wall events
+data/story.json             Story campaign script (briefings, radio, debriefs, ending)
+data/reverse.json           Reverse mode alien cards and AI settings
+data/meta.json, puzzles.json  achievements, skins, mastery / puzzle setups
+mods/                       JSON overrides merged over data/ and Map Editor levels
 assets/sprites, assets/sounds   optional real art/sound (overrides placeholders)
 game/
   settings.py               constants, palette, difficulty multipliers
   game_manager.py           window, fixed-timestep loop, save data
   core/                     EventBus, StateMachine, Timer, Health, PathFollower,
                             A*, SpatialHash, ObjectPool (no pygame, unit-testable)
-  scenes/                   SceneManager + Menu, LevelSelect, Play, Pause, Win/Lose
+  scenes/                   SceneManager + Menu, LevelSelect, Play, Pause, Win/Lose,
+                            Story, Modes / Codex / Map Editor (extra_scenes.py), Siege Run screens
   systems/                  Input, Level, Wave, Asset, Player, Tower, Enemy,
                             Projectile, Collision, Effects, UI, Audio
   entities/                 Commander, Tower, Enemy (+ subclasses), Projectile, Item

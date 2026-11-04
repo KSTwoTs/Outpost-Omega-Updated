@@ -1,0 +1,27 @@
+{
+  "_comment": "Commander Vance's Phase 5 kit (systems/commander_kit.py). Keys: R dash, V grenade, B cycle grenade, Z mech suit.",
+  "dash": {"speed": 520, "time": 0.18, "invuln": 0.3, "cooldown": 3.0},
+  "grenade_range": 220,
+  "start_grenades": {"frag": 2},
+  "grenades": {
+    "frag": {"name": "Frag", "radius": 70, "damage": 60},
+    "cryo": {"name": "Cryo", "radius": 90, "damage": 15, "slow": 0.6, "slow_time": 3.0},
+    "emp":  {"name": "EMP Cleanse", "radius": 100, "stun": 1.2}
+  },
+  "weapons": {
+    "shotgun":      {"name": "Shotgun",         "duration": 40, "range": 120, "rate": 1.6, "damage": 7, "pellets": 6, "spread": 0.12},
+    "sniper":       {"name": "Sniper Rifle",    "duration": 40, "range": 330, "rate": 0.9, "damage": 45},
+    "flamethrower": {"name": "Flamethrower",    "duration": 30, "range": 95,  "rate": 10, "damage": 3, "burn_dps": 8},
+    "rocket":       {"name": "Rocket Launcher", "duration": 30, "range": 240, "rate": 0.8, "damage": 40, "splash": 60}
+  },
+  "mech": {"charge": 60, "duration": 15, "damage_taken": 0.2, "speed_mult": 0.8, "blaster_mult": 4.0,
+           "stomp_radius": 70, "stomp_damage": 40},
+  "crate": {"carry_speed": 0.8, "deliver_range": 40, "boost_time": 15},
+  "drone": {"range": 150, "rate": 1.2, "rate_per_level": 0.1, "damage": 3, "damage_per_level": 1},
+  "gear_drop_elite": 0.15,
+  "gear": {
+    "helmet": {"per_tier": 0.10, "desc": "+{}% blaster range", "names": ["Scout Visor", "Tactical Helm", "Command Helm"]},
+    "armor":  {"per_tier": 0.10, "desc": "-{}% damage taken",  "names": ["Flak Vest", "Combat Plate", "Aegis Armor"]},
+    "boots":  {"per_tier": 0.08, "desc": "+{}% speed",         "names": ["Trail Boots", "Sprint Greaves", "Jump Boots"], "dash_cut": 0.4}
+  }
+}

@@ -20,6 +20,10 @@ ITEM_COLORS = {
     "repair_kit": S.GREEN,
     "overcharge": S.ORANGE,
     "shield_battery": S.CYAN,
+    "chip": S.GREEN,
+    "weapon": S.ORANGE,
+    "grenade": S.RED,
+    "gear": S.ENERGY,
 }
 
 
@@ -86,10 +90,16 @@ class ItemManager:
             self.events.publish("item_expired", item=item)
         self.items = []
 
+    subtypes = {}   # kind -> list of variants (chip / weapon / grenade / gear); PlayScene fills it
+
     def drop(self, kind, x, y):
         x = max(12, min(S.MAP_W - 12, x))
         y = max(12, min(S.MAP_H - 12, y))
-        self.items.append(Item(kind, self.data["items"][kind], x, y))
+        item = Item(kind, self.data["items"][kind], x, y)
+        if kind in self.subtypes:
+            item.sub = random.choice(self.subtypes[kind])
+        self.items.append(item)
+        return item
 
     def collect(self, item):
         if not item.remove:
@@ -103,15 +113,16 @@ class ItemManager:
                 return True
         return False
 
-    def on_update(self, dt, commander, waves=None):
+    def on_update(self, dt, commander, waves=None, partner=None):
         warn = (waves is not None and waves.phase == "build"
                 and waves.countdown <= S.ITEM_WARN_TIME)
         for item in self.items:
             item.expiring = warn
             item.update(dt)
-            if commander.alive and circles_overlap(commander.pos.x, commander.pos.y, commander.radius,
-                                                   item.x, item.y, S.ITEM_RADIUS):
-                self.collect(item)
+            for c in (commander, partner):
+                if c is not None and c.alive and not item.remove and circles_overlap(
+                        c.pos.x, c.pos.y, c.radius, item.x, item.y, S.ITEM_RADIUS):
+                    self.collect(item)
         self.items = [i for i in self.items if not i.remove]
 
     def on_render(self, screen, offset):

@@ -34,9 +34,22 @@ class EffectsSystem:
         self.flash_time = 0.0
         self.flash_max = 0.0
         self.enabled_numbers = True
+        self.shake_mult = 1.0      # Settings: screen shake
+        self.particle_mult = 1.0   # Settings: particle intensity
+
+    SHAKE_LEVELS = (0.0, 0.5, 1.0)
+    PARTICLE_LEVELS = (0.35, 0.7, 1.0)
+
+    def configure(self, settings):
+        """Apply the player's Settings (see GameManager.DEFAULT_SETTINGS)."""
+        self.shake_mult = self.SHAKE_LEVELS[settings.get("shake", 2)]
+        self.particle_mult = self.PARTICLE_LEVELS[settings.get("particles", 2)]
+        self.enabled_numbers = bool(settings.get("numbers", True))
 
     # ---- emitters ---------------------------------------------------------------
     def burst(self, x, y, color, count, speed, life, size, drag=3.0, gravity=0.0):
+        if self.particle_mult < 1.0 and count > 0:
+            count = max(1, int(round(count * self.particle_mult)))
         for _ in range(count):
             a = random.uniform(0, math.tau)
             s = random.uniform(0.3, 1.0) * speed
@@ -93,7 +106,7 @@ class EffectsSystem:
         self.beams.append([x1, y1, x2, y2, color, life, life])
 
     def shake(self, amount):
-        self.trauma = min(1.0, self.trauma + amount)
+        self.trauma = min(1.0, self.trauma + amount * self.shake_mult)
 
     def flash(self, color, duration=0.2):
         self.flash_color, self.flash_time, self.flash_max = color, duration, duration

@@ -17,9 +17,14 @@ NODE_STYLE = {
     "cache": ("SUPPLY CACHE", S.ENERGY, "$", "Spend Scrap on towers, augments, relics, repairs"),
     "event": ("EVENT", S.CYAN, "?", "Something unexpected"),
     "boss": ("BOSS", S.MAGENTA, "B", "{waves} waves and a boss. Ends the act"),
+    "rest": ("REST", S.GREEN, "R", "Repair the Core or train one augment"),
+    "forge": ("FORGE", S.ORANGE, "F", "Merge two augments into a stronger one"),
+    "gamble": ("GAMBLE", (200, 110, 240), "%", "Spend Scrap on a blind relic"),
+    "miniboss": ("MINI-BOSS", S.RED, "M", "{waves} waves capped by a Swarm Queenlet. Relic + draft"),
 }
 KIND_STYLE = {"augment": ("AUGMENT", S.CYAN), "tower": ("TOWER", S.ALIEN_GREEN),
-              "relic": ("RELIC", S.ENERGY), "repair": ("REPAIR", S.GREEN)}
+              "relic": ("RELIC", S.ENERGY), "repair": ("REPAIR", S.GREEN),
+              "loan": ("DEBT MERCHANT", S.ORANGE), "sell_relic": ("BLACK MARKET", (200, 110, 240))}
 
 
 # ---- drawing helpers -------------------------------------------------------------
@@ -68,6 +73,13 @@ def card_style(run, kind, oid):
     if kind == "repair":
         hp = run.cfg["shop"]["repair_hp"]
         return "Core Repair", f"Heal the Core {hp} HP", label, color
+    if kind == "loan":
+        d = run.cfg["debt"]
+        return "Take a Loan", f"+{d['loan']} Scrap now. Repay {d['repay']} after {d['nodes']} nodes or lose Core HP", \
+            label, color
+    if kind == "sell_relic":
+        rel = run.cfg["relics"][oid]
+        return f"Sell {rel['name']}", f"The black market pays Scrap for it. ({rel['desc']})", label, color
     name, desc, cursed = run.describe(kind, oid)
     if cursed:
         label, color = "CURSED RELIC", S.RED
@@ -161,9 +173,15 @@ class RunMapScene(_RunScene):
 
     def on_start(self):
         self.game.save_run()   # resume from here if the game is closed
+        self.notes = [[m, 5.0] for m in (self.run.messages if self.run else [])]
+        if self.run:
+            self.run.messages.clear()
 
     def on_update(self, dt):
         super().on_update(dt)
+        for n in getattr(self, "notes", []):
+            n[1] -= dt
+        self.notes = [n for n in getattr(self, "notes", []) if n[1] > 0]
         if self.run is None or self.run.over:
             self.game.scenes.change("run_end" if self.run else "menu")
 
@@ -197,7 +215,7 @@ class RunMapScene(_RunScene):
             if node and node in self.run.available_nodes():
                 self.audio.play("click")
                 kind = self.run.enter(node)
-                if kind in ("combat", "elite", "boss"):
+                if kind in ("combat", "elite", "boss", "miniboss"):
                     self.game.scenes.change("play", level_id=node["sector"],
                                             difficulty=self.game.difficulty, mode="run")
                 elif kind == "cache":
@@ -252,17 +270,42 @@ class RunMapScene(_RunScene):
             t = a.text(f"FLOOR {f + 1}" if f < len(run.map) - 1 else "BOSS", 16, S.TEXT_DIM, True)
             screen.blit(t, t.get_rect(center=(int(x), 92)))
         hint = "Pick a glowing node to continue" if avail else ""
-        h = a.text(hint, 20, S.TEXT_DIM)
-        screen.blit(h, h.get_rect(center=(S.SCREEN_W // 2, 540)))
+        h = a.text(hint, 18, S.TEXT_DIM)
+        screen.blit(h, h.get_rect(center=(S.SCREEN_W // 2, 530)))
+        bits = []
+        fac = run.cfg.get("factions", {}).get(getattr(run, "faction", None))
+        if fac:
+            bits.append((f"Faction: {fac['name']} ({fac['desc']})", tuple(fac["color"])))
+        ev = run.cfg.get("act_events", {}).get(getattr(run, "act_event", None))
+        if ev:
+            bits.append((f"Act event: {ev['name']}: {ev['desc']}", S.ORANGE))
+        if getattr(run, "debt", None):
+            bits.append((f"Debt: {run.debt[0]} Scrap due in {run.debt[1]} node(s)", S.RED))
+        for sid, n in run.set_counts().items():
+            st = run.cfg["relic_sets"][sid]
+            bits.append((f"{st['name']} {min(n, st['pieces'])}/{st['pieces']}", S.ENERGY if n >= st["pieces"] else S.TEXT_DIM))
+        bits.append((f"Seed {run.seed}", S.TEXT_DIM))
+        x = 24
+        for text, col in bits:
+            s = a.text(text, 15, col, True)
+            if x + s.get_width() > S.SCREEN_W - 20:
+                break
+            screen.blit(s, (x, 544))
+            x += s.get_width() + 22
+        for i, note in enumerate(getattr(self, "notes", [])):
+            s = a.text(note[0], 24, S.ENERGY, True)
+            screen.blit(s, s.get_rect(center=(S.SCREEN_W // 2, 300 + i * 34)))
         self.render_loadout(screen, mouse)
         if hovered:
             label, color, _l, desc = NODE_STYLE[hovered["type"]]
             waves = run.waves_for(hovered["type"])
             lines = [label, desc.format(waves=waves)]
-            if hovered["type"] in ("combat", "elite", "boss"):
+            if hovered["type"] in ("combat", "elite", "boss", "miniboss"):
                 names = {"sector1": "Desert Outpost", "sector2": "Frozen Relay Station",
                          "sector3": "Hive Crash Site", "sector4": "Magma Forge", "sector5": "Open Plains",
-                         "sector6": "Orbital Platform", "sector7": "Derelict Ship", "sector8": "Twin Cores"}
+                         "sector6": "Orbital Platform", "sector7": "Derelict Ship", "sector8": "Twin Cores",
+                         "sector9": "Jungle", "sector10": "Crystal Caves", "sector11": "Ruined City",
+                         "sector12": "Gas Giant Station"}
                 sid = hovered["sector"]
                 lines.append("Map: " + ("Uncharted (generated)" if sid.startswith("proc_") else names.get(sid, sid)))
                 lines.append(f"Starts at threat level {run.wave_start(hovered)}")
@@ -330,7 +373,12 @@ class RunRewardScene(_RunScene):
         source = self.reward.get("node", "combat")
         while self.steps and not self.options:
             step = self.steps.pop(0)
-            if step == "draft":
+            if step == "boss_relic":
+                self.options = self.run.boss_relic_options()
+                self.title = "CHOOSE A BOSS RELIC (powerful, with a catch)"
+                self.btn_skip.label = "SKIP"
+                self.skip_scrap = 0
+            elif step == "draft":
                 self.options = self.run.draft_options(source)
                 self.title = "CHOOSE AN UPGRADE"
                 self.btn_skip.label = f"SKIP (+{self.run.cfg.get('skip_scrap', 10)} Scrap)"
@@ -447,10 +495,10 @@ class ShopScene(_RunScene):
 
     def card_rects(self):
         n = len(self.run.shop)
-        total = n * self.CARD_W + (n - 1) * self.GAP
+        w = min(self.CARD_W, (S.SCREEN_W - 40 - (n - 1) * self.GAP) // max(1, n))
+        total = n * w + (n - 1) * self.GAP
         x0 = S.SCREEN_W // 2 - total // 2
-        return [pygame.Rect(x0 + i * (self.CARD_W + self.GAP), 210, self.CARD_W, self.CARD_H)
-                for i in range(n)]
+        return [pygame.Rect(x0 + i * (w + self.GAP), 210, w, self.CARD_H) for i in range(n)]
 
     def handle_command(self, cmd):
         if cmd.name != "click" or self.run is None:
@@ -481,6 +529,10 @@ class ShopScene(_RunScene):
                 footer = ("SOLD", S.TEXT_DIM)
             else:
                 footer = (f"{offer['price']} Scrap", S.ENERGY if afford else S.RED)
+                if offer["kind"] == "loan":
+                    footer = ("Take it", S.ORANGE)
+                elif offer["kind"] == "sell_relic":
+                    footer = (f"+{offer['value']} Scrap", (200, 110, 240))
             draw_card(screen, a, rect, run, offer["kind"], offer["id"],
                       hover=rect.collidepoint(mouse) and afford and not offer["sold"],
                       dim=offer["sold"], footer=footer)
@@ -491,8 +543,13 @@ class ShopScene(_RunScene):
 class EventScene(_RunScene):
     def __init__(self, game, **kwargs):
         super().__init__(game, **kwargs)
-        self.event_id = self.run.pick_event() if self.run else None
-        self.event = self.run.cfg["events"][self.event_id] if self.run else None
+        node_type = (self.run.node or {}).get("type") if self.run else None
+        special = self.run.special_event(node_type) if self.run and node_type in ("rest", "forge", "gamble") else None
+        if special:
+            self.event_id, self.event = node_type, special
+        else:
+            self.event_id = self.run.pick_event() if self.run else None
+            self.event = self.run.cfg["events"][self.event_id] if self.run else None
         self.result = None
         cx = S.SCREEN_W // 2
         self.buttons = []

@@ -903,9 +903,655 @@ def _sonic(s, v):
         _c(s, S.WHITE, (14, 20), 2)
 
 
+
+# ---- Phase 5 towers ------------------------------------------------------------------------
+CHRONO = (170, 130, 255)          # Chrono Spire violet
+OLIVE = (96, 110, 70)
+TAR = (34, 26, 22)
+
+
+def _flak(s, v):
+    def barrels(ys, length, col=S.STEEL_LIGHT, w=4):
+        for y in ys:
+            _r(s, K, (18, y - w // 2 - 1, length + 2, w + 2))
+            _r(s, col, (19, y - w // 2, length, w))
+            _r(s, K, (18 + length - 1, y - w // 2 - 2, 4, w + 4))     # muzzle brake
+    if v == "t0":
+        barrels((16, 24), 18)
+        _hub(s, (15, 20), 9, OLIVE, None, S.STEEL_DARK, 4)
+        _c(s, S.ORANGE, (15, 20), 2)
+    elif v == "t1":
+        barrels((13, 20, 27), 18)
+        _hub(s, (14, 20), 10, OLIVE, S.CYAN, S.STEEL_DARK, 4)
+        _c(s, S.ORANGE, (14, 20), 2)
+    elif v == "t2":
+        barrels((12, 17, 23, 28), 19, w=3)
+        _r(s, K, (1, 12, 8, 16), 2)                      # ammo drum
+        _r(s, S.ENERGY, (2, 13, 6, 14), 2)
+        _hub(s, (15, 20), 10, OLIVE, S.ENERGY, S.STEEL_DARK, 5)
+        _c(s, S.ORANGE, (15, 20), 3)
+    elif v == "b0":   # Skyburst: one huge flared barrel
+        _p(s, K, [(16, 13), (36, 7), (40, 7), (40, 33), (36, 33), (16, 27)])
+        _p(s, S.STEEL_LIGHT, [(17, 14), (36, 9), (38, 9), (38, 31), (36, 31), (17, 26)])
+        _l(s, S.MAGENTA, (36, 9), (36, 31), 2)
+        _hub(s, C, 12, OLIVE, S.MAGENTA, S.STEEL_DARK, 5)
+        _p(s, S.ORANGE, _star(C, 5, 2, 5))
+    else:             # Hailstorm: rotary six-barrel
+        _r(s, K, (14, 10, 26, 20), 3)
+        _r(s, S.STEEL_DARK, (15, 11, 24, 18), 3)
+        for y in (13, 17, 21, 25):
+            _l(s, S.STEEL_LIGHT, (18, y + 1), (39, y + 1), 2)
+        _r(s, S.MAGENTA, (31, 10, 3, 20))
+        _hub(s, C, 10, OLIVE, S.MAGENTA, S.ORANGE, 4)
+
+
+def _ion(s, v):
+    def coil(x, h, col):
+        _r(s, K, (x - 1, 20 - h - 1, 5, h * 2 + 2), 2)
+        _r(s, col, (x, 20 - h, 3, h * 2), 2)
+    if v == "t0":
+        _r(s, K, (12, 16, 28, 8))
+        _r(s, S.STEEL, (13, 17, 26, 6))
+        for x in (20, 28):
+            coil(x, 6, S.CYAN)
+        _hub(s, C, 9, S.STEEL_DARK, None, S.CYAN, 4)
+    elif v == "t1":
+        _r(s, K, (12, 15, 28, 10))
+        _r(s, S.STEEL, (13, 16, 26, 8))
+        for x in (19, 25, 31):
+            coil(x, 7, S.CYAN)
+        _r(s, S.WHITE, (37, 18, 3, 4))
+        _hub(s, C, 10, S.STEEL_DARK, S.CYAN, S.CYAN, 5)
+    elif v == "t2":
+        _r(s, K, (10, 14, 30, 12), 2)
+        _r(s, S.STEEL, (11, 15, 28, 10), 2)
+        for x in (18, 24, 30):
+            coil(x, 9, S.ENERGY)
+        _r(s, S.CYAN, (36, 17, 4, 6))
+        _hub(s, (11, 20), 10, S.STEEL_DARK, S.ENERGY, S.CYAN, 6)
+        _c(s, S.WHITE, (11, 20), 2)
+    elif v == "b0":   # Orbital Lance: slim, long, ringed
+        _l(s, K, (8, 20), (40, 20), 6)
+        _l(s, S.STEEL_LIGHT, (8, 20), (39, 20), 3)
+        for x in (16, 24, 32):
+            _c(s, K, (x, 20), 6, 0)
+            _c(s, S.MAGENTA, (x, 20), 5, 2)
+        _hub(s, (10, 20), 7, S.STEEL_DARK, S.MAGENTA, S.CYAN, 3)
+    else:             # Planet Cracker: split twin barrel with a glowing core
+        for y in (11, 29):
+            _r(s, K, (12, y - 4, 28, 8), 2)
+            _r(s, S.STEEL, (13, y - 3, 26, 6), 2)
+        _p(s, S.MAGENTA, [(18, 14), (38, 18), (38, 22), (18, 26)])
+        _p(s, S.WHITE, [(20, 18), (38, 19), (38, 21), (20, 22)])
+        _hub(s, (12, 20), 11, S.STEEL_DARK, S.MAGENTA, S.CYAN, 6)
+        _c(s, S.WHITE, (12, 20), 3)
+
+
+def _shield(s, v):
+    orb = (110, 190, 255)
+    def emitter(c, r, trim):
+        _c(s, K, c, r + 1)
+        _c(s, orb, c, r)
+        _c(s, S.WHITE, (c[0] - r // 3, c[1] - r // 3), max(1, r // 3))
+        if trim:
+            _c(s, trim, c, r + 1, 1)
+    if v == "t0":
+        _p(s, K, _ngon(C, 14, 6))
+        _p(s, S.STEEL, _ngon(C, 12, 6))
+        emitter(C, 6, None)
+    elif v == "t1":
+        for deg in (90, 210, 330):
+            p = _polar(C, 14, deg)
+            _l(s, K, C, p, 4)
+            _c(s, K, p, 4)
+            _c(s, S.CYAN, p, 3)
+        _p(s, K, _ngon(C, 12, 6))
+        _p(s, S.STEEL, _ngon(C, 10, 6))
+        emitter(C, 6, S.CYAN)
+    elif v == "t2":
+        for deg in (45, 135, 225, 315):
+            p = _polar(C, 15, deg)
+            _l(s, K, C, p, 4)
+            _c(s, K, p, 4)
+            _c(s, S.ENERGY, p, 3)
+        _p(s, K, _ngon(C, 13, 6))
+        _p(s, S.STEEL, _ngon(C, 11, 6))
+        emitter(C, 7, S.ENERGY)
+    elif v == "b0":   # Aegis Dome: big segmented dome
+        _c(s, K, C, 18)
+        _c(s, (60, 110, 170), C, 17)
+        for r in (17, 11):
+            _p(s, orb, _ngon(C, r, 6), 1)
+        for deg in range(0, 360, 60):
+            _l(s, orb, C, _polar(C, 17, deg), 1)
+        _c(s, S.MAGENTA, C, 18, 2)
+        emitter(C, 5, None)
+    else:             # Rapid Recharge: orb wrapped in charging arcs
+        _p(s, K, _ngon(C, 13, 6))
+        _p(s, S.STEEL, _ngon(C, 11, 6))
+        for start in (0.3, 2.4, 4.5):
+            pygame.draw.arc(s, S.MAGENTA, (3, 3, 34, 34), start, start + 1.4, 3)
+        emitter(C, 7, None)
+        _r(s, S.GREEN, (18, 15, 4, 10))
+        _r(s, S.GREEN, (15, 18, 10, 4))
+
+
+def _tar(s, v):
+    def blob(r, col=TAR):
+        _p(s, K, _star(C, r + 2, r - 1, 7, 0.3))
+        _p(s, col, _star(C, r, r - 3, 7, 0.3))
+        _c(s, (70, 56, 46), (16, 15), 3)
+    def bubbles(col, n=3):
+        for i, p in enumerate(((14, 24), (25, 14), (26, 25))[:n]):
+            _c(s, col, p, 3 - (i % 2))
+            _c(s, S.WHITE, (p[0] - 1, p[1] - 1), 1)
+    if v == "t0":
+        blob(13)
+        bubbles((80, 64, 52), 2)
+    elif v == "t1":
+        blob(14)
+        _r(s, K, (17, 1, 6, 12), 2)            # feed pipe
+        _r(s, S.STEEL, (18, 2, 4, 10), 2)
+        bubbles(S.CYAN)
+    elif v == "t2":
+        blob(16)
+        _c(s, S.ENERGY, C, 17, 1)
+        _r(s, K, (17, 0, 6, 12), 2)
+        _r(s, S.ENERGY, (18, 1, 4, 10), 2)
+        bubbles((120, 96, 70))
+    elif v == "b0":   # Napalm Bog: tar shot through with flame
+        blob(16, (60, 26, 16))
+        _p(s, S.ORANGE, _star(C, 10, 4, 6))
+        _p(s, S.ENERGY, _star(C, 5, 2, 6))
+        _c(s, S.MAGENTA, C, 18, 1)
+    else:             # Deep Tar: a dark whirlpool
+        blob(17, (20, 14, 14))
+        for r, a in ((13, 0.0), (9, 1.6), (5, 3.2)):
+            pygame.draw.arc(s, (90, 70, 60), (20 - r, 20 - r, r * 2, r * 2), a, a + 3.6, 2)
+        _c(s, S.MAGENTA, C, 18, 1)
+        _c(s, VOID, C, 2)
+
+
+def _chrono(s, v):
+    def glass(c, h, frame, sand=S.ENERGY):
+        w = h * 2 // 3
+        top = [(c[0] - w, c[1] - h), (c[0] + w, c[1] - h), (c[0], c[1])]
+        bot = [(c[0] - w, c[1] + h), (c[0] + w, c[1] + h), (c[0], c[1])]
+        _p(s, K, [(x * 1.0, y) for x, y in top], 0)
+        _p(s, K, bot)
+        _p(s, (200, 220, 255), [(top[0][0] + 2, top[0][1] + 1), (top[1][0] - 2, top[1][1] + 1), (c[0], c[1] - 1)])
+        _p(s, (200, 220, 255), [(bot[0][0] + 2, bot[0][1] - 1), (bot[1][0] - 2, bot[1][1] - 1), (c[0], c[1] + 1)])
+        _p(s, sand, [(c[0] - w + 4, c[1] + h - 1), (c[0] + w - 4, c[1] + h - 1), (c[0], c[1] + 3)])
+        _l(s, frame, (c[0] - w - 1, c[1] - h - 1), (c[0] + w + 1, c[1] - h - 1), 2)
+        _l(s, frame, (c[0] - w - 1, c[1] + h + 1), (c[0] + w + 1, c[1] + h + 1), 2)
+    if v == "t0":
+        _c(s, K, C, 13)
+        _c(s, (60, 50, 100), C, 12)
+        glass(C, 8, S.STEEL_LIGHT)
+    elif v == "t1":
+        _c(s, K, C, 15)
+        _c(s, (60, 50, 100), C, 14)
+        _c(s, S.CYAN, C, 14, 1)
+        for deg in range(0, 360, 30):
+            _l(s, S.CYAN, _polar(C, 12, deg), _polar(C, 14, deg), 1)
+        glass(C, 9, S.CYAN)
+    elif v == "t2":
+        _p(s, K, _star(C, 19, 15, 12))
+        _p(s, (80, 64, 130), _star(C, 17, 14, 12))
+        _c(s, S.ENERGY, C, 15, 2)
+        glass(C, 10, S.ENERGY, CHRONO)
+    elif v == "b0":   # Time Loop: four glasses circling a ring
+        _c(s, K, C, 17, 3)
+        _c(s, CHRONO, C, 16, 2)
+        _c(s, S.MAGENTA, C, 19, 1)
+        for deg in (0, 90, 180, 270):
+            glass(_polar(C, 13, deg), 5, S.STEEL_LIGHT)
+        _c(s, S.WHITE, C, 2)
+    else:             # Stasis Lock: frozen crystal clock
+        _p(s, K, _ngon(C, 19, 4, math.pi / 4))
+        _p(s, (120, 200, 255), _ngon(C, 17, 4, math.pi / 4))
+        _p(s, S.MAGENTA, _ngon(C, 17, 4, math.pi / 4), 2)
+        _c(s, K, C, 9)
+        _c(s, S.WHITE, C, 8)
+        _l(s, K, C, (20, 14), 2)
+        _l(s, K, C, (25, 20), 2)
+        _c(s, CHRONO, C, 2)
+
+
+
+# ---- Phase 5 batch 2 ------------------------------------------------------------------------
+HACK = (90, 255, 140)             # Hacker Spire terminal green
+HOLO = (120, 230, 255)
+PLASMA = (255, 110, 220)
+
+
+def _decoy(s, v):
+    """A pad projecting a little hologram of Vance."""
+    def pad(r, trim):
+        _c(s, K, C, r + 1)
+        _c(s, S.STEEL_DARK, C, r)
+        _c(s, HOLO, C, r - 3, 1)
+        if trim:
+            _c(s, trim, C, r, 1)
+    def holo(scale=1.0, col=HOLO):
+        def r(x, y, w, h):
+            _r(s, col, (20 + x * scale, 20 + y * scale, max(2, w * scale), max(2, h * scale)))
+        _p(s, (70, 140, 170), [(20, 30), (12, 34), (28, 34)])               # projector cone
+        _c(s, col, (20, 20 - 9 * scale), max(2, int(3 * scale)))           # head
+        r(-4, -5, 8, 9)                                                     # torso
+        r(-7, -4, 2, 7)                                                     # arms
+        r(5, -4, 2, 7)
+        r(-4, 4, 3, 6)                                                      # legs
+        r(1, 4, 3, 6)
+        _l(s, S.WHITE, (20 - 3 * scale, 20 - 3 * scale), (20 + 2 * scale, 20 - 3 * scale), 1)
+    if v == "t0":
+        pad(12, None)
+        holo(1.0)
+    elif v == "t1":
+        pad(14, S.CYAN)
+        for deg in (45, 135, 225, 315):
+            _c(s, S.CYAN, _polar(C, 12, deg), 2)
+        holo(1.15)
+    elif v == "t2":
+        _p(s, K, _ngon(C, 18, 8, math.pi / 8))
+        _p(s, S.STEEL_DARK, _ngon(C, 16, 8, math.pi / 8))
+        _p(s, S.ENERGY, _ngon(C, 16, 8, math.pi / 8), 2)
+        holo(1.3)
+    elif v == "b0":   # Mirage Field: three overlapping holograms
+        pad(17, S.MAGENTA)
+        for dx in (-6, 6):
+            _c(s, (60, 120, 150), (20 + dx, 15), 3)
+            _r(s, (60, 120, 150), (17 + dx, 18, 6, 9))
+        holo(1.2)
+    else:             # Booby Trap: hologram over a charge
+        pad(17, S.MAGENTA)
+        for deg in range(0, 360, 60):
+            _r(s, S.RED, (*_polar(C, 13, deg), 3, 3))
+        holo(1.1, (255, 170, 170))
+        _c(s, S.RED, (20, 31), 2)
+
+
+def _fence(s, v):
+    """A pylon with a plasma emitter on top."""
+    def pylon(r, trim, core=PLASMA):
+        _p(s, K, _ngon(C, r + 2, 4, math.pi / 4))
+        _p(s, S.STEEL, _ngon(C, r, 4, math.pi / 4))
+        if trim:
+            _p(s, trim, _ngon(C, r, 4, math.pi / 4), 2)
+        _c(s, K, C, 6)
+        _c(s, core, C, 5)
+        _c(s, S.WHITE, C, 2)
+    if v == "t0":
+        pylon(11, None)
+    elif v == "t1":
+        for deg in (0, 90, 180, 270):
+            _l(s, K, C, _polar(C, 17, deg), 4)
+            _c(s, PLASMA, _polar(C, 16, deg), 2)
+        pylon(12, S.CYAN)
+    elif v == "t2":
+        for deg in (0, 90, 180, 270):
+            _l(s, K, C, _polar(C, 18, deg), 5)
+            _l(s, S.ENERGY, C, _polar(C, 17, deg), 2)
+        pylon(13, S.ENERGY)
+    elif v == "b0":   # Arc Wall: tall coil
+        _c(s, K, C, 17)
+        _c(s, S.STEEL_DARK, C, 16)
+        for r in (14, 10):
+            _c(s, PLASMA, C, r, 2)
+        _c(s, S.MAGENTA, C, 17, 1)
+        _c(s, S.WHITE, C, 4)
+    else:             # Overload Grid: node with many emitters
+        _p(s, K, _ngon(C, 18, 6))
+        _p(s, S.STEEL, _ngon(C, 16, 6))
+        _p(s, S.MAGENTA, _ngon(C, 16, 6), 2)
+        for deg in range(0, 360, 60):
+            _c(s, PLASMA, _polar(C, 11, deg), 3)
+        _c(s, S.WHITE, C, 4)
+
+
+def _mirror(s, v):
+    """A tilting mirror panel; it turns toward whatever it's bouncing beams at."""
+    glass = (190, 230, 255)
+    def panel(w, h, trim, x=18):
+        _r(s, K, (x - 1, 20 - h - 1, w + 2, h * 2 + 2), 2)
+        _r(s, glass, (x, 20 - h, w, h * 2), 2)
+        _l(s, S.WHITE, (x + 1, 20 - h + 2), (x + 1, 20 + h - 6), 1)
+        if trim:
+            _r(s, trim, (x - 1, 20 - h - 1, w + 2, h * 2 + 2), 2, 1)
+    if v == "t0":
+        _hub(s, (14, 20), 8, S.STEEL, None, None)
+        panel(5, 11, None, 22)
+    elif v == "t1":
+        _hub(s, (13, 20), 9, S.STEEL, S.CYAN, None)
+        panel(5, 13, S.CYAN, 22)
+    elif v == "t2":
+        _hub(s, (12, 20), 10, S.STEEL, S.ENERGY, None)
+        panel(6, 15, S.ENERGY, 22)
+        _c(s, S.ENERGY, (12, 20), 3)
+    elif v == "b0":   # Prism Splitter: triangular prism
+        _hub(s, (11, 20), 8, S.STEEL, S.MAGENTA, None)
+        tri = [(18, 6), (18, 34), (36, 20)]
+        _p(s, K, [(16, 4), (16, 36), (38, 20)])
+        _p(s, glass, tri)
+        for col, dy in ((S.RED, -5), (S.ENERGY, 0), (S.CYAN, 5)):
+            _l(s, col, (24, 20), (36, 20 + dy), 1)
+        _p(s, S.MAGENTA, tri, 1)
+    else:             # Focusing Lens: big convex lens
+        _hub(s, (11, 20), 8, S.STEEL, S.MAGENTA, None)
+        _r(s, K, (20, 3, 12, 34), 6)
+        _r(s, glass, (21, 4, 10, 32), 5)
+        _r(s, S.MAGENTA, (20, 3, 12, 34), 6, 1)
+        _l(s, S.WHITE, (24, 8), (24, 30), 1)
+
+
+def _hacker(s, v):
+    """A terminal mast with a signal dish."""
+    def screen(x, y, w, h, trim):
+        _r(s, K, (x - 1, y - 1, w + 2, h + 2), 2)
+        _r(s, (10, 30, 16), (x, y, w, h), 2)
+        for i in range(1, h // 3):
+            _l(s, HACK, (x + 2, y + i * 3), (x + 2 + (i * 5) % (w - 3), y + i * 3), 1)
+        if trim:
+            _r(s, trim, (x - 1, y - 1, w + 2, h + 2), 2, 1)
+    def dish(r, col=S.STEEL_LIGHT):
+        cx = 38 - r
+        pygame.draw.arc(s, K, (cx - r, 20 - r, r * 2, r * 2), -1.3, 1.3, 4)
+        pygame.draw.arc(s, col, (cx - r, 20 - r, r * 2, r * 2), -1.3, 1.3, 2)
+        _l(s, K, (22, 20), (cx + r - 2, 20), 2)
+        _c(s, HACK, (cx + r - 2, 20), 2)
+    if v == "t0":
+        screen(6, 12, 14, 16, None)
+        dish(8)
+    elif v == "t1":
+        screen(5, 10, 15, 20, S.CYAN)
+        dish(10)
+    elif v == "t2":
+        screen(4, 8, 16, 24, S.ENERGY)
+        dish(12, S.ENERGY)
+    elif v == "b0":   # Virus: skull glyph on the screen
+        screen(4, 8, 18, 24, S.MAGENTA)
+        _c(s, HACK, (13, 18), 5)
+        _c(s, K, (11, 17), 1)
+        _c(s, K, (15, 17), 1)
+        _r(s, HACK, (10, 22, 7, 3))
+        dish(11, S.MAGENTA)
+    else:             # Botnet: three linked nodes
+        for p in ((10, 9), (10, 31), (28, 20)):
+            _c(s, K, p, 6)
+            _c(s, (10, 30, 16), p, 5)
+            _c(s, HACK, p, 2)
+        for a, b in (((10, 9), (10, 31)), ((10, 9), (28, 20)), ((10, 31), (28, 20))):
+            _l(s, S.MAGENTA, a, b, 1)
+        _c(s, S.MAGENTA, (28, 20), 7, 1)
+
+
+def _magnet(s, v):
+    """A horseshoe magnet over a coil (spins slowly)."""
+    def horseshoe(r, w, tip=S.STEEL_LIGHT, body=S.RED):
+        rect = (20 - r, 20 - r, r * 2, r * 2)
+        pygame.draw.arc(s, K, rect, math.pi * 0.15, math.pi * 1.85, w + 2)
+        pygame.draw.arc(s, body, rect, math.pi * 0.2, math.pi * 1.8, w)
+        for deg in (-30, 30):
+            p = _polar(C, r - w // 2, deg)
+            _r(s, K, (p[0] - 3, p[1] - 3, 7, 7))
+            _r(s, tip, (p[0] - 2, p[1] - 2, 5, 5))
+    if v == "t0":
+        horseshoe(12, 5)
+        _c(s, S.STEEL_DARK, C, 4)
+    elif v == "t1":
+        horseshoe(14, 5)
+        _c(s, S.CYAN, C, 5, 1)
+        _c(s, S.STEEL_DARK, C, 4)
+    elif v == "t2":
+        horseshoe(16, 6, S.ENERGY)
+        for r in (5, 8):
+            _c(s, S.ENERGY, C, r, 1)
+    elif v == "b0":   # Demagnetizer: broken field lines
+        horseshoe(16, 6, S.STEEL_LIGHT, (150, 60, 180))
+        for deg in range(0, 360, 45):
+            _l(s, S.MAGENTA, _polar(C, 4, deg), _polar(C, 8, deg), 1)
+    else:             # Maglock: double magnet
+        horseshoe(17, 4)
+        horseshoe(10, 4, S.STEEL_LIGHT, S.MAGENTA)
+
+
+
+# ---- Phase 5 batch 3 ------------------------------------------------------------------------
+BIO = (140, 230, 90)
+FLESH = (196, 110, 120)
+
+
+def _lightning(s, v):
+    """A conductor spire seen from above: rings around a glowing tip."""
+    def spire(r, ring, tip=S.ENERGY, n=3):
+        _c(s, K, C, r + 1)
+        _c(s, S.STEEL_DARK, C, r)
+        for i in range(n):
+            _c(s, ring, C, r - 3 - i * 3, 1)
+        _c(s, K, C, 4)
+        _c(s, tip, C, 3)
+        _c(s, S.WHITE, C, 1)
+    if v == "t0":
+        spire(11, S.STEEL_LIGHT, n=2)
+    elif v == "t1":
+        for deg in (45, 225):
+            _l(s, K, C, _polar(C, 18, deg), 3)
+            _c(s, S.CYAN, _polar(C, 17, deg), 2)
+        spire(13, S.CYAN)
+    elif v == "t2":
+        for deg in (0, 90, 180, 270):
+            _l(s, K, C, _polar(C, 18, deg), 3)
+            _c(s, S.ENERGY, _polar(C, 17, deg), 3)
+        spire(14, S.ENERGY)
+    elif v == "b0":   # Storm Caller: cloud swirl around the tip
+        for deg in range(0, 360, 60):
+            _c(s, (150, 160, 190), _polar(C, 12, deg), 6)
+        for deg in range(30, 390, 60):
+            _c(s, (110, 120, 150), _polar(C, 13, deg), 4)
+        _c(s, S.MAGENTA, C, 18, 1)
+        _p(s, S.ENERGY, [(21, 10), (16, 21), (20, 21), (18, 30), (25, 18), (21, 18), (23, 10)])
+    else:             # Capacitor Bank: banks of cells
+        _r(s, K, (4, 4, 32, 32), 4)
+        _r(s, S.STEEL_DARK, (5, 5, 30, 30), 4)
+        for x, y in ((8, 8), (22, 8), (8, 22), (22, 22)):
+            _r(s, K, (x, y, 10, 10), 2)
+            _r(s, S.ENERGY, (x + 1, y + 1, 8, 8), 2)
+            _r(s, S.WHITE, (x + 3, y + 2, 2, 3))
+        _r(s, S.MAGENTA, (4, 4, 32, 32), 4, 2)
+        _c(s, S.WHITE, C, 3)
+
+
+def _biolab(s, v):
+    """A round vat of green goo with feed tubes."""
+    def vat(r, trim, goo=BIO):
+        _c(s, K, C, r + 1)
+        _c(s, (60, 70, 80), C, r)
+        _c(s, goo, C, r - 3)
+        _c(s, (220, 255, 200), (17, 17), 2)
+        _c(s, (220, 255, 200), (23, 22), 1)
+        if trim:
+            _c(s, trim, C, r, 1)
+    if v == "t0":
+        _l(s, K, (20, 20), (36, 20), 4)
+        vat(11, None)
+    elif v == "t1":
+        for deg in (0, 180):
+            _l(s, K, C, _polar(C, 19, deg), 4)
+            _l(s, BIO, C, _polar(C, 18, deg), 2)
+        vat(12, S.CYAN)
+    elif v == "t2":
+        for deg in (0, 90, 180, 270):
+            _l(s, K, C, _polar(C, 19, deg), 4)
+            _l(s, BIO, C, _polar(C, 18, deg), 2)
+        vat(14, S.ENERGY)
+    elif v == "b0":   # Rendering Plant: crushers around the vat
+        for deg in (45, 135, 225, 315):
+            p = _polar(C, 14, deg)
+            _r(s, K, (p[0] - 5, p[1] - 5, 10, 10), 2)
+            _r(s, S.STEEL, (p[0] - 4, p[1] - 4, 8, 8), 2)
+        vat(12, S.MAGENTA, (110, 200, 70))
+    else:             # Mutagen Lab: purple mutagen with a helix
+        vat(15, S.MAGENTA, (170, 90, 210))
+        for i in range(7):
+            y = 10 + i * 3
+            dx = int(5 * math.sin(i * 0.9))
+            _c(s, BIO, (20 + dx, y), 2)
+            _c(s, S.WHITE, (20 - dx, y), 1)
+
+
+def _overclock(s, v):
+    """A cog with heat vents (spins slowly)."""
+    def cog(r, body, trim, core=S.ORANGE):
+        _p(s, K, _star(C, r + 2, r - 2, 8))
+        _p(s, body, _star(C, r, r - 3, 8))
+        if trim:
+            _p(s, trim, _star(C, r, r - 3, 8), 1)
+        _c(s, K, C, 6)
+        _c(s, core, C, 5)
+        _c(s, S.ENERGY, C, 2)
+    if v == "t0":
+        cog(13, S.STEEL, None)
+    elif v == "t1":
+        cog(15, S.STEEL, S.CYAN)
+    elif v == "t2":
+        cog(17, (150, 140, 120), S.ENERGY, S.RED)
+    elif v == "b0":   # Turbo Core: double cog, red-hot
+        cog(18, (120, 90, 90), S.MAGENTA, S.RED)
+        _p(s, S.ORANGE, _star(C, 9, 6, 6, 0.3))
+        _c(s, S.ENERGY, C, 3)
+    else:             # Cryo-Cooled: frosty cog with coolant ring
+        cog(17, (150, 190, 220), S.MAGENTA, S.CRYO)
+        _c(s, S.CRYO, C, 11, 2)
+        for deg in range(0, 360, 60):
+            _l(s, S.WHITE, _polar(C, 9, deg), _polar(C, 13, deg), 1)
+
+
+def _uplink(s, v):
+    """A satellite dish seen from above."""
+    def dish(r, trim, rim=S.STEEL_LIGHT):
+        _c(s, K, C, r + 1)
+        _c(s, rim, C, r)
+        _c(s, (200, 210, 225), C, r - 2)
+        for rr in (r - 5, r - 9):
+            if rr > 2:
+                _c(s, S.STEEL, C, rr, 1)
+        if trim:
+            _c(s, trim, C, r + 1, 1)
+        for deg in (90, 210, 330):        # feed arms
+            _l(s, K, _polar(C, r - 1, deg), C, 2)
+        _c(s, K, C, 3)
+        _c(s, S.RED, C, 2)
+    if v == "t0":
+        dish(12, None)
+    elif v == "t1":
+        dish(14, S.CYAN)
+    elif v == "t2":
+        dish(16, S.ENERGY, S.ENERGY)
+    elif v == "b0":   # Twin Strike: two dishes
+        for c in ((12, 14), (28, 26)):
+            _c(s, K, c, 10)
+            _c(s, (200, 210, 225), c, 9)
+            _c(s, S.MAGENTA, c, 9, 1)
+            _c(s, S.RED, c, 2)
+        _l(s, S.MAGENTA, (12, 14), (28, 26), 1)
+    else:             # Targeting Array: dish with crosshair
+        dish(17, S.MAGENTA)
+        _l(s, S.RED, (20, 4), (20, 36), 1)
+        _l(s, S.RED, (4, 20), (36, 20), 1)
+        _c(s, S.RED, C, 9, 1)
+
+
+def _bait(s, v):
+    """A fleshy alien-attracting pod with a bullseye."""
+    def pod(r, col=FLESH, trim=None):
+        _p(s, K, _ngon(C, r + 2, 10))
+        _p(s, col, _ngon(C, r, 10))
+        _c(s, (240, 220, 200), C, r - 4, 2)
+        _c(s, S.RED, C, r - 8 if r > 10 else 3)
+        _c(s, (240, 220, 200), C, 2)
+        if trim:
+            _p(s, trim, _ngon(C, r, 10), 2)
+    if v == "t0":
+        pod(12)
+    elif v == "t1":
+        pod(14, trim=S.CYAN)
+    elif v == "t2":
+        for deg in range(0, 360, 45):
+            _r(s, K, (*[int(c) - 2 for c in _polar(C, 16, deg)], 5, 5))
+            _r(s, S.ENERGY, (*[int(c) - 1 for c in _polar(C, 16, deg)], 3, 3))
+        pod(15, trim=S.ENERGY)
+    elif v == "b0":   # Spore Pod: spore bulbs
+        for deg in range(0, 360, 60):
+            p = _polar(C, 15, deg)
+            _c(s, K, p, 4)
+            _c(s, (170, 220, 90), p, 3)
+        pod(13, (180, 120, 110), S.MAGENTA)
+    else:             # Regenerator: pod wrapped in a green heal ring
+        pod(16, (200, 130, 140), S.MAGENTA)
+        _c(s, S.GREEN, C, 18, 2)
+        _r(s, S.GREEN, (18, 14, 4, 12))
+        _r(s, S.GREEN, (14, 18, 12, 4))
+
+
+def _generator(s, v):
+    """A reactor drum with power coils (spins slowly)."""
+    def drum(r, trim, core=S.ENERGY):
+        _p(s, K, _ngon(C, r + 2, 8, math.pi / 8))
+        _p(s, (70, 76, 92), _ngon(C, r, 8, math.pi / 8))
+        if trim:
+            _p(s, trim, _ngon(C, r, 8, math.pi / 8), 2)
+        _c(s, K, C, r - 5)
+        _c(s, core, C, r - 6)
+        _c(s, S.WHITE, C, max(2, r // 4))
+    if v == "t0":
+        drum(12, None)
+    elif v == "t1":
+        for deg in (0, 120, 240):
+            _c(s, K, _polar(C, 16, deg), 4)
+            _c(s, S.CYAN, _polar(C, 16, deg), 3)
+        drum(13, S.CYAN)
+    elif v == "t2":
+        for deg in (0, 90, 180, 270):
+            _c(s, K, _polar(C, 16, deg), 4)
+            _c(s, S.ENERGY, _polar(C, 16, deg), 3)
+        drum(14, S.ENERGY, S.ORANGE)
+    elif v == "b0":   # Fusion Reactor: torus with a plasma core
+        _c(s, K, C, 19)
+        _c(s, (70, 76, 92), C, 18)
+        _c(s, S.MAGENTA, C, 18, 2)
+        _c(s, S.CYAN, C, 13, 3)
+        _c(s, S.WHITE, C, 6)
+        _c(s, S.MAGENTA, C, 3)
+    else:             # Grid Hub: node with cable sockets
+        for deg in range(0, 360, 45):
+            _l(s, K, C, _polar(C, 19, deg), 3)
+            _c(s, S.ENERGY, _polar(C, 18, deg), 2)
+        drum(12, S.MAGENTA)
+
+
+def _brood(s, v):
+    """An alien egg cluster (it's an alien tower, after all)."""
+    trim = {"t0": None, "t1": S.CYAN, "t2": S.ENERGY, "b0": S.MAGENTA, "b1": S.MAGENTA}[v]
+    n = {"t0": 3, "t1": 4, "t2": 5, "b0": 3, "b1": 7}[v]
+    _c(s, K, C, 17)
+    _c(s, (74, 58, 72), C, 16)
+    if trim:
+        _c(s, trim, C, 16, 2)
+    for i in range(n):
+        p = _polar(C, 8 if n > 1 else 0, i * 360 / n)
+        r = 6 if v != "b0" else 8
+        _c(s, K, p, r + 1)
+        _c(s, (190, 80, 180) if v != "b0" else (120, 140, 100), p, r)
+        _c(s, S.ALIEN_GREEN, (p[0] - 1, p[1] - 1), 2)
+
+
 BRANCH_ART = {"flamer": _flamer_b, "mortar": _mortar_b, "gravity": _gravity_b, "harvester": _harvester_b,
               "radar": _radar_b, "drone": _drone_b, "barricade": _barricade_b, "mines": _mines_b}
-NEW_TOWERS = {"laser": _laser, "acid": _acid, "repair": _repair, "sonic": _sonic}
+NEW_TOWERS = {"laser": _laser, "acid": _acid, "repair": _repair, "sonic": _sonic,
+              "flak": _flak, "ion": _ion, "shield": _shield, "tar": _tar, "chrono": _chrono,
+              "decoy": _decoy, "fence": _fence, "mirror": _mirror, "hacker": _hacker, "magnet": _magnet,
+              "lightning": _lightning, "biolab": _biolab, "overclock": _overclock, "uplink": _uplink,
+              "bait": _bait, "generator": _generator, "brood": _brood}
 TURRETS.update(NEW_TOWERS)
 BRANCHED.update(BRANCH_ART)
 BRANCHED.update(NEW_TOWERS)
@@ -945,3 +1591,125 @@ def draw_puddle(screen, pos, radius, fade, level):
             pygame.draw.circle(surf, (200, 255, 140, a), (int(p[0]), int(p[1])), 2)
         _POOL_CACHE[key] = surf
     screen.blit(surf, surf.get_rect(center=(int(pos[0]), int(pos[1]))))
+
+
+# ---- Phase 5 effects -------------------------------------------------------------------
+_MAP_SURF = {}
+
+
+def _map_layer():
+    surf = _MAP_SURF.get("layer")
+    if surf is None:
+        surf = pygame.Surface((S.MAP_W, S.MAP_H), pygame.SRCALPHA)
+        _MAP_SURF["layer"] = surf
+    surf.fill((0, 0, 0, 0))
+    return surf
+
+
+ION_COLORS = {None: (120, 220, 255), 0: (200, 140, 255), 1: (255, 120, 230)}
+
+
+def draw_ion(screen, routes, origin, fade, branch, offset):
+    """Ion Cannon blast: a glowing column down every lane, fading out. fade 1 -> 0."""
+    layer = _map_layer()
+    col = ION_COLORS.get(branch, ION_COLORS[None])
+    a = int(255 * max(0.0, min(1.0, fade)))
+    width = 6 + int(18 * fade) + (8 if branch == 1 else 0)
+    for route in routes:
+        pts = [(int(x), int(y)) for x, y in route]
+        if len(pts) < 2:
+            continue
+        pygame.draw.lines(layer, (*col, a // 3), False, pts, width + 10)
+        pygame.draw.lines(layer, (*col, a), False, pts, width)
+        pygame.draw.lines(layer, (255, 255, 255, a), False, pts, max(2, width // 3))
+        for p in pts:
+            pygame.draw.circle(layer, (*col, a), p, width // 2)
+    ox, oy = int(origin[0]), int(origin[1])
+    pygame.draw.line(layer, (*col, a), (ox, oy), (ox, 0), 4 + int(6 * fade))   # uplink to orbit
+    pygame.draw.circle(layer, (255, 255, 255, a), (ox, oy), 6 + int(10 * fade))
+    screen.blit(layer, (offset[0], offset[1]))
+
+
+_BUBBLE_CACHE = {}
+
+
+def draw_bubble(screen, pos, frac, t):
+    """Shield Projector bubble over a tower. frac = shield left (0..1)."""
+    level = max(1, int(frac * 8))
+    surf = _BUBBLE_CACHE.get(level)
+    if surf is None:
+        surf = pygame.Surface((44, 44), pygame.SRCALPHA)
+        a = 30 + level * 12
+        pygame.draw.circle(surf, (110, 190, 255, a // 3), (22, 22), 20)
+        pygame.draw.circle(surf, (150, 210, 255, a), (22, 22), 20, 2)
+        _BUBBLE_CACHE[level] = surf
+    screen.blit(surf, surf.get_rect(center=(int(pos[0]), int(pos[1]))))
+    ang = t * 2.0
+    pygame.draw.arc(screen, (220, 240, 255), (pos[0] - 20, pos[1] - 20, 40, 40), ang, ang + 0.6, 1)
+
+
+_TAR_CACHE = {}
+TAR_TINTS = ((48, 36, 30), (44, 34, 30), (40, 30, 28), (30, 22, 20))
+
+
+def draw_tar(screen, pos, radius, level, burning, t):
+    """Tar Pit pool. level 0-2 = tier, 3 = branch."""
+    radius = max(12, int(radius * 0.8))
+    key = (radius, level)
+    surf = _TAR_CACHE.get(key)
+    if surf is None:
+        size = radius * 2 + 4
+        surf = pygame.Surface((size, size), pygame.SRCALPHA)
+        c = (size // 2, size // 2)
+        col = TAR_TINTS[level]
+        n = 24
+        pts = [(c[0] + radius * (0.9 + 0.1 * math.sin(i * 2.3)) * math.cos(i * math.tau / n),
+                c[1] + radius * (0.9 + 0.1 * math.sin(i * 2.3)) * math.sin(i * math.tau / n))
+               for i in range(n)]
+        pygame.draw.polygon(surf, (*col, 200), pts)
+        pygame.draw.polygon(surf, (16, 12, 10, 230), pts, 2)
+        inner = [(c[0] + (x - c[0]) * 0.6, c[1] + (y - c[1]) * 0.6) for x, y in pts]
+        pygame.draw.polygon(surf, (*[max(0, v - 14) for v in col], 220), inner)
+        pygame.draw.ellipse(surf, (150, 130, 110, 90), (c[0] - radius * 0.55, c[1] - radius * 0.6,
+                                                        radius * 0.7, radius * 0.25))   # sheen
+        _TAR_CACHE[key] = surf
+    screen.blit(surf, surf.get_rect(center=(int(pos[0]), int(pos[1]))))
+    if burning:
+        for i in range(6):
+            a = t * 3 + i * 1.05
+            r = radius * (0.25 + 0.5 * ((i * 37) % 10) / 10)
+            fx = pos[0] + math.cos(a) * r
+            fy = pos[1] + math.sin(a) * r
+            h = 4 + 3 * math.sin(t * 12 + i)
+            pygame.draw.polygon(screen, S.ORANGE, [(fx - 3, fy), (fx + 3, fy), (fx, fy - h - 4)])
+            pygame.draw.polygon(screen, S.ENERGY, [(fx - 1.5, fy), (fx + 1.5, fy), (fx, fy - h)])
+
+
+FENCE_COLORS = {0: PLASMA, 1: (255, 140, 230), 2: (255, 190, 120), 3: S.MAGENTA}
+
+
+def draw_fence(screen, a, b, level):
+    """Plasma Fence beam between two pylons: a jittery glowing line."""
+    import random
+    col = FENCE_COLORS.get(level, PLASMA)
+    pts = [a]
+    n = max(2, int(math.hypot(b[0] - a[0], b[1] - a[1]) / 14))
+    for i in range(1, n):
+        t = i / n
+        pts.append((a[0] + (b[0] - a[0]) * t + random.uniform(-2, 2),
+                    a[1] + (b[1] - a[1]) * t + random.uniform(-2, 2)))
+    pts.append(b)
+    pygame.draw.lines(screen, col, False, pts, 4 if level >= 2 else 3)
+    pygame.draw.lines(screen, S.WHITE, False, pts, 1)
+
+
+def draw_hack(screen, pos, radius, frac):
+    """Green bracket marker on a hacked alien. frac = hack time left (0..1)."""
+    r = int(radius + 6)
+    x, y = int(pos[0]), int(pos[1])
+    for sx, sy in ((-1, -1), (1, -1), (-1, 1), (1, 1)):
+        cx, cy = x + sx * r, y + sy * r
+        pygame.draw.line(screen, HACK, (cx, cy), (cx - sx * 5, cy), 2)
+        pygame.draw.line(screen, HACK, (cx, cy), (cx, cy - sy * 5), 2)
+    pygame.draw.arc(screen, HACK, (x - r, y - r - 6, r * 2, r * 2), math.pi / 2,
+                    math.pi / 2 + math.tau * max(0.0, min(1.0, frac)), 2)

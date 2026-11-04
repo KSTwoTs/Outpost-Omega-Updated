@@ -45,6 +45,11 @@ class MenuScene(Scene):
             Button((cx - 130, 430, 260, 46), "DAILY CHALLENGE", "daily"),
             Button((cx - 130, 482, 260, 46), "TECH LAB", "tech"),
             Button((cx - 130, 534, 260, 46), "QUIT", "quit"),
+            Button((S.SCREEN_W - 170, 16, 154, 40), "SETTINGS", "settings"),
+            Button((S.SCREEN_W - 170, 62, 154, 40), "TUTORIAL", "tutorial"),
+            Button((S.SCREEN_W - 170, 108, 154, 40), "SEED RUN", "seed"),
+            Button((S.SCREEN_W - 170, 154, 154, 40), "MODES", "modes"),
+            Button((S.SCREEN_W - 170, 200, 154, 40), "CODEX", "codex"),
         ]
         self.t = 0.0
 
@@ -70,6 +75,14 @@ class MenuScene(Scene):
             self.game.scenes.change("tech_lab")
         elif command == "daily":
             self.game.start_daily()
+        elif command == "seed":
+            self.game.scenes.push("seed")
+        elif command == "tutorial":
+            self.game.scenes.change("play", level_id="sector1", difficulty="Easy", mode="campaign", tutorial=True)
+        elif command == "settings":
+            self.game.scenes.push("settings")
+        elif command in ("modes", "codex"):
+            self.game.scenes.change(command)
         elif command == "quit":
             self.game.running = False
 

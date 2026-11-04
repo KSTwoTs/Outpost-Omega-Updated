@@ -129,7 +129,7 @@ class Modifiers:
                     tier[stat] = tier[stat] * e.get("mult", 1.0) + e.get("add", 0)
                 if "damage" in tier:
                     tier["damage"] = round(tier["damage"])
-                for int_stat in ("chain", "drones", "max_mines", "beams", "income"):
+                for int_stat in ("chain", "drones", "max_mines", "beams", "income", "burst", "targets", "splits"):
                     if int_stat in tier:
                         tier[int_stat] = int(round(tier[int_stat]))
                 if "slow" in tier:
@@ -184,6 +184,13 @@ class RunState:
         self.visited = set()            # ids of completed nodes (drawn as the path taken)
         self.map = self.generate_map()
         self.core_hp = self.core_max
+        # Phase 5: an alien faction for the whole run, an act-wide event, the debt merchant
+        factions = list(cfg.get("factions", {}))
+        self.faction = self.rng.choice(factions) if factions else None
+        self.act_event = None
+        self.debt = None                # [repay, nodes_left]
+        self.messages = []              # one-shot lines for the run map (debt collected, etc.)
+        self.roll_act_event()
 
         self.nodes_cleared = 0
         self.elites = 0
@@ -201,7 +208,8 @@ class RunState:
     # ---- saving -----------------------------------------------------------------
     SAVED = ("seed", "tech_effects", "augments", "relics", "event_effects", "towers", "scrap",
              "act", "floor", "map", "core_hp", "nodes_cleared", "elites", "bosses", "kills",
-             "score", "shop", "commander", "cmd_level", "cmd_xp", "cmd_perks", "endless")
+             "score", "shop", "commander", "cmd_level", "cmd_xp", "cmd_perks", "endless", "chips", "gear",
+             "faction", "act_event", "debt", "messages", "research", "ascension", "pet")
 
     def to_dict(self):
         """Everything needed to resume the run (JSON-safe), kept in save.json."""
@@ -229,6 +237,7 @@ class RunState:
         run.node = run.node_by_id(data["node_id"]) if data.get("node_id") else None
         run.position = run.node_by_id(data["position_id"]) if data.get("position_id") else None
         run.endless = bool(run.endless)
+        run.messages = run.messages or []
         run.over = False
         run.victory = False
         run.salvage_earned = 0
@@ -242,7 +251,117 @@ class RunState:
             out += self.cfg["augments"][a]["effects"]
         for r in self.relics:
             out += self.cfg["relics"][r]["effects"]
+        for sid in self.complete_sets():
+            out += self.cfg["relic_sets"][sid]["effects"]
+        ev = getattr(self, "act_event", None)
+        if ev:
+            out += self.cfg["act_events"][ev]["effects"]
         return out
+
+    # ---- Phase 5 ------------------------------------------------------------------
+    def set_counts(self):
+        counts = {}
+        for r in self.relics:
+            sid = self.cfg["relics"][r].get("set")
+            if sid:
+                counts[sid] = counts.get(sid, 0) + 1
+        return counts
+
+    def complete_sets(self):
+        sets = self.cfg.get("relic_sets", {})
+        return [sid for sid, n in self.set_counts().items() if sid in sets and n >= sets[sid]["pieces"]]
+
+    def roll_act_event(self):
+        """Act 1 has a 50% chance of a run-wide event; every later act gets one."""
+        events = list(self.cfg.get("act_events", {}))
+        if not events:
+            self.act_event = None
+            return
+        self.act_event = self.rng.choice(events) if (self.act > 1 or self.rng.random() < 0.5) else None
+
+    def apply_hero_deck(self, hero):
+        for kind in self.cfg.get("hero_decks", {}).get(hero, []):
+            if kind in self.tower_data and kind not in self.towers:
+                self.towers.append(kind)
+
+    def faction_cfg(self, endless_cfg):
+        """endless.json with this run's faction weights folded in."""
+        f = self.cfg.get("factions", {}).get(getattr(self, "faction", None))
+        if not f:
+            return endless_cfg
+        cfg = copy.deepcopy(endless_cfg)
+        w = cfg["enemy_weights"]
+        for kind, mult in f["weights"].items():
+            w[kind] = w.get(kind, 0.5) * mult
+        return cfg
+
+    def special_event(self, kind):
+        """Rest / Forge / Gamble nodes reuse EventScene with generated choices."""
+        cfg = self.cfg
+        if kind == "rest":
+            pct = int(cfg.get("rest_heal", 0.4) * 100)
+            choices = [{"label": "Repair the Core", "gain": {"heal_pct": cfg.get("rest_heal", 0.4)},
+                        "sub": f"Heal {pct}% of the Core's max HP"}]
+            if self.augments:
+                aid = self.rng.choice(self.augments)
+                name = cfg["augments"][aid]["name"]
+                choices.append({"label": f"Train: {name}", "gain": {"empower": aid},
+                                "sub": "Its effect stacks a second time"})
+            return {"title": "Rest Stop", "text": "A quiet ridge with a working med-bay and a training rig. "
+                    "There's time for one thing before the next push.", "choices": choices}
+        if kind == "forge":
+            choices = []
+            if len(self.augments) >= 2:
+                a, b = self.rng.sample(self.augments, 2)
+                na, nb = cfg["augments"][a]["name"], cfg["augments"][b]["name"]
+                choices.append({"label": f"Forge {na} + {nb}", "gain": {"forge": [a, b]},
+                                "sub": "Lose both, gain one Epic or Legendary augment"})
+            choices.append({"label": "Salvage the forge", "gain": {"scrap": 30}, "sub": "+30 Scrap"})
+            return {"title": "Forge", "text": "An abandoned fabricator still hums. It could fuse two of your "
+                    "augments into something stronger, if you can spare them.", "choices": choices}
+        if kind == "gamble":
+            g = cfg.get("gamble", {"cheap": 40, "rich": 80, "curse_chance": 0.25})
+            return {"title": "Gambler's Den", "text": "A scavenger with a crate of sealed relics. "
+                    "No refunds, no peeking.",
+                    "choices": [{"label": f"Blind relic ({g['cheap']} Scrap)", "cost": {"scrap": g["cheap"]},
+                                 "gain": {"gamble": "cheap"},
+                                 "sub": f"Any relic. {int(g['curse_chance'] * 100)}% chance it's cursed"},
+                                {"label": f"Sealed vault ({g['rich']} Scrap)", "cost": {"scrap": g["rich"]},
+                                 "gain": {"gamble": "rich"}, "sub": "A Rare or better relic, never cursed"},
+                                {"label": "Walk away", "sub": "Keep your Scrap"}]}
+        return None
+
+    def take_loan(self):
+        d = self.cfg.get("debt", {})
+        if self.debt:
+            return False
+        self.scrap += d.get("loan", 100)
+        self.debt = [d.get("repay", 150), d.get("nodes", 2)]
+        return True
+
+    def tick_debt(self):
+        if not self.debt:
+            return
+        self.debt[1] -= 1
+        if self.debt[1] > 0:
+            return
+        owed = self.debt[0]
+        self.debt = None
+        if self.scrap >= owed:
+            self.scrap -= owed
+            self.messages.append(f"The debt merchant collected {owed} Scrap.")
+        else:
+            pen = self.cfg.get("debt", {}).get("penalty_hp", 25)
+            paid = self.scrap
+            self.scrap = 0
+            self.core_hp = max(1, self.core_hp - pen)
+            self.messages.append(f"Couldn't pay the debt merchant: took {paid} Scrap and {pen} Core HP.")
+
+    def boss_relic_options(self):
+        pool = [rid for rid, r in self.cfg["relics"].items()
+                if r.get("rarity") == "boss" and rid not in self.relics]
+        n = min(len(pool), self.cfg.get("boss_relic_choices", 3))
+        return [("relic", r) for r in self.rng.sample(pool, n)]
 
     @property
     def mods(self):
@@ -297,10 +416,13 @@ class RunState:
         if floor == floors - 1:
             return "boss"
         if floor == floors - 2:
-            return self.rng.choice(["cache", "event"])
+            return self.rng.choice(["cache", "event", "rest"])
         weights = dict(self.cfg["node_weights"])
         if floor < self.cfg.get("elite_min_floor", 2):
             weights.pop("elite", None)
+            weights.pop("forge", None)
+        if floor < floors - 3:   # mini-bosses sit between the elites and the boss
+            weights.pop("miniboss", None)
         kinds = list(weights)
         return self.rng.choices(kinds, [weights[k] for k in kinds])[0]
 
@@ -361,6 +483,8 @@ class RunState:
     def waves_for(self, kind):
         """How many waves a combat/elite/boss fight has in the current act."""
         cfg = self.cfg["waves_per_node"]
+        if kind == "miniboss":
+            kind = "elite"
         if "base" in cfg:
             return min(cfg.get("max", 999), cfg["base"] + cfg.get("per_act", 0) * (self.act - 1))
         return cfg.get(kind, 3)
@@ -370,7 +494,7 @@ class RunState:
         count = self.waves_for(kind)
         start = self.wave_start(node)
         step = self.cfg["wave_depth"].get("per_wave", 1.0)
-        gen = EndlessWaveGenerator(endless_cfg, enemy_data, lanes=lanes,
+        gen = EndlessWaveGenerator(self.faction_cfg(endless_cfg), enemy_data, lanes=lanes,
                                    seed=self.seed * 31 + self.act * 101 + node["floor"] * 7 + node["index"])
         mult = self.cfg.get("enemy_count_mult", 1.0)
         min_interval = endless_cfg.get("min_interval", 0.25)
@@ -386,9 +510,11 @@ class RunState:
                     g["interval"] = round(max(min_interval, g["interval"] / mult ** 0.5), 2)
             w["boss"] = None
             w["mods"]["boss_hp_mult"] = 1.0
-            if kind == "elite":
+            if kind in ("elite", "miniboss"):
                 w["mods"]["elite_chance"] = max(w["mods"]["elite_chance"], self.cfg.get("elite_node_chance", 0.6))
             waves.append(w)
+        if kind == "miniboss" and waves:   # a Swarm Queenlet caps the fight
+            waves[-1]["boss"] = "swarm_queenlet"
         if kind == "boss" and waves:
             waves[-1]["boss"] = self.boss_for_act()
             waves[-1]["mods"]["boss_hp_mult"] = 1 + self.cfg.get("boss_hp_per_act", 0.5) * (self.act - 1)
@@ -422,8 +548,9 @@ class RunState:
             if spec.get("heal"):
                 self.heal(self.core_max * spec["heal"])
             reward["healed"] = round(self.core_hp - before)
-        if node["type"] == "elite":
+        if node["type"] in ("elite", "miniboss"):
             self.elites += 1
+        self.tick_debt()
         if node["type"] == "boss":
             self.bosses += 1
             if self.act == self.cfg["acts"] and not self.endless:
@@ -440,6 +567,7 @@ class RunState:
         self.position = None
         self.node = None
         self.map = self.generate_map()
+        self.roll_act_event()
 
     def claim_victory(self):
         self.finish(victory=True)
@@ -473,7 +601,8 @@ class RunState:
 
     def relic_pool(self, cursed=None):
         return [rid for rid, r in self.cfg["relics"].items()
-                if rid not in self.relics and (cursed is None or bool(r.get("cursed")) == cursed)]
+                if rid not in self.relics and r.get("rarity") != "boss"
+                and (cursed is None or bool(r.get("cursed")) == cursed)]
 
     # ---- rarity ---------------------------------------------------------------
     def rarity_of(self, kind, oid):
@@ -569,11 +698,27 @@ class RunState:
             offers.append({"kind": "relic", "id": r, "sold": False,
                            "price": price(s["relic"], self.rarity_of("relic", r))})
         offers.append({"kind": "repair", "id": "repair", "price": price(s["repair"]), "sold": False})
+        if not self.debt and self.cfg.get("debt"):   # the debt merchant
+            offers.append({"kind": "loan", "id": "loan", "price": 0, "sold": False})
+        sellable = [r for r in self.relics if self.cfg["relics"][r].get("rarity") != "boss"]
+        bm = self.cfg.get("black_market", {"common": 25, "rare": 45, "epic": 70, "legendary": 100, "cursed": 40})
+        for r in self.rng.sample(sellable, min(1, len(sellable))):   # the black market buys a relic
+            offers.append({"kind": "sell_relic", "id": r, "price": 0, "sold": False,
+                           "value": bm.get(self.rarity_of("relic", r), 30)})
         return offers
 
     def buy(self, offer):
         if offer["sold"] or self.scrap < offer["price"]:
             return False
+        if offer["kind"] == "loan":
+            offer["sold"] = self.take_loan()
+            return offer["sold"]
+        if offer["kind"] == "sell_relic":
+            if offer["id"] in self.relics:
+                self.relics.remove(offer["id"])
+                self.scrap += offer["value"]
+            offer["sold"] = True
+            return True
         if offer["kind"] == "repair":
             if self.core_hp >= self.core_max:
                 return False
@@ -624,6 +769,36 @@ class RunState:
                 r = self.rng.choice(pool)
                 self.add_relic(r)
                 lines.append(f"Cursed relic: {self.cfg['relics'][r]['name']}")
+        if gain.get("heal_pct"):
+            before = self.core_hp
+            self.heal(self.core_max * gain["heal_pct"])
+            lines.append(f"Core repaired {round(self.core_hp - before)} HP")
+        if gain.get("empower"):
+            self.add_augment(gain["empower"])
+            lines.append(f"{self.cfg['augments'][gain['empower']]['name']} now stacks twice")
+        if gain.get("forge"):
+            for aid in gain["forge"]:
+                if aid in self.augments:
+                    self.augments.remove(aid)
+            pool = [a for a in self.augment_pool() if self.cfg["augments"][a].get("rarity") in ("epic", "legendary")]
+            if pool:
+                aid = self.rng.choice(pool)
+                self.add_augment(aid)
+                lines.append(f"Forged: {self.rarity_of('augment', aid).title()} augment {self.cfg['augments'][aid]['name']}")
+        if gain.get("gamble"):
+            g = self.cfg.get("gamble", {})
+            if gain["gamble"] == "cheap" and self.rng.random() < g.get("curse_chance", 0.25) and self.relic_pool(True):
+                r = self.rng.choice(self.relic_pool(cursed=True))
+                lines.append(f"Cursed! {self.cfg['relics'][r]['name']}")
+            else:
+                pool = self.relic_pool(cursed=False)
+                if gain["gamble"] == "rich":
+                    pool = [r for r in pool if self.cfg["relics"][r].get("rarity") in ("rare", "epic", "legendary")] or pool
+                r = self.rng.choice(pool)
+                lines.append(f"{self.rarity_of('relic', r).title()} relic: {self.cfg['relics'][r]['name']}")
+            self.add_relic(r)
+            for sid in self.complete_sets():
+                lines.append(f"Set complete: {self.cfg['relic_sets'][sid]['name']}!")
         for _ in range(gain.get("tower_card", 0)):
             t = self.unlock_random_tower()
             if t:

@@ -1,0 +1,37 @@
+{
+  "_comment": "Reverse mode (systems/reverse.py): you send the aliens, the AI builds the towers. cost = Biomass per send, count = aliens per send, cooldown = seconds before that card can be sent again.",
+  "time_limit": 360,
+  "core_hp": 180,
+  "start_biomass": 200,
+  "income": 10,
+  "core_bonus": 4,
+  "growth": {
+    "cost": 150,
+    "cost_mult": 1.5,
+    "income": 4
+  },
+  "evolve": {
+    "cost": 200,
+    "cost_mult": 1.6,
+    "hp": 0.12
+  },
+  "roster": [
+    {"kind": "skitter", "count": 6, "cost": 30, "cooldown": 1.0},
+    {"kind": "glider", "count": 3, "cost": 40, "cooldown": 1.5},
+    {"kind": "hunter", "count": 3, "cost": 55, "cooldown": 2.0},
+    {"kind": "cloaker", "count": 3, "cost": 50, "cooldown": 2.0},
+    {"kind": "brute", "count": 2, "cost": 60, "cooldown": 2.0},
+    {"kind": "burrower", "count": 3, "cost": 55, "cooldown": 2.0},
+    {"kind": "mender", "count": 2, "cost": 45, "cooldown": 2.0},
+    {"kind": "shield_drone", "count": 2, "cost": 50, "cooldown": 2.0},
+    {"kind": "reflector", "count": 2, "cost": 70, "cooldown": 3.0},
+    {"kind": "bomber", "count": 3, "cost": 75, "cooldown": 3.0},
+    {"kind": "juggernaut", "count": 1, "cost": 90, "cooldown": 3.0},
+    {"kind": "blob", "count": 2, "cost": 90, "cooldown": 3.0},
+    {"kind": "carrier", "count": 1, "cost": 140, "cooldown": 8.0},
+    {"kind": "swarm_queenlet", "count": 1, "cost": 180, "cooldown": 8.0},
+    {"kind": "siege_titan", "count": 1, "cost": 500, "cooldown": 60.0},
+    {"kind": "mothership", "count": 1, "cost": 650, "cooldown": 60.0}
+  ],
+  "ai": {"start_energy": 650, "income": {"Easy": 7, "Normal": 10, "Hard": 14}, "think": 1.5, "max_towers": 22, "ground": ["pulse", "cryo", "tesla", "flamer", "railgun", "mortar", "laser", "acid", "lightning"], "air": ["flak", "missile", "pulse", "tesla"], "opening_builds": 3, "kill_reward": 0.5}
+}

@@ -19,6 +19,7 @@ WEATHER = {
     "sandstorm": {"name": "Sandstorm", "desc": "Towers have 20% less range", "color": (214, 182, 128)},
     "blizzard": {"name": "Blizzard", "desc": "Aliens 15% slower, the ground is icy", "color": (235, 245, 255)},
     "acid_rain": {"name": "Acid Rain", "desc": "Towers slowly corrode during waves", "color": S.ACID},
+    "heatwave": {"name": "Heatwave", "desc": "Towers overheat if they fire nonstop", "color": (255, 150, 80)},
 }
 
 
@@ -92,7 +93,7 @@ class WeatherSystem:
         self.info = WEATHER[kind]
         self.towers, self.enemies, self.level = towers, enemies, level
         rng = random.Random(7)
-        count = {"sandstorm": 140, "blizzard": 160, "acid_rain": 130}[kind]
+        count = {"sandstorm": 140, "blizzard": 160, "acid_rain": 130, "heatwave": 60}[kind]
         self.parts = [[rng.uniform(0, S.MAP_W), rng.uniform(0, S.MAP_H), rng.uniform(0.6, 1.4)]
                       for _ in range(count)]
         if kind == "sandstorm":

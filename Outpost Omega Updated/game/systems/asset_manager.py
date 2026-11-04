@@ -181,6 +181,103 @@ OVERSEER = [
     "..kkk...kkk...kkk.....",
 ]
 
+
+# ---- Phase 5 aliens ---------------------------------------------------------------
+ADAPTIVE = [
+    "....kkkk....", "...kbbbbk...", "..kbgggGbk..", ".kbgwkgwkgbk", ".kbggggggbk.",
+    "kbgGggggGgbk", "kbgggGGgggbk", ".kbggggggbk.", "..kbGggGbk..", "..kgk..kgk..",
+    ".kk......kk.",
+]
+THIEF = [
+    "....kkkk....", "...kNNNNk...", "..kNeeeeNk..", "..kNywywNk..", "...kgggGk...",
+    "..kgggggGk..", ".kgkggggkyk.", ".kk.gGGg.kk.", "...kg..gk...", "..kk....kk..",
+]
+LEECH = [
+    "...kkkkkk...", "..krrrrrrk..", ".krMrrrrMrk.", "kreeMrrMeerk", "krrrrrrrrrrk",
+    "kMrrrrrrrrMk", ".krMrrrrMrk.", "..krrrrrrk..", "...kkkkkk...",
+]
+PHASER = [
+    "....kkkk....", "...kmMMmk...", "..kmmccmmk..", ".kmMcwwcMmk.", ".kmmcwwcmmk.",
+    "..kmmccmmk..", "...kmMMmk...", "..km.kk.mk..", ".kk......kk.",
+]
+REFLECTOR = [
+    "....kkkk....", "...kSWWSk...", "..kSsWWsSk..", ".kSsseessSk.", ".kWSsssssWk.",
+    "kSWSssssSWSk", "kSsWSssSWsSk", ".kSsssssSk..", "..kSk..kSk..", ".kk......kk.",
+]
+SWARM_MIND = [
+    "...kkkkkk...", "..kmmmmmmk..", ".kmMwmmwMmk.", "kmmmmMMmmmmk", "kmMmmmmmmMmk",
+    "kmmgggggggmk", ".kmgGggGgmk.", "..kmgggggk..", "..kgk..kgk..", ".kk......kk.",
+]
+NECRO_SPORE = [
+    "....kkkk....", "..kkmMMmkk..", ".kMmmggmmMk.", ".kmgGwwGgmk.", "kmmgweewgmmk",
+    "kMmgGwwGgmMk", ".kmmggggmmk.", "..kMmmmmMk..", "...kGkkGk...", "..kk....kk..",
+]
+INFECTOR = [
+    "....kkkk....", "...kmmmmk...", "..kmMmmMmk..", ".kmmcmmcmmk.", ".kmmmmmmmmk.",
+    "kmMkmmmmkMmk", "k.kmMmmMmk.k", "..kmmmmmmk..", "..kmk..kmk..", ".kk......kk.",
+]
+BLOB = [
+    "...kkkkkk...", "..kggggggk..", ".kgaaggaagk.", "kgawkgawkggk", "kggggggggggk",
+    "kgaggggggagk", "kggGggggGggk", ".kgggggggk..", "..kkkkkkkk..",
+]
+BOMBER = [
+    "kk........kk", "kdkk....kkdk", ".kddkkkkddk.", "..kdsSSsdk..", "..kdsrrsdk..",
+    "...kdsdsk...", "....kddk....", ".....kk.....",
+]
+JAMMER = [
+    "..k..kk..k..", "...k.kk.k...", "....kookk...", "...kooook...", "..koowwook..",
+    "..kooeeook..", "..kGoooGok..", "...kggggk...", "..kgk..kgk..", ".kk......kk.",
+]
+ARTILLERY_GRUB = [
+    "......kkkk......", "....kkddddkk....", "...kdssSSssdk...", "..kgGggggggGgk..",
+    ".kgggrggggrgggk.", "kgGggggggggggGgk", "kgggGGggggGGgggk", ".kgggggggggggggk",
+    "..kGkGkGkGkGkGk.", "...k.k.k.k.k.k..",
+]
+PATHCUTTER = [
+    "k..........k", "kSk......kSk", ".kSk.kk.kSk.", "..kNNNNNNk..", ".kNnnnnnnNk.",
+    ".kNnyNNynNk.", "..kNnnnnNk..", "..kNNkkNNk..", ".kNk....kNk.", ".kk......kk.",
+]
+SWARM_QUEENLET = [
+    "...kk....kk...", "..kyyk..kyyk..", "...kmmkkmmk...", "..kmMmmmmMmk..", ".kmmwmmmmwmmk.",
+    ".kmmmmMMmmmmk.", "kmMggggggggMmk", "kmgGgggggggGmk", ".kmggggggggmk.", "..kmgGggGgmk..",
+    "..kgk.kk.kgk..", ".kk........kk.",
+]
+MOTHERSHIP = [
+    "........kkkkkkkk........", "......kkddddddddkk......", "....kkddsSSSSSSsddkk....",
+    "..kkddssccccccccssddkk..", ".kddssccwwccccwwccssddk.", "kdmmmmmmmmmmmmmmmmmmmmdk",
+    "kdMmMmMmMmMmMmMmMmMmMmdk", ".kddddddddddddddddddddk.", "..kkdddkkdddddkkdddkk...",
+    "....kgk..kgggk..kgk.....", ".....k....kkk....k......",
+]
+HIVE_MIND = [
+    "....kkkkkkkk....", "..kkmmmmmmmmkk..", ".kmmMmmwwmmMmmk.", "kmmMmmweewmmMmmk",
+    "kmMmmmweewmmmMmk", "kmmmmmmwwmmmmmmk", ".kmMgggggggggMk.", "..kmgGgggggGgmk.",
+    "...kkgk..kgkk...", "....kk....kk....",
+]
+FALLEN_COMMANDER = [
+    "....kkkk....", "...kmMMmk...", "...kmrrmk...", "..kkMMMMkk..", ".kmMmMMmMmk.",
+    "kmMkmggmkMmk", "k.kMmggmMk.k", "...kmMMmk...", "...km..mk...", "..kMk..kMk..",
+    "..kkk..kkk..",
+]
+ACID_LEVIATHAN = [
+    "......kkkkkkkkkk......", "....kkaaaaaaaaaakk....", "...kaaGGaaaaaaGGaak...",
+    "..kaGgrrgaaaagrrgGak..", ".kaagggggaaaagggggaak.", "kaGgggwkwkwkwkwgggGak.",
+    "kaggggkwkwkwkwkggggak.", ".kaGgggggggggggggGak..", "..kkaaGGGGGGGGGGaakk..",
+    "....kkaaaaaaaaaakk....", "......kkkkkkkkkk......",
+]
+NEST_HEART = [
+    "......kkkkkkkk......", "....kkmmmmmmmmkk....", "...kmmMMmmmmMMmmk...",
+    "..kmMmmrrmmrrmmMmk..", ".kmMmrrrrmmrrrrmMmk.", "kmmmrrrrrrrrrrrrmmmk",
+    "kmMmrrrrrrrrrrrrmMmk", "kmmmmrrrrrrrrrrmmmmk", ".kmMmmrrrrrrrrmmMmk.",
+    "..kmmMmmrrrrmmMmmk..", "...kmmMMmmmmMMmmk...", "....kkmmmmmmmmkk....",
+    "......kkkkkkkk......",
+]
+ARCHITECT = [
+    "........kkkkkk........", "......kkccccccbk......", ".....kcbWbbbbWbck.....",
+    "....kcbbbbccbbbbck....", "...kdddddddddddddk....", "..kdsSSsdcccdsSSsdk...",
+    ".kdsssssdcwcdsssssdk..", "kdssddssdcccdssddssdk.", "kdsdkkdssdddssdkkdsdk.",
+    ".kdk..kdsk.kdsk..kdk..", "..k....kk...kk....k...",
+]
+
 SPRITE_NAMES = [
     "commander_0", "commander_1", "commander_down",
     "skitter_0", "skitter_1", "brute_0", "brute_1", "glider_0", "glider_1",
@@ -188,6 +285,10 @@ SPRITE_NAMES = [
     "mender_0", "juggernaut_0", "cloaker_0", "burrower_0", "spitter_0", "hive_egg_0",
     "siege_titan_0", "hive_queen_0", "shield_drone_0", "hunter_0", "mimic_0", "carrier_0",
     "burrow_wyrm_0",
+    "adaptive_0", "thief_0", "leech_0", "phaser_0", "reflector_0", "swarm_mind_0", "necro_spore_0",
+    "infector_0", "blob_0", "bomber_0", "jammer_0", "artillery_grub_0", "pathcutter_0",
+    "swarm_queenlet_0", "mothership_0", "hive_mind_0", "fallen_commander_0", "acid_leviathan_0",
+    "nest_heart_0", "architect_0",
     "tower_base", "turret_pulse", "turret_tesla", "turret_cryo",
     "turret_railgun", "turret_missile", "turret_flamer", "turret_mortar", "turret_gravity",
     "turret_harvester", "turret_radar", "turret_drone", "turret_barricade", "turret_mines", "core",
@@ -195,7 +296,8 @@ SPRITE_NAMES = [
 ] + tower_art.variant_names()   # upgraded tower looks, branches, drones
 
 
-HERO_PALETTES = {}   # hero id -> {pixel letter: color}; GameManager fills it from commanders.json
+HERO_PALETTES = {}
+FUSION_PARTS = {}    # fusion id -> (part, part); GameManager fills it from tower_systems.json   # hero id -> {pixel letter: color}; GameManager fills it from commanders.json
 
 
 def from_pixels(rows, scale=2, palette=None):
@@ -343,6 +445,30 @@ def _item(kind):
         pygame.draw.rect(s, k, (5, 2, 10, 16), border_radius=2)
         pygame.draw.rect(s, S.ORANGE, (6, 3, 8, 14), border_radius=2)
         pygame.draw.polygon(s, S.ENERGY, [(11, 4), (7, 11), (10, 11), (9, 16), (13, 9), (10, 9)])
+    elif kind == "chip":   # augment chip: a little circuit board
+        pygame.draw.rect(s, k, (3, 3, 14, 14), border_radius=2)
+        pygame.draw.rect(s, (30, 110, 60), (4, 4, 12, 12), border_radius=2)
+        for i in (6, 10, 14):
+            pygame.draw.line(s, k, (i - 1, 0), (i - 1, 3), 1)
+            pygame.draw.line(s, k, (i - 1, 17), (i - 1, 20), 1)
+        pygame.draw.rect(s, S.ENERGY, (7, 7, 6, 6))
+        pygame.draw.line(s, S.GREEN, (4, 10), (7, 10), 1)
+    elif kind == "weapon":   # a rifle silhouette
+        pygame.draw.rect(s, k, (1, 7, 18, 6), border_radius=1)
+        pygame.draw.rect(s, S.STEEL_LIGHT, (2, 8, 16, 4))
+        pygame.draw.rect(s, k, (5, 11, 4, 7))
+        pygame.draw.rect(s, S.ORANGE, (6, 12, 2, 5))
+    elif kind == "grenade":
+        pygame.draw.circle(s, k, (10, 12), 7)
+        pygame.draw.circle(s, (90, 110, 70), (10, 12), 6)
+        pygame.draw.rect(s, k, (8, 2, 5, 5))
+        pygame.draw.rect(s, S.STEEL_LIGHT, (9, 3, 3, 3))
+        pygame.draw.line(s, S.RED, (13, 4), (16, 2), 2)
+    elif kind == "gear":   # a helmet
+        pygame.draw.circle(s, k, (10, 11), 8)
+        pygame.draw.circle(s, S.ENERGY, (10, 11), 7)
+        pygame.draw.rect(s, k, (3, 11, 15, 6))
+        pygame.draw.rect(s, S.CYAN, (5, 11, 10, 3))
     elif kind == "shield_battery":
         pygame.draw.polygon(s, k, [(10, 1), (18, 4), (16, 14), (10, 19), (4, 14), (2, 4)])
         pygame.draw.polygon(s, S.CYAN, [(10, 3), (16, 5), (14, 13), (10, 17), (6, 13), (4, 5)])
@@ -383,7 +509,16 @@ def build_placeholder(name):
               "burrower": (BURROWER, 2), "spitter": (SPITTER, 2), "hive_egg": (HIVE_EGG, 2),
               "siege_titan": (SIEGE_TITAN, 3), "hive_queen": (HIVE_QUEEN, 3),
               "shield_drone": (SHIELD_DRONE, 2), "hunter": (HUNTER, 2), "mimic": (MIMIC, 2),
-              "carrier": (CARRIER, 3), "burrow_wyrm": (BURROW_WYRM, 3)}
+              "carrier": (CARRIER, 3), "burrow_wyrm": (BURROW_WYRM, 3),
+              # Phase 5 (longer names first so "swarm_mind" isn't caught by a shorter key)
+              "swarm_queenlet": (SWARM_QUEENLET, 2), "swarm_mind": (SWARM_MIND, 2),
+              "artillery_grub": (ARTILLERY_GRUB, 2), "acid_leviathan": (ACID_LEVIATHAN, 3),
+              "fallen_commander": (FALLEN_COMMANDER, 3), "necro_spore": (NECRO_SPORE, 2),
+              "adaptive": (ADAPTIVE, 2), "thief": (THIEF, 2), "leech": (LEECH, 2), "phaser": (PHASER, 2),
+              "reflector": (REFLECTOR, 2), "infector": (INFECTOR, 2), "blob": (BLOB, 2),
+              "bomber": (BOMBER, 3), "jammer": (JAMMER, 2), "pathcutter": (PATHCUTTER, 2),
+              "mothership": (MOTHERSHIP, 3), "hive_mind": (HIVE_MIND, 3), "nest_heart": (NEST_HEART, 3),
+              "architect": (ARCHITECT, 3)}
     for key, (rows, scale) in phase3.items():
         if name.startswith(key + "_"):
             return from_pixels(rows, scale)
@@ -394,6 +529,17 @@ def build_placeholder(name):
         return tower_art.tower_base("b" if level == "b" else int(level[1]))
     if name.startswith("drone_t"):
         return tower_art.drone(int(name[-1]))
+    if name.startswith("turret_fusion_"):   # hybrid: both parents' tier-3 looks layered
+        fid = name[len("turret_fusion_"):]
+        parts = FUSION_PARTS.get(fid, ("pulse", "cryo"))
+        base = tower_art.turret(parts[0], "t2") or build_placeholder(f"turret_{parts[0]}")
+        top = tower_art.turret(parts[1], "t2") or build_placeholder(f"turret_{parts[1]}")
+        surf = base.copy()
+        top = pygame.transform.smoothscale(top, (26, 26))
+        top.set_alpha(230)
+        surf.blit(top, top.get_rect(center=(20, 20)))
+        pygame.draw.circle(surf, S.MAGENTA, (20, 20), 19, 1)
+        return surf
     if name.startswith("turret_"):
         kind = name[len("turret_"):]
         if kind[-3:-2] == "_" and kind[-2] in "tb":   # turret_<kind>_t1 / _b0 ...
@@ -404,7 +550,7 @@ def build_placeholder(name):
         return _turret(kind)
     if name == "core":
         return _core()
-    if name in ("energy_crystal", "repair_kit", "overcharge", "shield_battery"):
+    if name in ("energy_crystal", "repair_kit", "overcharge", "shield_battery", "chip", "weapon", "grenade", "gear"):
         return _item(name)
     # Unknown name: an obvious magenta square so missing art is easy to spot.
     surf = pygame.Surface((24, 24), pygame.SRCALPHA)

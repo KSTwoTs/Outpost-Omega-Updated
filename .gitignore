@@ -12,3 +12,6 @@ __pycache__/
 
 # Copies the Claude desktop app saves when files are shared in chat
 Claude outputs/
+
+# Test program for using 3D art styles
+3D Art Style Test/
